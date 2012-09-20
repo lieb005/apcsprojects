@@ -17,7 +17,6 @@ import javax.swing.JApplet;
 public class GPA extends JApplet
 {
     HashMap <String, Byte[]> grades = new HashMap<String, Byte[]>();
-    
 
     /**
      * @param args the command line arguments
@@ -51,6 +50,7 @@ public class GPA extends JApplet
 		    while (!read.ready ())
 			    {}
 		    letterGrades[i] = read.readLine ().toLowerCase().replaceAll("[ ]*,[ ]*", ",").split (",");
+		    int[] numGrades;
 		    for (int j = 0;j < letterGrades[i].length;j++)
 		    {
 			
@@ -63,6 +63,13 @@ public class GPA extends JApplet
 	}
     }
 
+    private int letterToNum(char c)
+    {
+	c = Character.toLowerCase (c);
+	return 0x66 - c;
+    }
+    
+    private int 
     @Override
     public void start ()
     {
