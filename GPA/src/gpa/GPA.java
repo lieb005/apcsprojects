@@ -50,10 +50,10 @@ public class GPA extends JApplet
 		    while (!read.ready ())
 			    {}
 		    letterGrades[i] = read.readLine ().toLowerCase().replaceAll("[ ]*,[ ]*", ",").split (",");
-		    int[] numGrades;
+		    int[] numGrades = new int [letterGrades[i].length];
 		    for (int j = 0;j < letterGrades[i].length;j++)
 		    {
-			
+			numGrades[i] = letterToNum(letterGrades[i][j].charAt(0));
 		    }
 		}
 	    }
