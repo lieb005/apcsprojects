@@ -66,10 +66,14 @@ public class GPA extends JApplet
     private int letterToNum(char c)
     {
 	c = Character.toLowerCase (c);
-	return 0x66 - c;
+	return c != 0x65 ? Math.min(0x66 - c, 4) : 0;
     }
     
-    private int 
+    private char numToLetter (int num)
+    {
+        final char[] gradeLetters = new char[]{'A', 'B', 'C', 'D', 'F'};
+        return gradeLetters[num];
+    }
     @Override
     public void start ()
     {
