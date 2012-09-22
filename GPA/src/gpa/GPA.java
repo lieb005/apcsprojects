@@ -8,6 +8,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import javax.swing.JApplet;
 
 /**
@@ -16,67 +18,100 @@ import javax.swing.JApplet;
  */
 public class GPA extends JApplet
 {
-    HashMap <String, Byte[]> grades = new HashMap<String, Byte[]>();
+
+    LinkedHashMap<String, int[]> grades = new LinkedHashMap<String, int[]> ();
 
     /**
      * @param args the command line arguments
      */
     public static void main (String[] args)
     {
-	GPA gpa = new GPA ();
-	gpa.init ();
-	gpa.start ();
+        GPA gpa = new GPA ();
+        gpa.init ();
+        gpa.start ();
     }
 
     @Override
     public void init ()
     {
-	super.init ();
-	BufferedReader read = new BufferedReader (new InputStreamReader (System.in));
-	try
-	{
-	    
-	    while (true)
-	    {
-		System.out.println ("Enter the Name(s) separated by commas");
-		while (!read.ready ())
-		{
-		}
-		String[] names = read.readLine ().replaceAll("[ ]*,[ ]*", ",").split (",");
-		String[][] letterGrades = new String[names.length][];
-		for (int i = 0;i < names.length;i++)
-		{
-		    System.out.println ("Enter a comma separated list of letter grades for " + names[i]);
-		    while (!read.ready ())
-			    {}
-		    letterGrades[i] = read.readLine ().toLowerCase().replaceAll("[ ]*,[ ]*", ",").split (",");
-		    int[] numGrades = new int [letterGrades[i].length];
-		    for (int j = 0;j < letterGrades[i].length;j++)
-		    {
-			numGrades[i] = letterToNum(letterGrades[i][j].charAt(0));
-		    }
-		}
-	    }
-	}
-	catch (IOException e)
-	{
-	}
+        super.init ();
+        BufferedReader read = new BufferedReader (new InputStreamReader (System.in));
+        try
+        {
+
+            while (true)
+            {
+                grades = new LinkedHashMap<String, int[]> ();
+                System.out.println ("Enter the Name(s) separated by commas");
+                String temp = read.readLine ();
+                if (temp == "exit")
+                {
+                    System.exit (0);
+                }
+                String[] names = temp.replaceAll ("[ ]*,[ ]*", ",").split (",");
+                String[][] letterGrades = new String[names.length][];
+                for (int i = 0; i < names.length; i++)
+                {
+                    System.out.println ("Enter a comma separated list of letter grades for " + names[i]);
+                    String tmp = read.readLine ();
+                    if (tmp == "exit")
+                    {
+                        System.exit (0);
+                    }
+                    letterGrades[i] = tmp.toLowerCase ().replaceAll ("[ ]*,[ ]*", ",").split (",");
+                    int[] numGrades = new int[letterGrades[i].length];
+                    for (int j = 0; j < letterGrades[i].length; j++)
+                    {
+                        numGrades[j] = letterToNum (letterGrades[i][j].charAt (0));
+                    }
+                    grades.put (names[i], numGrades);
+                }
+                for (Map.Entry<String, int[]> entry : grades.entrySet ())
+                {
+                    String string = entry.getKey ();
+                    int[] is = entry.getValue ();
+                    //System.out.printf ("%s has %d,%d,%d,%d,%d,%d\n", string, is[0], is[1], is[2], is[3], is[4], is[5]);
+                    System.out.printf ("%s has an average grade of %s\n", string, numToLetter ((is[0] + is[1] + is[2] + is[3] + is[4] + is[5]) / 6));
+                }
+                System.out.println ();
+            }
+        }
+        catch (IOException e)
+        {
+        }
     }
 
-    private int letterToNum(char c)
+    private int letterToNum (char c)
     {
-	c = Character.toLowerCase (c);
-	return c != 0x65 ? Math.min(0x66 - c, 4) : 0;
+        switch (c)
+        {
+        case 'a':
+            return 0;
+        case 'b':
+            return 1;
+        case 'c':
+            return 2;
+        case 'd':
+            return 3;
+        case 'f':
+            return 4;
+        default:
+            return 9;
+        }
     }
-    
+
     private char numToLetter (int num)
     {
-        final char[] gradeLetters = new char[]{'A', 'B', 'C', 'D', 'F'};
+        final char[] gradeLetters = new char[]
+        {
+            'A', 'B', 'C', 'D', 'F'
+        };
         return gradeLetters[num];
     }
+
     @Override
     public void start ()
     {
-	super.start ();
+        super.start ();
     }
 }
