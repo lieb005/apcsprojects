@@ -21,11 +21,21 @@ public enum Levels
     private final int masterX, masterY;
     private final int[] enemyX, enemyY;
 
-    Levels (int masterX, int masterY, int[] enemyX, int[] enemyY)
+    Levels (int masterx, int mastery, int[] enemyx, int[] enemyy)
     {
-        this.masterX = masterX;
-        this.masterY = masterY;
-        this.enemyX = enemyX;
-        this.enemyY = enemyY;
+        masterX = masterx;
+        masterY = mastery;
+        enemyX = enemyx;
+        enemyY = enemyy;
+    }
+
+    public Levels getLevel (int i)
+    {
+        switch (i)
+        {
+        case 1:
+            return WOLRD1;
+        }
+        return null;
     }
 }
