@@ -8,24 +8,26 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.util.ArrayList;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Vector;
-import javax.swing.JApplet;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 /**
  *
  * @author mark
  */
-
-public class DotFPS extends JApplet
+public class DotFPS extends JApplet implements KeyListener, MouseListener
 {
 
+    public static final int gridSize = 32;
     public static final int gridX = 40, gridY = 10, windowX = 400, windowY = 400;
-    public static final int scaleX = windowX/gridX, scaleY = windowY/gridY;
     static final int initLevel = 0;
+    public static final int NONE = 0, UP = 1, LEFT = 2, RIGHT = 3, DOWN = 4;
     int level = 0;
+    Stage bg;
 
     /**
      * @param args the command line arguments
@@ -37,7 +39,7 @@ public class DotFPS extends JApplet
         f.add (d);
         d.init ();
         d.start ();
-        f.setSize (400, 400);
+        f.setSize (windowX, windowY);
         f.setVisible (true);
         f.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
     }
@@ -51,28 +53,84 @@ public class DotFPS extends JApplet
     public void init ()
     {
         super.init ();
-        Stage bg = new Level (0, 0, new int[]
-                {
-                    2, 5, 7, 9, 12, 15, 17, 19, 21, 23, 26, 27
-                }, new int[]
-                {
-                    1, 3, 7, 3, 9, 5, 2, 6, 9, 3, 7, 3
-                });
-        bg.add (new Assassin (true), 0, 0);
+        bg = Levels.getLevel (Levels.WOLRD1);
+        bg.setSize (gridX * gridSize, gridY * gridSize);
+        bg.addMouseListener (this);
+        bg.addKeyListener (this);
         bg.repaint ();
-        add (bg);
+        JScrollPane scrollPane = new JScrollPane (bg);
+        scrollPane.setHorizontalScrollBarPolicy (ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy (ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+        add (scrollPane);
         invalidate ();
         validate ();
         repaint ();
-        System.out.println (bg.getSize ());
-        System.out.println(new ArrayList<Assassin>(bg.getAssassinVector ()));
+    }
 
+    @Override
+    public void keyTyped (KeyEvent e)
+    {
+    }
+
+    @Override
+    public void keyPressed (KeyEvent e)
+    {
+        switch (e.getKeyCode ())
+        {
+        case KeyEvent.VK_UP:
+            bg.moveMaster (UP);
+            break;
+        case KeyEvent.VK_RIGHT:
+            bg.moveMaster (RIGHT);
+            break;
+        case KeyEvent.VK_LEFT:
+            bg.moveMaster (LEFT);
+            break;
+        case KeyEvent.VK_DOWN:
+            bg.moveMaster (DOWN);
+            break;
+        }
+        bg.repaint ();
+    }
+
+    @Override
+    public void keyReleased (KeyEvent e)
+    {
+        bg.stopMaster ();
+        bg.repaint ();
+    }
+
+    @Override
+    public void mouseClicked (MouseEvent e)
+    {
+    }
+
+    @Override
+    public void mousePressed (MouseEvent e)
+    {
+    }
+
+    @Override
+    public void mouseReleased (MouseEvent e)
+    {
+    }
+
+    @Override
+    public void mouseEntered (MouseEvent e)
+    {
+    }
+
+    @Override
+    public void mouseExited (MouseEvent e)
+    {
     }
 }
 
 abstract class Actor extends Canvas
 {
-    protected int currentX, currentY, startX, startY;
+
+    public final static int NONE = DotFPS.NONE, UP = DotFPS.UP, DOWN = DotFPS.DOWN, LEFT = DotFPS.LEFT, RIGHT = DotFPS.RIGHT;
+    protected double currentX, currentY, startX, startY;
     public static final int ACTOR_SIZE = 31;
 
     class EmptyActor extends Actor
@@ -85,76 +143,69 @@ abstract class Actor extends Canvas
         }
     }
 
-}
+    public double getExactX ()
+    {
+        return currentX;
+    }
 
+    public double getExactY ()
+    {
+        return currentY;
+    }
+
+    @Override
+    public int getX ()
+    {
+        return (int) getExactX ();
+    }
+
+    @Override
+    public int getY ()
+    {
+        return (int) getExactY ();
+    }
+}
 
 class Assassin extends Actor
 {
 
-    Color assassinColor = Color.BLACK;
-    boolean master = false;
-    Bullet bullet;
+    public static final int STEP = 1;
+    private Color assassinColor = Color.BLACK;
+    private Bullet bullet;
 
     public Assassin ()
     {
-        this (false);
+        this (Color.BLACK, 0, 0);
     }
 
     public Assassin (Color c)
     {
-        this (false, c);
-    }
-
-    public Assassin (boolean master)
-    {
-        this(master, Color.BLACK, 0, 0);
-    }
-
-    public Assassin (boolean master, Color c)
-    {
-        this (master, c, 0, 0);
-    }
-
-    public Assassin (boolean master, int x, int y)
-    {
-        this (master, Color.BLACK, 0, 0);
+        this (c, 0, 0);
     }
 
     public Assassin (int x, int y)
     {
-        this (false, Color.BLACK, 0, 0);
+        this (Color.BLACK, 0, 0);
     }
 
     public Assassin (Color c, int x, int y)
     {
-        this (false, c, 0, 0);
-    }
-
-    public Assassin (boolean master, Color c, int x, int y)
-    {
-        this.master =master;
         assassinColor = c;
         startX = x;
         startY = y;
         currentX = x;
         currentY = y;
     }
+
     public void draw (Graphics g)
     {
         super.paint (g);
         Color color = Color.WHITE;
-        if (master)
-        {
-            color = Color.DARK_GRAY;
-        }
-        else
-        {
-            color = assassinColor;
-        }
+        color = assassinColor;
         g.setColor (color);
-        g.fillOval (currentX*DotFPS.scaleX, currentY*DotFPS.scaleY, ACTOR_SIZE, ACTOR_SIZE);
+        g.fillOval ((int) (currentX * (double) DotFPS.gridSize), (int) (currentY * (double) DotFPS.gridSize), ACTOR_SIZE, ACTOR_SIZE);
         g.setColor (Color.BLACK);
-        g.drawOval (currentX*DotFPS.scaleX, currentY*DotFPS.scaleY, ACTOR_SIZE, ACTOR_SIZE);
+        g.drawOval ((int) (currentX * (double) DotFPS.gridSize), (int) (currentY * (double) DotFPS.gridSize), ACTOR_SIZE, ACTOR_SIZE);
     }
 
     void moveBullet (int x, int y)
@@ -170,22 +221,20 @@ class Assassin extends Actor
         }
     }
 
-    @Override
-    public int getX ()
+    public void move (int direction)
     {
-        return currentX;
-    }
+        switch (direction)
+        {
 
-    @Override
-    public int getY ()
-    {
-        return currentY;
+        }
+        repaint ();
     }
 }
 
 class Bullet extends Actor
 {
 
+    public static final double STEP = 0.8;
     Assassin parent;
     public final int BULLET_WIDTH = 7, BULLET_HEIGHT = 7;
 
@@ -204,17 +253,110 @@ class Bullet extends Actor
         currentY = y;
     }
 
-    @Override
-    public void move (int x, int y)
+    public void move (int direction)
     {
-        setLocation (x, y);
+        switch (direction)
+        {
+        case UP:
+            setLocation ((int) (currentX), (int) (currentY - STEP));
+        case LEFT:
+            setLocation ((int) (currentX - STEP), (int) (currentY));
+        case RIGHT:
+            setLocation ((int) (currentX + STEP), (int) (currentY));
+        case DOWN:
+            setLocation ((int) (currentX), (int) (currentY + STEP));
+        }
     }
 
-    public void graw (Graphics g)
+    public void draw (Graphics g)
+    {
+        g.setColor (Color.BLACK);
+        g.fillOval ((int) currentX, (int) currentY, BULLET_WIDTH, BULLET_HEIGHT);
+    }
+}
+
+abstract class Stage extends JPanel
+{
+
+    Thread masterMoveThread;
+    public final static int NONE = DotFPS.NONE, UP = DotFPS.UP, DOWN = DotFPS.DOWN, LEFT = DotFPS.LEFT, RIGHT = DotFPS.RIGHT;
+    Vector<Assassin> killers = new Vector<Assassin> ();
+    Assassin master;
+
+    public void add (Assassin comp)
+    {
+        killers.add (comp);
+    }
+
+    public void remove (Assassin comp)
+    {
+        killers.remove (comp);
+    }
+
+    Point getLocationOf (Assassin a) throws NoComponentException
+    {
+        for (int i = 0; i < killers.size () - 1; i++)
+        {
+            if (killers.get (i).equals (a));
+            {
+                Point p = killers.get (i).getLocation ();
+                return p;
+            }
+        }
+        throw new NoComponentException ();
+    }
+
+    public Vector<Assassin> getAssassinVector ()
+    {
+        return killers;
+    }
+
+    @Override
+    public void paint (Graphics g)
     {
         super.paint (g);
-        g.setColor (Color.BLACK);
-        g.fillOval (currentX, currentY, BULLET_WIDTH, BULLET_HEIGHT);
+        for (int i = 0; i < killers.size (); i++)
+        {
+            killers.get (i).draw (g);
+        }
+    }
+
+    public Assassin getMaster ()
+    {
+        return master;
+    }
+
+    public Assassin removeMaster ()
+    {
+        killers.remove (master);
+        Assassin ret = master;
+        master = null;
+        return ret;
+    }
+
+    public void moveMaster (int direction)
+    {
+        final int dir = direction;
+        masterMoveThread = new Thread (new Runnable ()
+        {
+
+            @Override
+            public void run ()
+            {
+                while (true)
+                {
+                    master.move (dir);
+                    System.out.println("Moving " + dir);
+                }
+            }
+        });
+        masterMoveThread.start ();
+    }
+
+    public void stopMaster ()
+    {
+        masterMoveThread.interrupt ();
+        master.move (NONE);
     }
 }
 
@@ -230,9 +372,11 @@ class Level extends Stage
         this.masterY = masterY;
         this.enemyX = enemyX;
         this.enemyY = enemyY;
+        master = new Assassin (Color.LIGHT_GRAY, masterX, masterY);
+        add (master);
         for (int i = 0; i < enemyX.length; i++)
         {
-            add (new Assassin (false, new Color ((int) (Math.random () * 256), (int) (Math.random () * 256), (int) (Math.random () * 256))));
+            add (new Assassin (new Color ((int) (Math.random () * 256), (int) (Math.random () * 256), (int) (Math.random () * 256)), enemyX[i], enemyY[i]));
         }
     }
 
@@ -245,55 +389,6 @@ class Level extends Stage
     {
         this.masterX = masterX;
         this.masterY = masterY;
-    }
-}
-
-class Stage extends JPanel
-{
-
-    Vector<Assassin> killers = new Vector<Assassin> ();
-
-    public Stage ()
-    {
-        setLayout (null);
-    }
-
-    public void add (Assassin comp)
-    {
-        killers.add (comp);
-    }
-
-    public void remove (Assassin comp)
-    {
-        killers.remove (comp);
-    }
-
-    Point getLocationOf (Assassin a) throws NoComponentException
-    {
-        for (int i = 0; i < killers.size() - 1; i++)
-        {
-            if (killers.get(i).equals (a));
-            {
-                Point p = killers.get(i).getLocation ();
-                return p;
-            }
-        }
-        throw new NoComponentException ();
-    }
-
-    public Vector<Assassin> getAssassinVector()
-    {
-        return killers;
-    }
-
-    @Override
-    public void paint (Graphics g)
-    {
-        super.paint (g);
-        for (int i = 0; i < killers.size (); i++)
-        {
-            killers.get (i).draw (g);
-        }
     }
 }
 
