@@ -26,8 +26,9 @@ public class DotFPS extends JApplet implements KeyListener, MouseListener
     public static final int gridX = 40, gridY = 10, windowX = 400, windowY = 400;
     static final int initLevel = 0;
     public static final int NONE = 0, UP = 1, LEFT = 2, RIGHT = 3, DOWN = 4;
-    int level = 0;
-    Stage bg;
+    private int level = 0;
+    private Stage bg;
+    private int keyPressed = NONE;
 
     /**
      * @param args the command line arguments
@@ -42,6 +43,7 @@ public class DotFPS extends JApplet implements KeyListener, MouseListener
         f.setSize (windowX, windowY);
         f.setVisible (true);
         f.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
+        
     }
 
     private DotFPS (int initLevel)
@@ -57,7 +59,7 @@ public class DotFPS extends JApplet implements KeyListener, MouseListener
         bg.setSize (gridX * gridSize, gridY * gridSize);
         bg.addMouseListener (this);
         bg.addKeyListener (this);
-        bg.repaint ();
+        System.out.println (bg);
         JScrollPane scrollPane = new JScrollPane (bg);
         scrollPane.setHorizontalScrollBarPolicy (ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy (ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
@@ -65,11 +67,13 @@ public class DotFPS extends JApplet implements KeyListener, MouseListener
         invalidate ();
         validate ();
         repaint ();
+        bg.repaint ();
     }
 
     @Override
     public void keyTyped (KeyEvent e)
     {
+        System.out.println (e.getSource ());
     }
 
     @Override
@@ -90,29 +94,34 @@ public class DotFPS extends JApplet implements KeyListener, MouseListener
             bg.moveMaster (DOWN);
             break;
         }
-        bg.repaint ();
+        repaint ();
     }
 
     @Override
     public void keyReleased (KeyEvent e)
     {
         bg.stopMaster ();
-        bg.repaint ();
+        repaint ();
     }
 
     @Override
     public void mouseClicked (MouseEvent e)
     {
+        bg.requestFocusInWindow ();
+
     }
 
     @Override
     public void mousePressed (MouseEvent e)
     {
+        bg.requestFocusInWindow ();
     }
 
     @Override
     public void mouseReleased (MouseEvent e)
     {
+        bg.requestFocusInWindow ();
+
     }
 
     @Override
@@ -126,12 +135,14 @@ public class DotFPS extends JApplet implements KeyListener, MouseListener
     }
 }
 
-abstract class Actor extends Canvas
+abstract class Actor extends Canvas implements Runnable
 {
 
     public final static int NONE = DotFPS.NONE, UP = DotFPS.UP, DOWN = DotFPS.DOWN, LEFT = DotFPS.LEFT, RIGHT = DotFPS.RIGHT;
     protected double currentX, currentY, startX, startY;
     public static final int ACTOR_SIZE = 31;
+    protected int direction;
+    protected Thread t;
 
     class EmptyActor extends Actor
     {
@@ -140,6 +151,16 @@ abstract class Actor extends Canvas
         public void paint (Graphics g)
         {
             super.paint (g);
+        }
+
+        @Override
+        public void run ()
+        {
+        }
+
+        @Override
+        public void move ()
+        {
         }
     }
 
@@ -164,6 +185,13 @@ abstract class Actor extends Canvas
     {
         return (int) getExactY ();
     }
+
+    void setDirection (int direction)
+    {
+        this.direction = direction;
+    }
+
+    abstract public void move ();
 }
 
 class Assassin extends Actor
@@ -188,6 +216,7 @@ class Assassin extends Actor
         this (Color.BLACK, 0, 0);
     }
 
+    @SuppressWarnings("CallToThreadStartDuringObjectConstruction")
     public Assassin (Color c, int x, int y)
     {
         assassinColor = c;
@@ -195,6 +224,8 @@ class Assassin extends Actor
         startY = y;
         currentX = x;
         currentY = y;
+        t = new Thread (this);
+        t.start ();
     }
 
     public void draw (Graphics g)
@@ -210,7 +241,12 @@ class Assassin extends Actor
 
     void moveBullet (int x, int y)
     {
-        bullet.move (x, y);
+        bullet.setLocation (x, y);
+    }
+
+    void moveBullet (int direction)
+    {
+        bullet.setDirection (direction);
     }
 
     public void shoot ()
@@ -225,9 +261,39 @@ class Assassin extends Actor
     {
         switch (direction)
         {
-
+        case UP:
+            currentY -= STEP;
+        case LEFT:
+            currentX -= STEP;
+        case RIGHT:
+            currentX += STEP;
+        case DOWN:
+            currentY += STEP;
         }
         repaint ();
+    }
+
+    @Override
+    public void move ()
+    {
+        move (direction);
+    }
+
+    @Override
+    public void run ()
+    {
+        while (true)
+        {
+            move ();
+            try
+            {
+                Thread.sleep (100000000000L);
+            }
+            catch (InterruptedException ex)
+            {
+            }
+            repaint ();
+        }
     }
 }
 
@@ -267,11 +333,33 @@ class Bullet extends Actor
             setLocation ((int) (currentX), (int) (currentY + STEP));
         }
     }
+@Override
+    public void move ()
+    {
+        move (direction);
+    }
 
     public void draw (Graphics g)
     {
         g.setColor (Color.BLACK);
         g.fillOval ((int) currentX, (int) currentY, BULLET_WIDTH, BULLET_HEIGHT);
+    }
+
+    @Override
+    @SuppressWarnings("SleepWhileInLoop")
+    public void run ()
+    {
+
+        while (true)
+        {
+            move ();
+            try
+            {
+                Thread.sleep (100);
+            }
+            catch (InterruptedException ex)
+            {}
+        }
     }
 }
 
@@ -346,7 +434,7 @@ abstract class Stage extends JPanel
                 while (true)
                 {
                     master.move (dir);
-                    System.out.println("Moving " + dir);
+                    System.out.println ("Moving " + dir);
                 }
             }
         });
@@ -355,7 +443,6 @@ abstract class Stage extends JPanel
 
     public void stopMaster ()
     {
-        masterMoveThread.interrupt ();
         master.move (NONE);
     }
 }
