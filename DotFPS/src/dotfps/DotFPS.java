@@ -13,7 +13,10 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Vector;
-import javax.swing.*;
+import java.util.regex.Pattern;
+import javax.swing.JApplet;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 /**
  *
@@ -24,11 +27,12 @@ public class DotFPS extends JApplet implements KeyListener, MouseListener
 
     public static final int gridSize = 32;
     public static final int gridX = 40, gridY = 10, windowX = 400, windowY = 400;
-    static final int initLevel = 0;
+    static final int initLevel = 1;
     public static final int NONE = 0, UP = 1, LEFT = 2, RIGHT = 3, DOWN = 4;
+    public final static boolean DEBUG = true;
+    public final static boolean VERBOSE_DEBUG = false;
     private int level = 0;
     private Stage bg;
-    private int keyPressed = NONE;
 
     /**
      * @param args the command line arguments
@@ -43,7 +47,7 @@ public class DotFPS extends JApplet implements KeyListener, MouseListener
         f.setSize (windowX, windowY);
         f.setVisible (true);
         f.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
-        
+
     }
 
     private DotFPS (int initLevel)
@@ -55,25 +59,24 @@ public class DotFPS extends JApplet implements KeyListener, MouseListener
     public void init ()
     {
         super.init ();
-        bg = Levels.getLevel (Levels.WOLRD1);
+        bg = Levels.WOLRD1.getLevel ();
         bg.setSize (gridX * gridSize, gridY * gridSize);
+        bg.setViewSize (getWidth (), getHeight ());
         bg.addMouseListener (this);
         bg.addKeyListener (this);
-        System.out.println (bg);
-        JScrollPane scrollPane = new JScrollPane (bg);
-        scrollPane.setHorizontalScrollBarPolicy (ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setVerticalScrollBarPolicy (ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-        add (scrollPane);
+        bg.initMaster ();
+        bg.initEnemies ();
+        add (bg);
         invalidate ();
         validate ();
         repaint ();
         bg.repaint ();
+        bg.requestFocusInWindow ();
     }
 
     @Override
     public void keyTyped (KeyEvent e)
     {
-        System.out.println (e.getSource ());
     }
 
     @Override
@@ -93,8 +96,10 @@ public class DotFPS extends JApplet implements KeyListener, MouseListener
         case KeyEvent.VK_DOWN:
             bg.moveMaster (DOWN);
             break;
+        default:
+            e.consume ();
         }
-        repaint ();
+        //bg.getMaster ().repaint ();
     }
 
     @Override
@@ -108,7 +113,6 @@ public class DotFPS extends JApplet implements KeyListener, MouseListener
     public void mouseClicked (MouseEvent e)
     {
         bg.requestFocusInWindow ();
-
     }
 
     @Override
@@ -135,28 +139,17 @@ public class DotFPS extends JApplet implements KeyListener, MouseListener
     }
 }
 
-abstract class Actor extends Canvas implements Runnable
+abstract class Actor extends Canvas
 {
 
     public final static int NONE = DotFPS.NONE, UP = DotFPS.UP, DOWN = DotFPS.DOWN, LEFT = DotFPS.LEFT, RIGHT = DotFPS.RIGHT;
-    protected double currentX, currentY, startX, startY;
+    protected volatile double currentX, currentY, startX, startY;
     public static final int ACTOR_SIZE = 31;
     protected int direction;
-    protected Thread t;
+    protected int windowWidth, windowHeight;
 
     class EmptyActor extends Actor
     {
-
-        @Override
-        public void paint (Graphics g)
-        {
-            super.paint (g);
-        }
-
-        @Override
-        public void run ()
-        {
-        }
 
         @Override
         public void move ()
@@ -164,12 +157,12 @@ abstract class Actor extends Canvas implements Runnable
         }
     }
 
-    public double getExactX ()
+    public synchronized double getExactX ()
     {
         return currentX;
     }
 
-    public double getExactY ()
+    public synchronized double getExactY ()
     {
         return currentY;
     }
@@ -191,13 +184,19 @@ abstract class Actor extends Canvas implements Runnable
         this.direction = direction;
     }
 
+    public synchronized void setWindowSize (int width, int height)
+    {
+        windowWidth = width;
+        windowHeight = height;
+    }
+
     abstract public void move ();
 }
 
 class Assassin extends Actor
 {
 
-    public static final int STEP = 1;
+    public static final double STEP = .1;
     private Color assassinColor = Color.BLACK;
     private Bullet bullet;
 
@@ -216,7 +215,6 @@ class Assassin extends Actor
         this (Color.BLACK, 0, 0);
     }
 
-    @SuppressWarnings("CallToThreadStartDuringObjectConstruction")
     public Assassin (Color c, int x, int y)
     {
         assassinColor = c;
@@ -224,19 +222,23 @@ class Assassin extends Actor
         startY = y;
         currentX = x;
         currentY = y;
-        t = new Thread (this);
-        t.start ();
     }
 
-    public void draw (Graphics g)
+    public synchronized void draw (Graphics g)
     {
-        super.paint (g);
-        Color color = Color.WHITE;
+        Color color;
         color = assassinColor;
         g.setColor (color);
         g.fillOval ((int) (currentX * (double) DotFPS.gridSize), (int) (currentY * (double) DotFPS.gridSize), ACTOR_SIZE, ACTOR_SIZE);
         g.setColor (Color.BLACK);
         g.drawOval ((int) (currentX * (double) DotFPS.gridSize), (int) (currentY * (double) DotFPS.gridSize), ACTOR_SIZE, ACTOR_SIZE);
+
+        if (DotFPS.VERBOSE_DEBUG)
+        {
+            g.setColor (Color.RED);
+            Pattern p;
+            g.drawString (this.toString ().split ("canvas([0-9]{1,2}){1}", 1)[0].replaceAll ("[^0-9]", ""), (int) (currentX * (double) DotFPS.gridSize) + 7, (int) (currentY * (double) DotFPS.gridSize) + 14);
+        }
     }
 
     void moveBullet (int x, int y)
@@ -249,67 +251,67 @@ class Assassin extends Actor
         bullet.setDirection (direction);
     }
 
-    public void shoot ()
+    public synchronized void shoot (double slope)
     {
         if (bullet == null)
         {
-            bullet = new Bullet (getX (), getY ());
+            bullet = new Bullet (getExactX () + (ACTOR_SIZE / (2 * DotFPS.gridSize)), getExactY () + (ACTOR_SIZE / (2 * DotFPS.gridSize)), slope);
         }
-    }
-
-    public void move (int direction)
-    {
-        switch (direction)
+        else
         {
-        case UP:
-            currentY -= STEP;
-        case LEFT:
-            currentX -= STEP;
-        case RIGHT:
-            currentX += STEP;
-        case DOWN:
-            currentY += STEP;
+            bullet.move ();
+            if ((bullet.getExactX () < (0 - bullet.BULLET_WIDTH) || bullet.getExactX () > windowWidth) || (bullet.getExactY () < (0 - bullet.BULLET_HEIGHT) || bullet.getExactY () > windowHeight))
+            {
+                bullet = null;
+            }
         }
-        repaint ();
     }
 
     @Override
     public void move ()
     {
-        move (direction);
+        switch (direction)
+        {
+        case UP:
+            currentY -= STEP;
+            break;
+        case LEFT:
+            currentX -= STEP;
+            break;
+        case RIGHT:
+            currentX += STEP;
+            break;
+        case DOWN:
+            currentY += STEP;
+            break;
+        }
+        if (bullet != null)
+        {
+            bullet.move ();
+        }
     }
 
-    @Override
-    public void run ()
+    public synchronized Bullet getBullet ()
     {
-        while (true)
-        {
-            move ();
-            try
-            {
-                Thread.sleep (100000000000L);
-            }
-            catch (InterruptedException ex)
-            {
-            }
-            repaint ();
-        }
+        return bullet;
     }
 }
 
 class Bullet extends Actor
 {
 
-    public static final double STEP = 0.8;
+    public static final double STEP = 0.1;
     Assassin parent;
     public final int BULLET_WIDTH = 7, BULLET_HEIGHT = 7;
+    private double slope;
 
-    public Bullet (int startx, int starty)
+    public Bullet (double startx, double starty, double slope)
     {
-        startX = startx;
-        startY = starty;
+        startX = startx - ((Math.signum (Math.atan (slope))*Math.cos (Math.atan (slope)) * (ACTOR_SIZE / 2.0)) / DotFPS.gridSize) + (ACTOR_SIZE / 2.0) / DotFPS.gridSize;
+        startY = starty - ((Math.signum (Math.atan (slope))*Math.sin (Math.atan (slope)) * (ACTOR_SIZE / 2.0)) / DotFPS.gridSize) + (ACTOR_SIZE / 2.0) / DotFPS.gridSize;
         currentX = startX;
         currentY = startY;
+        this.slope = slope;
     }
 
     @Override
@@ -319,47 +321,23 @@ class Bullet extends Actor
         currentY = y;
     }
 
-    public void move (int direction)
+    public synchronized void move (double slope)
     {
-        switch (direction)
-        {
-        case UP:
-            setLocation ((int) (currentX), (int) (currentY - STEP));
-        case LEFT:
-            setLocation ((int) (currentX - STEP), (int) (currentY));
-        case RIGHT:
-            setLocation ((int) (currentX + STEP), (int) (currentY));
-        case DOWN:
-            setLocation ((int) (currentX), (int) (currentY + STEP));
-        }
-    }
-@Override
-    public void move ()
-    {
-        move (direction);
-    }
-
-    public void draw (Graphics g)
-    {
-        g.setColor (Color.BLACK);
-        g.fillOval ((int) currentX, (int) currentY, BULLET_WIDTH, BULLET_HEIGHT);
+        this.slope = slope;
+        repaint ();
     }
 
     @Override
-    @SuppressWarnings("SleepWhileInLoop")
-    public void run ()
+    public synchronized void move ()
     {
+        currentX += (Math.abs (slope) / slope) * STEP;
+        currentY += -(slope * STEP); // negative since screen is top to bottom
+    }
 
-        while (true)
-        {
-            move ();
-            try
-            {
-                Thread.sleep (100);
-            }
-            catch (InterruptedException ex)
-            {}
-        }
+    public synchronized void draw (Graphics g)
+    {
+        g.setColor (Color.BLACK);
+        g.fillOval ((int) (currentX * DotFPS.gridSize), (int) (currentY * DotFPS.gridSize), BULLET_WIDTH, BULLET_HEIGHT);
     }
 }
 
@@ -368,20 +346,91 @@ abstract class Stage extends JPanel
 
     Thread masterMoveThread;
     public final static int NONE = DotFPS.NONE, UP = DotFPS.UP, DOWN = DotFPS.DOWN, LEFT = DotFPS.LEFT, RIGHT = DotFPS.RIGHT;
-    Vector<Assassin> killers = new Vector<Assassin> ();
-    Assassin master;
+    volatile Vector<Assassin> killers = new Vector<Assassin> ();
+    volatile Assassin master;
+    protected int windowWidth, windowHeight;
+    Thread masterThread = new Thread (new Runnable ()
+    {
 
-    public void add (Assassin comp)
+        @Override
+        public void run ()
+        {
+            while (true)
+            {
+                master.move ();
+                repaint ();
+                try
+                {
+                    Thread.sleep (50);
+                }
+                catch (InterruptedException ex)
+                {
+                }
+            }
+        }
+    });
+    Thread enemyThread = new Thread (new Runnable ()
+    {
+
+        @Override
+        public void run ()
+        {
+            int index = 0;
+            Assassin tempAssassin;
+            while (true)
+            {
+                index = (int) (Math.random () * killers.size ());
+
+                if (DotFPS.DEBUG)
+                {
+                    index = 5;
+                }
+
+                tempAssassin = killers.get (index);
+                if (tempAssassin.equals (master))
+                {
+                    continue;
+                }
+                do
+                {
+                    double slope = ((master.getExactY () + Actor.ACTOR_SIZE / 2.0) - (tempAssassin.getExactY () + Actor.ACTOR_SIZE / 2.0)) / ((master.getExactX () + Actor.ACTOR_SIZE / 2.0) - (tempAssassin.getExactX () + Actor.ACTOR_SIZE / 2.0));
+                    tempAssassin.shoot (slope);
+                    if (DotFPS.VERBOSE_DEBUG)
+                    {
+                        System.out.println (slope + "    " + tempAssassin);
+                    }
+                    repaint ();
+                    try
+                    {
+                        Thread.sleep (100);
+                    }
+                    catch (InterruptedException ex)
+                    {
+                    }
+                }
+                while (tempAssassin.getBullet () != null);
+                try
+                {
+                    Thread.sleep (DotFPS.DEBUG?0:100);
+                }
+                catch (InterruptedException ex)
+                {
+                }
+            }
+        }
+    });
+
+    public synchronized void add (Assassin comp)
     {
         killers.add (comp);
     }
 
-    public void remove (Assassin comp)
+    public synchronized void remove (Assassin comp)
     {
         killers.remove (comp);
     }
 
-    Point getLocationOf (Assassin a) throws NoComponentException
+    public Point getLocationOf (Assassin a) throws NoComponentException
     {
         for (int i = 0; i < killers.size () - 1; i++)
         {
@@ -394,18 +443,22 @@ abstract class Stage extends JPanel
         throw new NoComponentException ();
     }
 
-    public Vector<Assassin> getAssassinVector ()
+    public synchronized Vector<Assassin> getAssassinVector ()
     {
         return killers;
     }
 
     @Override
-    public void paint (Graphics g)
+    public synchronized void paint (Graphics g)
     {
         super.paint (g);
         for (int i = 0; i < killers.size (); i++)
         {
             killers.get (i).draw (g);
+            if (killers.get (i).getBullet () != null)
+            {
+                killers.get (i).getBullet ().draw (g);
+            }
         }
     }
 
@@ -422,28 +475,38 @@ abstract class Stage extends JPanel
         return ret;
     }
 
+    public void initMaster ()
+    {
+        masterThread.start ();
+    }
+
     public void moveMaster (int direction)
     {
-        final int dir = direction;
-        masterMoveThread = new Thread (new Runnable ()
-        {
-
-            @Override
-            public void run ()
-            {
-                while (true)
-                {
-                    master.move (dir);
-                    System.out.println ("Moving " + dir);
-                }
-            }
-        });
-        masterMoveThread.start ();
+        master.setDirection (direction);
     }
 
     public void stopMaster ()
     {
-        master.move (NONE);
+        master.setDirection (NONE);
+    }
+
+    public void moveAll ()
+    {
+        for (int i = 0; i < killers.size () - 1; i++)
+        {
+            killers.get (i).move ();
+        }
+    }
+
+    void initEnemies ()
+    {
+        enemyThread.start ();
+    }
+
+    public void setViewSize (int width, int height)
+    {
+        windowWidth = width;
+        windowHeight = height;
     }
 }
 
