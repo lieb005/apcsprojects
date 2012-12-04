@@ -47,7 +47,7 @@ public class RPN extends JApplet implements ActionListener, ItemListener
         f.add (r);
         f.setVisible (true);
         f.setSize (400, 400);
-        //f.pack ();
+        f.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
     }
 
     public RPN (int stack_size)

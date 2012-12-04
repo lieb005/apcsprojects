@@ -19,9 +19,9 @@ import java.util.logging.Logger;
 public class Haiku
 {
 
-    public final static double MAX_SYLLABLES = 7.0;
-    public final static int LINE_1 = 5;
-    public final static int LINE_2 = 7;
+    public final static double MAX_SYLLABLES = 11.0;
+    public final static int LINE_1 = 9;
+    public final static int LINE_2 = 11;
     File dict = new File ("./src/laugh/fri/pkg14/pkg9/c06d");
     ArrayList<ArrayList<String>> syllableSorted = new ArrayList<ArrayList<String>> ();
 

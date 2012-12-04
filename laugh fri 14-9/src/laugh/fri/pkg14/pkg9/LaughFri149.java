@@ -56,7 +56,7 @@ public class LaughFri149 extends JApplet
 	buttons.add (next);
 	buttons.add (exit);
 	add (buttons, "South");
-	haiku.setFont (new Font ("Arial", Font.BOLD, 150));
+	haiku.setFont (new Font ("Arial", Font.BOLD, 80));
 	haiku.setText ("<html>" + h.run (false).replaceAll ("\n", "<br/>") + "</html>");
 
 	exit.addActionListener (new ActionListener ()

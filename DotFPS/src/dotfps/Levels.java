@@ -4,6 +4,7 @@
  */
 package dotfps;
 
+import dotfps.Level;
 /**
  *
  * @author mark
@@ -11,12 +12,12 @@ package dotfps;
 public enum Levels
 {
 
-    WOLRD1 (1, 2, new int[]
+    WOLRD1 (0, 0, new int[]
 {
-1, 2, 3, 4, 5, 6, 7, 8
+1, 2, 3, 4, 5, 6, 7, 8, 13, 17, 19, 21, 22, 25, 30, 40
 }, new int[]
 {
-1, 4, 2, 6, 4, 7, 8, 7
+1, 4, 2, 6, 4, 7, 8, 7, 4, 8, 2, 6, 2, 5, 9, 4
 });
     private final int masterX, masterY;
     private final int[] enemyX, enemyY;
@@ -29,7 +30,7 @@ public enum Levels
         enemyY = enemyy;
     }
 
-    public Levels getLevel (int i)
+    static public Levels getLevels (int i)
     {
         switch (i)
         {
@@ -37,5 +38,10 @@ public enum Levels
             return WOLRD1;
         }
         return null;
+    }
+
+    public Level getLevel ()
+    {
+        return new Level (masterX, masterY, enemyX, enemyY);
     }
 }
