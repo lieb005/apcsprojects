@@ -72,4 +72,19 @@ public class HumanPlayer extends Critter
     {
         //super.putSelfInGrid (gr, loc);
     }
+
+    @Override
+    public void processActors (ArrayList<Actor> actors)
+    {
+        int n = actors.size ();
+        if (n == 0)
+        {
+            return;
+        }
+        for (int i = 0; i < actors.size (); i++)
+        {
+            count = count + (actors.remove (i) == null ? 0 : 1);
+        }
+        makeMove(getLocation ());
+    }
 }
