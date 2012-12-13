@@ -6,7 +6,6 @@ package humanplayer;
 
 import info.gridworld.actor.Actor;
 import info.gridworld.actor.Critter;
-import info.gridworld.grid.Grid;
 import info.gridworld.grid.Location;
 import java.util.ArrayList;
 
@@ -21,6 +20,10 @@ public class HumanPlayer extends Critter
 
     public HumanPlayer ()
     {
+    }
+    public HumanPlayer(int age)
+    {
+        
     }
 
     @Override
@@ -40,10 +43,7 @@ public class HumanPlayer extends Critter
                     {
                         if (count >= 2)
                         {
-                            for (int i = 0; i < getActors ().size (); i++)
-                            {
-                                getActors ().set (i, new HumanPlayer ());
-                            }
+                            count = 0;
                         }
                         else
                         {
@@ -63,14 +63,14 @@ public class HumanPlayer extends Critter
     @Override
     public void moveTo (Location newLocation)
     {
-        //super.moveTo (newLocation);
+        super.moveTo (new Location(0, 0));
     }
 
-    @Override
+    /*@Override
     public void putSelfInGrid (Grid<Actor> gr, Location loc)
     {
         //super.putSelfInGrid (gr, loc);
-    }
+    }*/
 
     @Override
     public void processActors (ArrayList<Actor> actors)
@@ -80,11 +80,17 @@ public class HumanPlayer extends Critter
         {
             return;
         }
-        for (int i = 0; i < actors.size (); i++)
+        else
+        {
+            if (count > 2)
+            {
+                
+            }
+        }
+        /*for (int i = 0; i < actors.size (); i++)
         {
             count = count + (actors.remove (i) == null ? 0 : 1);
-        }
+        }*/
         makeMove(getLocation ());
     }
-
 }
