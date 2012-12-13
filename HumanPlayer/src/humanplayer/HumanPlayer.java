@@ -8,7 +8,6 @@ import info.gridworld.actor.Actor;
 import info.gridworld.actor.Critter;
 import info.gridworld.grid.Grid;
 import info.gridworld.grid.Location;
-import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -87,4 +86,5 @@ public class HumanPlayer extends Critter
         }
         makeMove(getLocation ());
     }
+
 }
