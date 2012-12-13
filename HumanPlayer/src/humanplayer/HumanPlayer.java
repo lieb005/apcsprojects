@@ -21,9 +21,9 @@ public class HumanPlayer extends Critter
     public HumanPlayer ()
     {
     }
-    public HumanPlayer(int age)
+
+    public HumanPlayer (int age)
     {
-        
     }
 
     @Override
@@ -41,16 +41,12 @@ public class HumanPlayer extends Critter
                 {
                     while (true)
                     {
-                        if (count >= 2)
-                        {
-                            count = 0;
-                        }
-                        else
+                        if (count > 2)
                         {
                             ArrayList<Actor> actors = getGrid ().getNeighbors (getLocation ());
                             for (int i = 0; i < actors.size (); i++)
                             {
-                                count = count + (actors.remove (i) == null ? 0 : 1);
+                                count = count + (actors.get (i) == null ? 0 : 1);
                             }
                         }
                         makeMove (location);
@@ -60,37 +56,29 @@ public class HumanPlayer extends Critter
         }
     }
 
-    @Override
-    public void moveTo (Location newLocation)
-    {
-        super.moveTo (new Location(0, 0));
-    }
+    /*
+     * @Override public void moveTo (Location newLocation) { super.moveTo (new
+     * Location(0, 0)); }
+     */
 
-    /*@Override
-    public void putSelfInGrid (Grid<Actor> gr, Location loc)
-    {
-        //super.putSelfInGrid (gr, loc);
-    }*/
-
+    /*
+     * @Override public void putSelfInGrid (Grid<Actor> gr, Location loc) {
+     * //super.putSelfInGrid (gr, loc); }
+     */
     @Override
     public void processActors (ArrayList<Actor> actors)
     {
         int n = actors.size ();
-        if (n == 0)
+
+        if (count > 2)
         {
-            return;
+            while (actors.remove ((int) (Math.random () * actors.size ())) != null);
         }
-        else
-        {
-            if (count > 2)
-            {
-                
-            }
-        }
-        /*for (int i = 0; i < actors.size (); i++)
-        {
-            count = count + (actors.remove (i) == null ? 0 : 1);
-        }*/
-        makeMove(getLocation ());
+
+        /*
+         * for (int i = 0; i < actors.size (); i++) { count = count +
+         * (actors.remove (i) == null ? 0 : 1); }
+         */
+        makeMove (new Location (getGrid ().getNumRows () - 1, getGrid ().getNumCols () - 1));
     }
 }
