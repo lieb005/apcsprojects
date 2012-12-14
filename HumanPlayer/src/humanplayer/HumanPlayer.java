@@ -60,7 +60,7 @@ public class HumanPlayer extends Critter
             }
             else
             {
-                Runtime.getRuntime ().exec ("wall TEST");
+                //Runtime.getRuntime ().exec ("wall TEST");
             }
         }
         catch (IOException ex)
@@ -106,11 +106,8 @@ public class HumanPlayer extends Critter
                             if (!(getGrid ().get (l) instanceof Critter))
                             {
                                 //getGrid ().get(l).removeSelfFromGrid ();
-                                if (getGrid ().get (l) != null)
-                                {
-                                    getGrid ().get (l).removeSelfFromGrid ();
-                                }
-                                getGrid ().put (l, new ChildPlayer ());
+                                getGrid ().remove (l);
+                                new ChildPlayer ().putSelfInGrid (getGrid (), l);
                                 break;
                             }
                         }
@@ -132,19 +129,24 @@ public class HumanPlayer extends Critter
     @Override
     public void processActors (ArrayList<Actor> actors)
     {
-        int l = actors.size ();
+        int b = actors.size ();
         for (int n = 0;; n++)
         {
             if (!(actors.get (n) instanceof HumanPlayer) && !(actors.get (n) instanceof ChildPlayer))
             {
-                actors.get (n).removeSelfFromGrid ();
+                actors.remove (n);
                 count++;
                 break;
             }
         }
         if (count > 2)
         {
-            getGrid ().put (new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ())), new HumanPlayer ());
+            Location l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
+                            while (!(getGrid ().isValid (l)))
+                            {
+                                l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
+                            }
+            new HumanPlayer ().putSelfInGrid (getGrid (), l);
             count = 0;
             //int i = 0;
             //while (actors.get (i) != null)
@@ -198,12 +200,6 @@ class ChildPlayer extends Bug
     @Override
     public void move ()
     {
-        makeMove (getLocation ());
-        super.move ();
-    }
-
-    public void makeMove (Location loc)
-    {
         ArrayList<Location> locations = getGrid ().getOccupiedLocations ();
         for (int j = 0; j < locations.size (); j++)
         {
@@ -212,8 +208,19 @@ class ChildPlayer extends Bug
                 return;
             }
         }
-        getGrid ().put (new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ())), new HumanPlayer ());
+        Location l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
+        while (!(getGrid ().isValid (l)))
+        {
+            l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
+        }
+        getGrid ().remove(l);        
+        new HumanPlayer ().putSelfInGrid (getGrid (), l);
+//      super.move ();
+    }
 
-        //super.makeMove (loc);
+    @Override
+    public boolean canMove ()
+    {
+        return true;
     }
 }
