@@ -7,6 +7,7 @@ package humanplayer;
 import info.gridworld.actor.Actor;
 import info.gridworld.actor.Bug;
 import info.gridworld.actor.Critter;
+import info.gridworld.grid.Grid;
 import info.gridworld.grid.Location;
 import java.io.IOException;
 import java.net.URL;
@@ -88,7 +89,7 @@ public class HumanPlayer extends Critter
                     for (int j = 0; j < 64; j = (j + 1))
                     {
                         /*
-                         *  try { Runtime.getRuntime ().exec ("say TEST"); }
+                         * try { Runtime.getRuntime ().exec ("say TEST"); }
                          * catch (IOException ex) { Logger.getLogger
                          * (HumanPlayer.class.getName ()).log (Level.SEVERE,
                          * null, ex); }
@@ -99,8 +100,12 @@ public class HumanPlayer extends Critter
                         {
 
                             Location l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
-                            while (!(getGrid ().isValid (l)) || getGrid ().get (l) != null)
+                            while (!(getGrid ().isValid (l)))
                             {
+                                if (getGrid ().get (l) != null)
+                                {
+                                    break;
+                                }
                                 l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
                             }
                             //if (!(getGrid ().get (l) instanceof Critter))
@@ -111,6 +116,7 @@ public class HumanPlayer extends Critter
                             //    break;
                             //}
                             moveTo (l);
+                            disperse ();
                         }
                     }
                 }
@@ -128,13 +134,13 @@ public class HumanPlayer extends Critter
      * //super.putSelfInGrid (gr, loc); }
      */
     @Override
-    public void processActors (final ArrayList<Actor> actors)
+    synchronized public void processActors (final ArrayList<Actor> actors)
     {
         new Thread (new Runnable ()
         {
 
             @Override
-            public void run ()
+            synchronized public void run ()
             {
                 int b = actors.size ();
                 for (int n = 0; n < b; n++)
@@ -149,7 +155,7 @@ public class HumanPlayer extends Critter
                 if (count > 2)
                 {
                     Location l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
-                    while (!(getGrid ().isValid (l)))
+                    while (!(getGrid ().isValid (l)) || !(getGrid ().get (l) instanceof Critter))
                     {
                         l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
                     }
@@ -173,8 +179,25 @@ public class HumanPlayer extends Critter
 
     }
 
+    synchronized public void disperse ()
+    {
+        Grid g = getGrid ();
+        int w = g.getNumRows (), h = g.getNumCols ();
+        for (int i = w; i >= 0; i--)
+        {
+            for (int j = h; j >= 0; j--)
+            {
+                if (!(g.get (new Location (i, j)) instanceof Critter))
+                {
+                    g.remove (new Location (i, j));
+                    new ChildPlayer().putSelfInGrid (getGrid (), new Location (i, j));
+                }
+            }
+        }
+    }
+
     @Override
-    public ArrayList<Actor> getActors ()
+    synchronized public ArrayList<Actor> getActors ()
     {
         ArrayList<Actor> actors = new ArrayList<Actor> ();
         ArrayList<Location> locs = getGrid ().getOccupiedLocations ();
@@ -209,13 +232,13 @@ class ChildPlayer extends Bug
     }
 
     @Override
-    public void move ()
+    synchronized public void move ()
     {
         new Thread (new Runnable ()
         {
 
             @Override
-            public void run ()
+            synchronized public void run ()
             {
 
                 ArrayList<Location> locations = getGrid ().getOccupiedLocations ();
