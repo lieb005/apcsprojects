@@ -7,8 +7,11 @@ package humanplayer;
 import info.gridworld.actor.Actor;
 import info.gridworld.actor.Critter;
 import info.gridworld.grid.Location;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -61,7 +64,14 @@ public class HumanPlayer extends Critter
                     while(true)
                     //for (int j = 0;j < 64;j = (j+1))
                     {
-
+                        try
+                        {
+                            Runtime.getRuntime ().exec ("say TEST");
+                        }
+                        catch (IOException ex)
+                        {
+                            Logger.getLogger (HumanPlayer.class.getName()).log (Level.SEVERE, null, ex);
+                        }
                         //System.exit (1324253);
                         //console.print("lolllllol");
                         if (count > 2)
