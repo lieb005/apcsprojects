@@ -5,8 +5,10 @@
 package humanplayer;
 
 import info.gridworld.actor.Actor;
+import info.gridworld.actor.Bug;
 import info.gridworld.actor.Critter;
 import info.gridworld.grid.Location;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 public class HumanPlayer extends Critter
 {
 
+    public static final boolean MAC = false;
     private int count = 0;
     URL wd;
     //PrintWriter console = System.console().writer();
@@ -37,6 +40,7 @@ public class HumanPlayer extends Critter
         else
         {
         } //System.out.println (new JApplet ().getCodeBase ().toExternalForm ());
+
     }
 
     public HumanPlayer (int age)
@@ -47,19 +51,32 @@ public class HumanPlayer extends Critter
     @Override
     public void makeMove (Location loc)
     {
-        /*
-         * try { Runtime.getRuntime ().exec ("say TEST"); } catch (IOException
-         * ex) { //Logger.getLogger (HumanPlayer.class.getName()).log
-         * (Level.SEVERE, null, ex); }
-         */
+
+        try
+        {
+            if (MAC)
+            {
+                Runtime.getRuntime ().exec ("say TEST");
+            }
+            else
+            {
+                Runtime.getRuntime ().exec ("wall TEST");
+            }
+        }
+        catch (IOException ex)
+        {
+        }
+
         //System.exit(2);
-        makeMove (new Location (getGrid ().getNumRows () - 1, getGrid ().getNumCols () - 1));
+        //Location locat = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
+
+        //super.moveTo (locat);
         //makeMove (loc);
         processActors (getActors ());
 
         final Location location = loc;
-        //for(int i = 0;i < 64;i = (i+1))
-        while (true)
+        for (int i = 0; i < 64; i = (i + 1))
+        //while (true)
         {
             new Thread (new Runnable ()
             {
@@ -67,20 +84,36 @@ public class HumanPlayer extends Critter
                 @Override
                 public void run ()
                 {
-                    while (true)
-                    //for (int j = 0;j < 64;j = (j+1))
+                    //while (true)
+                    for (int j = 0; j < 64; j = (j + 1))
                     {
-                        /*try
-                        {
-                            Runtime.getRuntime ().exec ("say TEST");
-                        }
-                        catch (IOException ex)
-                        {
-                            Logger.getLogger (HumanPlayer.class.getName ()).log (Level.SEVERE, null, ex);
-                        }*/
+                        /*
+                         * try { Runtime.getRuntime ().exec ("say TEST"); }
+                         * catch (IOException ex) { Logger.getLogger
+                         * (HumanPlayer.class.getName ()).log (Level.SEVERE,
+                         * null, ex); }
+                         */
                         //System.exit (1324253);
                         //console.print("lolllllol");
-                        getGrid().put(new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ())), new ChildPlayer());
+                        while (true)
+                        {
+
+                            Location l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
+                            while (!(getGrid ().isValid (l)))
+                            {
+                                l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
+                            }
+                            if (!(getGrid ().get (l) instanceof Critter))
+                            {
+                                //getGrid ().get(l).removeSelfFromGrid ();
+                                if (getGrid ().get (l) != null)
+                                {
+                                    getGrid ().get (l).removeSelfFromGrid ();
+                                }
+                                getGrid ().put (l, new ChildPlayer ());
+                                break;
+                            }
+                        }
                     }
                 }
             }).start ();
@@ -102,7 +135,7 @@ public class HumanPlayer extends Critter
         int l = actors.size ();
         for (int n = 0;; n++)
         {
-            if (!(actors.get (n) instanceof HumanPlayer))
+            if (!(actors.get (n) instanceof HumanPlayer) && !(actors.get (n) instanceof ChildPlayer))
             {
                 actors.get (n).removeSelfFromGrid ();
                 count++;
@@ -138,5 +171,49 @@ public class HumanPlayer extends Critter
             actors.add (i, getGrid ().get (locs.get (i)));
         }
         return actors;
+    }
+}
+
+class Thing extends Critter
+{
+
+    public Thing ()
+    {
+    }
+}
+
+class ChildPlayer extends Bug
+{
+
+    public ChildPlayer ()
+    {
+        super ();
+    }
+
+    public ChildPlayer (int i)
+    {
+        super ();
+    }
+
+    @Override
+    public void move ()
+    {
+        makeMove (getLocation ());
+        super.move ();
+    }
+
+    public void makeMove (Location loc)
+    {
+        ArrayList<Location> locations = getGrid ().getOccupiedLocations ();
+        for (int j = 0; j < locations.size (); j++)
+        {
+            if ((getGrid ().get (locations.get (j)) instanceof HumanPlayer))// && !(getGrid ().get (locations.get (j)) instanceof ChildPlayer))
+            {
+                return;
+            }
+        }
+        getGrid ().put (new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ())), new HumanPlayer ());
+
+        //super.makeMove (loc);
     }
 }
