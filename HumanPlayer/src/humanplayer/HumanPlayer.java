@@ -29,6 +29,17 @@ public class HumanPlayer extends Critter
     @Override
     public void makeMove (Location loc)
     {
+        /*
+         * MARK?!?!?!??!?!?!?!!
+         * 
+         * Exception in thread "AWT-EventQueue-0" java.lang.StackOverflowError
+         *   at info.gridworld.grid.BoundedGrid.getNumRows(BoundedGrid.java:50)
+         *    at info.gridworld.grid.BoundedGrid.isValid(BoundedGrid.java:62)
+         * at info.gridworld.grid.BoundedGrid.get(BoundedGrid.java:87)
+         * at info.gridworld.actor.Actor.moveTo(Actor.java:159)
+         * at humanplayer.HumanPlayer.makeMove(HumanPlayer.java:33)
+         * at humanplayer.HumanPlayer$1.run(HumanPlayer.java:52)
+         */
         final Location location = loc;
         moveTo (new Location (0, 0));
         while (true)
