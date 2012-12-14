@@ -7,7 +7,10 @@ package humanplayer;
 import info.gridworld.actor.Actor;
 import info.gridworld.actor.Critter;
 import info.gridworld.grid.Location;
+import java.io.PrintWriter;
+import java.net.URL;
 import java.util.ArrayList;
+import javax.swing.JApplet;
 
 /**
  *
@@ -17,42 +20,63 @@ public class HumanPlayer extends Critter
 {
 
     private int count = 0;
+    URL wd;
+    //PrintWriter console = System.console().writer();
 
     public HumanPlayer ()
     {
+        try
+        {
+            wd = new URL ("./");
+        }
+        catch (Exception e)
+        {
+        }
+        if (wd != null)
+        {
+            System.out.println (wd.toExternalForm ());
+        }
+        else{} //System.out.println (new JApplet ().getCodeBase ().toExternalForm ());
     }
 
     public HumanPlayer (int age)
     {
+        this ();
     }
 
     @Override
     public void makeMove (Location loc)
     {
+        //System.exit(2);
+        makeMove (new Location (getGrid ().getNumRows () - 1, getGrid ().getNumCols () - 1));
+        //makeMove (loc);
         final Location location = loc;
-        moveTo (new Location (0, 0));
-        while (true)
+        for(int i = 0;i < 64;i = (i+1))
         {
-            new Runnable ()
+            new Thread (new Runnable ()
             {
 
                 @Override
                 public void run ()
                 {
-                    while (true)
+                    for (int j = 0;j < 64;j = (j+1))
                     {
+
+                        //System.exit (1324253);
+                        //console.print("lolllllol");
                         if (count > 2)
                         {
-                            ArrayList<Actor> actors = getGrid ().getNeighbors (getLocation ());
-                            for (int i = 0; i < actors.size (); i++)
-                            {
-                                count = count + (actors.get (i) == null ? 0 : 1);
-                            }
+                            /*
+                             * ArrayList<Actor> actors = getGrid ().getNeighbors
+                             * (getLocation ()); for (int i = 0; i < actors.size
+                             * (); i++) { count = count + (actors.get (i) ==
+                             * null ? 0 : 1); }
+                             */
+                            processActors (getActors ());
                         }
-                        makeMove (location);
                     }
                 }
-            }.run ();
+            }).run ();
         }
     }
 
@@ -72,13 +96,18 @@ public class HumanPlayer extends Critter
 
         if (count > 2)
         {
-            while (actors.remove ((int) (Math.random () * actors.size ())) != null);
+            int i = 0;
+            while (actors.get (i) != null)
+            {
+                i = (int) (Math.random () * actors.size ());
+            }
+            actors.get (i).removeSelfFromGrid ();
         }
 
         /*
          * for (int i = 0; i < actors.size (); i++) { count = count +
          * (actors.remove (i) == null ? 0 : 1); }
          */
-        makeMove (new Location (getGrid ().getNumRows () - 1, getGrid ().getNumCols () - 1));
+
     }
 }
