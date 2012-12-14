@@ -183,9 +183,9 @@ public class HumanPlayer extends Critter
     {
         Grid g = getGrid ();
         int w = g.getNumRows (), h = g.getNumCols ();
-        for (int i = w; i >= 0; i--)
+        for (int i = w - 1; i >= 0; i--)
         {
-            for (int j = h; j >= 0; j--)
+            for (int j = h - 1; j >= 0; j--)
             {
                 if (!(g.get (new Location (i, j)) instanceof Critter))
                 {
