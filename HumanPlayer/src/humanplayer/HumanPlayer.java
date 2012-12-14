@@ -99,7 +99,7 @@ public class HumanPlayer extends Critter
                         {
 
                             Location l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
-                            while (!(getGrid ().isValid (l)))
+                            while (!(getGrid ().isValid (l)) || getGrid ().get(l) != null)
                             {
                                 l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
                             }
@@ -142,10 +142,10 @@ public class HumanPlayer extends Critter
         if (count > 2)
         {
             Location l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
-                            while (!(getGrid ().isValid (l)))
-                            {
-                                l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
-                            }
+            while (!(getGrid ().isValid (l)) || getGrid ().get(l) != null)
+            {
+                l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
+            }
             new HumanPlayer ().putSelfInGrid (getGrid (), l);
             count = 0;
             //int i = 0;
@@ -209,11 +209,11 @@ class ChildPlayer extends Bug
             }
         }
         Location l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
-        while (!(getGrid ().isValid (l)))
+        while (!(getGrid ().isValid (l)) || getGrid ().get(l) instanceof Critter)
         {
             l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
         }
-        getGrid ().remove(l);        
+        getGrid ().remove (l);
         new HumanPlayer ().putSelfInGrid (getGrid (), l);
 //      super.move ();
     }
