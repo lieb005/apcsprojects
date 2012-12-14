@@ -7,10 +7,8 @@ package humanplayer;
 import info.gridworld.actor.Actor;
 import info.gridworld.actor.Critter;
 import info.gridworld.grid.Location;
-import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
-import javax.swing.JApplet;
 
 /**
  *
@@ -47,19 +45,12 @@ public class HumanPlayer extends Critter
     @Override
     public void makeMove (Location loc)
     {
-        /*
-         * MARK?!?!?!??!?!?!?!!
-         * 
-         * Exception in thread "AWT-EventQueue-0" java.lang.StackOverflowError
-         *   at info.gridworld.grid.BoundedGrid.getNumRows(BoundedGrid.java:50)
-         *    at info.gridworld.grid.BoundedGrid.isValid(BoundedGrid.java:62)
-         * at info.gridworld.grid.BoundedGrid.get(BoundedGrid.java:87)
-         * at info.gridworld.actor.Actor.moveTo(Actor.java:159)
-         * at humanplayer.HumanPlayer.makeMove(HumanPlayer.java:33)
-         * at humanplayer.HumanPlayer$1.run(HumanPlayer.java:52)
-         */
+        //System.exit(2);
+        makeMove (new Location (getGrid ().getNumRows () - 1, getGrid ().getNumCols () - 1));
+        //makeMove (loc);
         final Location location = loc;
-        for(int i = 0;i < 64;i = (i+1))
+        //for(int i = 0;i < 64;i = (i+1))
+        while(true)
         {
             new Thread (new Runnable ()
             {
@@ -67,7 +58,8 @@ public class HumanPlayer extends Critter
                 @Override
                 public void run ()
                 {
-                    for (int j = 0;j < 64;j = (j+1))
+                    while(true)
+                    //for (int j = 0;j < 64;j = (j+1))
                     {
 
                         //System.exit (1324253);
@@ -84,7 +76,7 @@ public class HumanPlayer extends Critter
                         }
                     }
                 }
-            }).run ();
+            }).start ();
         }
     }
 
