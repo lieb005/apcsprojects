@@ -20,7 +20,7 @@ public class HumanPlayerRunner
     {
         ActorWorld world = new ActorWorld ();
         HumanPlayer alice = new HumanPlayer (9);
-        HumanPlayer frank = new HumanPlayer (6);
+        ChildPlayer frank = new ChildPlayer (6);
         frank.setColor (Color.darkGray);
         alice.setColor (Color.PINK);
         HumanPlayer bob = new HumanPlayer (3);
