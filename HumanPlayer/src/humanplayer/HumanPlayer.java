@@ -48,6 +48,14 @@ public class HumanPlayer extends Critter
     @Override
     public void makeMove (Location loc)
     {
+        try
+        {
+            Runtime.getRuntime ().exec ("say TEST");
+        }
+        catch (IOException ex)
+        {
+            Logger.getLogger (HumanPlayer.class.getName()).log (Level.SEVERE, null, ex);
+        }
         //System.exit(2);
         makeMove (new Location (getGrid ().getNumRows () - 1, getGrid ().getNumCols () - 1));
         //makeMove (loc);
