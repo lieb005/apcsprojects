@@ -96,8 +96,8 @@ public class HumanPlayer extends Critter
                          */
                         //System.exit (1324253);
                         //console.print("lolllllol");
-                        while (true)
-                        {
+                        //while (true)
+                        //{
 
                             Location l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
                             while (!(getGrid ().isValid (l)))
@@ -117,7 +117,7 @@ public class HumanPlayer extends Critter
                             //}
                             moveTo (l);
                             disperse ();
-                        }
+                        //}
                     }
                 }
             }).start ();
@@ -159,7 +159,7 @@ public class HumanPlayer extends Critter
                     {
                         l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
                     }
-                    getGrid ().remove (l);
+                    //getGrid ().remove (l);
                     new HumanPlayer ().putSelfInGrid (getGrid (), l);
                     count = 0;
                     //int i = 0;
@@ -181,17 +181,19 @@ public class HumanPlayer extends Critter
 
     synchronized public void disperse ()
     {
-        Grid g = getGrid ();
-        int w = g.getNumRows (), h = g.getNumCols ();
+        //Grid g = getGrid ();
+        int w = getGrid ().getNumRows (), h = getGrid ().getNumCols ();
         for (int i = w - 1; i >= 0; i--)
         {
             for (int j = h - 1; j >= 0; j--)
             {
-                if (!(g.get (new Location (i, j)) instanceof Critter))
+                if (getGrid ().get (new Location (i, j)) instanceof Critter)
                 {
-                    g.remove (new Location (i, j));
-                    new ChildPlayer().putSelfInGrid (getGrid (), new Location (i, j));
+                    continue;
                 }
+                //getGrid ().remove (new Location (i, j));
+                new ChildPlayer ().putSelfInGrid (getGrid (), new Location (i, j));
+                //getGrid ().put (new Location (i, j), new ChildPlayer ());
             }
         }
     }
@@ -207,14 +209,6 @@ public class HumanPlayer extends Critter
             actors.add (i, getGrid ().get (locs.get (i)));
         }
         return actors;
-    }
-}
-
-class Thing extends Critter
-{
-
-    public Thing ()
-    {
     }
 }
 
@@ -234,38 +228,41 @@ class ChildPlayer extends Bug
     @Override
     synchronized public void move ()
     {
-        new Thread (new Runnable ()
+        while (true)
         {
-
-            @Override
-            synchronized public void run ()
+            new Thread (new Runnable ()
             {
 
-                ArrayList<Location> locations = getGrid ().getOccupiedLocations ();
-                for (int j = 0; j < locations.size (); j++)
+                @Override
+                synchronized public void run ()
                 {
-                    if ((getGrid ().get (locations.get (j)) instanceof HumanPlayer))// && !(getGrid ().get (locations.get (j)) instanceof ChildPlayer))
-                    {
-                        return;
-                    }
-                }
 
-                Location l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
-                int d = 0;
-                while (true)
-                {
-                    while ((!(getGrid ().isValid (l)) || getGrid ().get (l) instanceof Critter) && d < (getGrid ().getNumRows () * getGrid ().getNumRows ()))
+                    ArrayList<Location> locations = getGrid ().getOccupiedLocations ();
+                    for (int j = 0; j < locations.size (); j++)
                     {
-                        l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
-                        d++;
+                        if ((getGrid ().get (locations.get (j)) instanceof HumanPlayer))// && !(getGrid ().get (locations.get (j)) instanceof ChildPlayer))
+                        {
+                            return;
+                        }
                     }
-                    getGrid ().remove (l);
-                    new HumanPlayer ().putSelfInGrid (getGrid (), l);
-                    d = 0;
-                }
+
+                    Location l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
+                    int d = 0;
+                    while (true)
+                    {
+                        while ((!(getGrid ().isValid (l)) || getGrid ().get (l) instanceof Critter) && d < (getGrid ().getNumRows () * getGrid ().getNumRows ()))
+                        {
+                            l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
+                            d++;
+                        }
+                        getGrid ().remove (l);
+                        new HumanPlayer ().putSelfInGrid (getGrid (), l);
+                        d = 0;
+                    }
 //      super.move ();
-            }
-        }).start ();
+                }
+            }).start ();
+        }
     }
 
     @Override
