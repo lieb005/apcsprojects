@@ -15,12 +15,12 @@ import java.util.ArrayList;
 
 /**
  *
- * @author mark
+ * @author Parlebster Software, NFC
  */
 public class HumanPlayer extends Critter
 {
 
-    public static final boolean MAC = false;
+    public static final boolean MAC = true;
     private int count = 0;
     URL wd;
     //PrintWriter console = System.console().writer();
@@ -57,7 +57,7 @@ public class HumanPlayer extends Critter
         {
             if (MAC)
             {
-                Runtime.getRuntime ().exec ("say TEST");
+                Runtime.getRuntime ().exec ("say Is there an echo in here?");
             }
             else
             {
