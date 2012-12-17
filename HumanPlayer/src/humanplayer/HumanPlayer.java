@@ -12,6 +12,8 @@ import info.gridworld.grid.Location;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -220,15 +222,21 @@ class ChildPlayer extends Bug
 {
 
     public ChildPlayer ()
-    {
-        Runtime.getRuntime ().exec ("say It's a boy!");
-        super ();
+    {        super ();
+        try {
+            Runtime.getRuntime ().exec ("say It's a boy!");
+        } catch (IOException ex) {
+            Logger.getLogger(ChildPlayer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public ChildPlayer (int i)
-    {
-        Runtime.getRuntime ().exec ("say It's a boy!");
-        super ();
+    {        super ();
+        try {
+            Runtime.getRuntime ().exec ("say It's a boy!");
+        } catch (IOException ex) {
+            Logger.getLogger(ChildPlayer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
