@@ -7,7 +7,6 @@ package humanplayer;
 import info.gridworld.actor.Actor;
 import info.gridworld.actor.Bug;
 import info.gridworld.actor.Critter;
-import info.gridworld.grid.Grid;
 import info.gridworld.grid.Location;
 import java.io.IOException;
 import java.net.URL;
@@ -22,7 +21,7 @@ import java.util.logging.Logger;
 public class HumanPlayer extends Critter
 {
 
-    public static final boolean MAC = true;
+    public static final boolean MAC = false;
     private int count = 0;
     URL wd;
     //PrintWriter console = System.console().writer();
@@ -81,7 +80,8 @@ public class HumanPlayer extends Critter
         //processActors (getActors ());
 
         final Location location = loc;
-        for (int i = 0; i < 64; i = (i + 1))
+        if (true)
+        //for (int i = 0; i < 64; i = (i + 1))
         //while (true)
         {
             new Thread (new Runnable ()
@@ -104,29 +104,31 @@ public class HumanPlayer extends Critter
                         //while (true)
                         //{
 
-                            Location l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
-                            while (!(getGrid ().isValid (l)))
+                        Location l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
+                        while (!(getGrid ().isValid (l)))
+                        {
+                            if (getGrid ().get (l) == null)
                             {
-                                if (getGrid ().get (l) != null)
-                                {
-                                    break;
-                                }
-                                l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
+                                break;
                             }
-                            //if (!(getGrid ().get (l) instanceof Critter))
-                            //{
-                            //    //getGrid ().get(l).removeSelfFromGrid ();
-                            //    getGrid ().remove (l);
-                            //    new ChildPlayer ().putSelfInGrid (getGrid (), l);
-                            //    break;
-                            //}
-                            moveTo (l);
-                            disperse ();
+                            l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
+
+                        }
+                        //if (!(getGrid ().get (l) instanceof Critter))
+                        //{
+                        //    //getGrid ().get(l).removeSelfFromGrid ();
+                        //    getGrid ().remove (l);
+                        //    new ChildPlayer ().putSelfInGrid (getGrid (), l);
+                        //    break;
+                        //}
+                        moveTo (l);
+                        disperse ();
                         //}
                     }
                 }
             }).start ();
         }
+        //disperse ();
     }
 
     /*
@@ -222,27 +224,31 @@ class ChildPlayer extends Bug
 {
 
     public ChildPlayer ()
-    {        super ();
-        try {
-            Runtime.getRuntime ().exec ("say It's a boy!");
-        } catch (IOException ex) {
-            Logger.getLogger(ChildPlayer.class.getName()).log(Level.SEVERE, null, ex);
+    {
+        super ();
+        if (HumanPlayer.MAC)
+        {
+            try
+            {
+                Runtime.getRuntime ().exec ("say It's a boy!");
+            }
+            catch (IOException ex)
+            {
+                Logger.getLogger (ChildPlayer.class.getName ()).log (Level.SEVERE, null, ex);
+            }
         }
     }
 
     public ChildPlayer (int i)
-    {        super ();
-        try {
-            Runtime.getRuntime ().exec ("say It's a boy!");
-        } catch (IOException ex) {
-            Logger.getLogger(ChildPlayer.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    {
+        this ();
     }
 
     @Override
     synchronized public void move ()
     {
-        while (true)
+        if (true)
+        //while (true)
         {
             new Thread (new Runnable ()
             {
@@ -262,7 +268,8 @@ class ChildPlayer extends Bug
 
                     Location l = new Location ((int) (Math.random () * getGrid ().getNumRows ()), (int) (Math.random () * getGrid ().getNumRows ()));
                     int d = 0;
-                    while (true)
+                    if (true)
+                    //while (true)
                     {
                         while ((!(getGrid ().isValid (l)) || getGrid ().get (l) instanceof Critter) && d < (getGrid ().getNumRows () * getGrid ().getNumRows ()))
                         {
@@ -273,7 +280,6 @@ class ChildPlayer extends Bug
                         new HumanPlayer ().putSelfInGrid (getGrid (), l);
                         d = 0;
                     }
-//      super.move ();
                 }
             }).start ();
         }
