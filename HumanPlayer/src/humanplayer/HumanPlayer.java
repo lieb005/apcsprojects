@@ -27,8 +27,10 @@ public class HumanPlayer extends Critter
 
     public HumanPlayer ()
     {
+        //Runtime.getRuntime ().exec ("say A black person? That's racist!");
         try
         {
+            Runtime.getRuntime ().exec ("say Mark and Ben, Ready! PREPARE YOURSELF!! Everybody else give up hope now, because we already win.");
             wd = new URL ("./");
         }
         catch (Exception e)
@@ -57,7 +59,8 @@ public class HumanPlayer extends Critter
         {
             if (MAC)
             {
-                Runtime.getRuntime ().exec ("say Is there an echo in here?");
+                Runtime.getRuntime ().exec ("say Is there an echo in here?!");
+                //Runtime.getRuntime ().exec ("say h!");
             }
             else
             {
@@ -192,6 +195,7 @@ public class HumanPlayer extends Critter
                     continue;
                 }
                 //getGrid ().remove (new Location (i, j));
+                // GridWorld apparently doesn't like threads... rude.
                 new ChildPlayer ().putSelfInGrid (getGrid (), new Location (i, j));
                 //getGrid ().put (new Location (i, j), new ChildPlayer ());
             }
@@ -217,11 +221,13 @@ class ChildPlayer extends Bug
 
     public ChildPlayer ()
     {
+        Runtime.getRuntime ().exec ("say It's a boy!");
         super ();
     }
 
     public ChildPlayer (int i)
     {
+        Runtime.getRuntime ().exec ("say It's a boy!");
         super ();
     }
 
