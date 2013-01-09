@@ -11,7 +11,6 @@ package supa.mobsta.bros;
 public
         class SupaMobstaBros
 {
-
     /**
      * @param args the command line arguments
      */
