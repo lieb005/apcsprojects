@@ -4,13 +4,11 @@
  */
 package supa.mobsta.enemies;
 
-import supa.mobsta.bros.Player;
-
 /**
  *
  * @author mark
  */
-public class Dames extends Enemy
+public class Gangstas extends Enemy
 {
     
 }

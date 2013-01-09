@@ -8,7 +8,7 @@ package supa.mobsta.enemies;
  *
  * @author mark
  */
-public class Fuzz
+public class Fuzz extends Enemy
 {
     
 }

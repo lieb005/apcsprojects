@@ -2,15 +2,13 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package supa.mobsta.enemies;
-
-import supa.mobsta.bros.Player;
+package supa.mobsta.bros;
 
 /**
  *
  * @author mark
  */
-public class Dames extends Enemy
+public abstract class Player
 {
     
 }

@@ -8,7 +8,7 @@ package supa.mobsta.goodguys;
  *
  * @author mark
  */
-public class HiddenMobstaOctoCat
+public class HiddenMobstaOctoCat extends GoodGuy
 {
     
 }

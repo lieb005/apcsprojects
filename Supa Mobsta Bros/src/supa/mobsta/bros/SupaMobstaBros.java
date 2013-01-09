@@ -8,14 +8,14 @@ package supa.mobsta.bros;
  *
  * @author 314Chan Telecommunications, LLC.
  */
-public
-        class SupaMobstaBros
+public class SupaMobstaBros
 {
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args)
+    private World currWorld;
+    SupaMobstaBros()
     {
-        // TODO code application logic here
+    }
+
+    SupaMobstaBros(String string)
+    {
     }
 }
