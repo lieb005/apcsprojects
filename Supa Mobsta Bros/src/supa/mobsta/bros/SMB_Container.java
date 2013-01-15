@@ -15,20 +15,36 @@ import javax.swing.JFrame;
 public class SMB_Container extends JApplet
 {
 
+    private static String[] arg;
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args)
     {
+        arg = args;
         JFrame f = new JFrame("Supa Mobsta Bros");
+        SMB_Container c = new SMB_Container();
+        f.add(c);
+        f.setSize(SupaMobstaBros.SCREEN_WIDTH * SupaMobstaBros.TILE_WIDTH, SupaMobstaBros.SCREEN_HEIGHT * SupaMobstaBros.TILE_HEIGHT);
+        c.init();
+        c.start();
+        f.setVisible(true);
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    @Override
+    public void init()
+    {
+        super.init();
         SupaMobstaBros s;
-        if (new File(args[0]).exists())
+        if (new File(arg[0]).exists())
         {
-            s = new SupaMobstaBros(args[0]);
+            s = new SupaMobstaBros(arg[0]);
         } else
         {
             s = new SupaMobstaBros();
         }
-
+        add(s);
     }
 }
