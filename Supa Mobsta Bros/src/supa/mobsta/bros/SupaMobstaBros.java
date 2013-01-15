@@ -10,12 +10,18 @@ package supa.mobsta.bros;
  */
 public class SupaMobstaBros
 {
+    World current_World;
     private World currWorld;
     SupaMobstaBros()
     {
     }
 
+    /**
+     * 
+     * @param string Level file to import
+     */
     SupaMobstaBros(String string)
     {
+        current_World 
     }
 }

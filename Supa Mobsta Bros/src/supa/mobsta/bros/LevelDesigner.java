@@ -5,7 +5,6 @@
 package supa.mobsta.bros;
 
 import javax.swing.JApplet;
-import sun.applet.Main;
 
 /**
  *
