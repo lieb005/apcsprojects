@@ -8,7 +8,7 @@ package supa.mobsta.goodguys;
  *
  * @author mark
  */
-public class BramCohen
+public class BramCohen extends GoodGuy
 {
     
 }

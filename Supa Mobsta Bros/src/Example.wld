@@ -6,28 +6,51 @@
 # Worlds start with a declaration of name
 Name World 1
 
-#Then is a listing of the different levels
+# Then is a listing of the different levels
 
 Level level 1
 // you can indent the contents or not, it is your choice
 # The Worlds are easiest to make with the level editor, they are unintuitive without it
 // The levels are layed out as a Grid in the editor
 # The codes are located in the codes.txt file
+// The Highest Byte is the Enemy while the lowest 2 Bytes is the 
 
-00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01 01
+000 000 000 000 000 000 000
+000 000 000 000 000 000 000
+000 000 000 000 000 000 000
+000 000 000 000 000 000 000
+000 000 000 000 000 000 000
+000 000 000 000 000 000 000
+000 000 000 000 000 000 000
+000 000 000 000 000 000 000
+000 000 000 000 000 000 000
+000 000 000 000 000 000 000
+000 000 000 000 000 000 000
+000 000 000 000 000 000 D00
+001 001 001 001 001 001 001 
 
-# Levels are 12 tall by a custom width.  Reccomended greater than 16 wide
+#This is what that level would look like
+
+#__________
+#      
+#      ||
+#      ||
+#      ||
+#      ||
+#      ||
+#      ||
+#      ||
+#_O_   ||
+# |    ||
+#| |___||
+#_______|
+
+# Levels are 12 tall by a custom width.  Recommended greater than 12 wide
 // smaller will cause problems with the thing and size and stuff
+
+EndLevel
+Level level 2
+
+#The next level goes here and so on...
 
 EndLevel

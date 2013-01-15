@@ -4,11 +4,7 @@
  */
 package supa.mobsta.bros;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.io.FileNotFoundException;
 
 /**
  *
@@ -17,29 +13,23 @@ import java.util.logging.Logger;
 public enum Worlds
 {
     // These are the names of our worlds associated to the files
-    World_1("world1.wld");
+
+    World_1("src/world1.wld");
     private World world;
     // This function makes it so that 
+
     Worlds(String dataFile)
     {
         try
         {
-            String data = "";
-            BufferedReader reader = new BufferedReader(new FileReader(dataFile));
-            while (reader.ready())
-            {
-                data += reader.readLine();
-            }
-            createWorld(data);
-        } catch (IOException ex)
+            world = new World(dataFile);
+        } catch (FileNotFoundException ex)
         {
-            Logger.getLogger(Worlds.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    // This function decodes the data in the world file.
-    // It will be annoying to write
-    private void createWorld(String data)
+
+    public World getWorld()
     {
-        
+        return world;
     }
 }

@@ -8,7 +8,7 @@ package supa.mobsta.goodguys;
  *
  * @author mark
  */
-public class AlCapone
+public class AlCapone extends GoodGuy
 {
     
 }
