@@ -29,7 +29,7 @@ public final class Level
     private BufferedImage fullLevel;
     private ArrayList<Image[]> levelTiles = new ArrayList<Image[]>();
     private ArrayList<ArrayList<Player>> players = new ArrayList<ArrayList<Player>>();
-    public Image[][] tiles = null;
+    private static Image[][] tiles = null;
 
     public Level(String level)
     {
@@ -105,7 +105,6 @@ public final class Level
 	    ex.printStackTrace();
 	} finally
 	{
-	    level = null;
 	    System.out.println("End");
 	}
 
