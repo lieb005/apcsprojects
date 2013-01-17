@@ -2,11 +2,11 @@ In this directory needs to be the pictures
 of the characters and the pallette(s)
 
 The Characters can either have multiple pictures
-    ie: tux1.png, tx2.png, ...
+    ie: tux1.png, tux2.png, ...
 
 The Pallette must be a 16x5 grid of textures.  They
 must all be squares (8x8 or 32x32 maybe).  They will
-be srunk to ~8x8, so they will lose detail if large.
+be shrunk to ~8x8, so they will lose detail if large.
 
 Read codes.txt for ordering of the tiles and Example.wld
 for how they are addressed.
