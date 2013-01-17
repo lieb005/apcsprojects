@@ -13,9 +13,9 @@ Level level 1
 # The Worlds are easiest to make with the level editor, they are unintuitive without it
 // The levels are layed out as a Grid in the editor
 # The codes are located in the codes.txt file
-// The Highest Byte is the Enemy while the lowest 2 Bytes is the 
+// The Highest Byte is the Enemy while the lowest 2 Bytes is the pallette location of
+# the thing
 
-000 000 000 000 000 000 000
 000 000 000 000 000 000 000
 000 000 000 000 000 000 000
 000 000 000 000 000 000 000
@@ -49,8 +49,24 @@ Level level 1
 // smaller will cause problems with the thing and size and stuff
 
 EndLevel
+
+#Dummy Line
+
 Level level 2
 
 #The next level goes here and so on...
+
+000
+000
+000
+000
+000
+000
+000
+000
+000
+000
+000
+000
 
 EndLevel

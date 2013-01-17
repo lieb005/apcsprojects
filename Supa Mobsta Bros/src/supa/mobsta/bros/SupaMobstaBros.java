@@ -22,7 +22,8 @@ public class SupaMobstaBros extends JPanel
 
     SupaMobstaBros()
     {
-        currWorld = Worlds.World_1.getWorld();
+        currWorld = Worlds.Example.getWorld();
+        //currWorld = Worlds.World_1.getWorld();
     }
 
     /**

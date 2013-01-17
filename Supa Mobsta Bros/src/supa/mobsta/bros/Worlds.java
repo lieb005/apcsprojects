@@ -13,8 +13,8 @@ import java.io.FileNotFoundException;
 public enum Worlds
 {
     // These are the names of our worlds associated to the files
-
-    World_1("src/world1.wld");
+    Example("src/Example.wld"),
+    World_1("src/World1.wld");
     private World world;
     // This function makes it so that 
 
@@ -25,6 +25,7 @@ public enum Worlds
             world = new World(dataFile);
         } catch (FileNotFoundException ex)
         {
+            ex.printStackTrace();
         }
     }
 

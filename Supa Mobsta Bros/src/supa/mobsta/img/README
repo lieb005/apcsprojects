@@ -14,13 +14,13 @@ for how they are addressed.
 There also needs to be a pallette of Enemies, but that can
 just be a single height image like:
 
-________________
-|__   __    __ |
-|\/||/oo\ _//- |
-|\/|| ^^ /__\  |
-|\/||     ^^   |
-|  ||          |
-|  ||          |
-|  ||          |
-|  ||          |
-+--------------+
+______________
+|__ __    __ |
+|\//oo\ _//- |
+|\/ ^^ /__\  |
+|\/     ^^   |
+|            |
+|            |
+|            |
+|            |
++------------+

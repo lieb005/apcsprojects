@@ -38,7 +38,7 @@ public class SMB_Container extends JApplet
     {
         super.init();
         SupaMobstaBros s;
-        if (new File(arg[0]).exists())
+        if ((arg.length > 0) && new File(arg[0]).exists())
         {
             s = new SupaMobstaBros(arg[0]);
         } else

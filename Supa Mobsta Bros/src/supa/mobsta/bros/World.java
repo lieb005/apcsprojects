@@ -23,63 +23,73 @@ public class World
 
     public World(String file) throws FileNotFoundException
     {
-        this(new File(file));
+	this(new File(file));
     }
 
     public World(File file) throws FileNotFoundException
     {
-        if (!file.exists())
-        {
-            throw new FileNotFoundException(file.getAbsolutePath() + " does not exist!");
-        }
-        try
-        {
-            String data = "";
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            while (reader.ready())
-            {
-                data += reader.readLine();
-            }
-            createWorld(data);
-        } catch (IOException ex)
-        {
-        }
+	if (!file.exists())
+	{
+	    throw new FileNotFoundException(file.getAbsolutePath() + " does not exist!");
+	}
+	else
+	{
+	    System.out.println("File Exists");
+	}
+	try
+	{
+	    String data = "";
+	    BufferedReader reader = new BufferedReader(new FileReader(file));
+	    while (reader.ready())
+	    {
+		data += reader.readLine() + "\n";
+	    }
+	    //System.out.println(data);
+	    createWorld(data);
+	} catch (IOException ex)
+	{
+	}
     }
 
     // This function decodes the data in the world file.
     // It will be annoying to write
     private void createWorld(String data)
     {
-        boolean doingLevel = false;
-        String level = "";
-        for (String line : data.split("\n"))
-        {
-            if (!doingLevel)
-            {
-                line = line.trim().toLowerCase();
-                if (line.isEmpty() || line.startsWith("#") || line.startsWith("//"))
-                {
-                    continue;
-                }
-                if (line.startsWith("name"))
-                {
-                    // cut off "name " (with space)
-                    name = line.substring(5);
-                }
-                if (line.startsWith("level"))
-                {
-                    doingLevel = true;
-                }
-            } else
-            {
-                if (line.startsWith("endlevel"))
-                {
-                    doingLevel = false;
-                    levels.add(new Level(level));
-                    continue;
-                }
-                level += line;
-            }
-        }
+	boolean doingLevel = false;
+	String level = "";
+	for (String line : data.split("\n"))
+	{
+	    line = line.trim().toLowerCase();
+	    if (line.isEmpty() || line.startsWith("#") || line.startsWith("//") || line.matches("[\n]+") || line.equals(""))
+	    {
+		continue;
+	    }
+	    if (!doingLevel)
+	    {
+		if (line.startsWith("name"))
+		{
+		    // cut off "name " (with space)
+		    name = line.substring(5);
+		}
+		if (line.startsWith("level"))
+		{
+		    doingLevel = true;
+		}
+	    }
+	    else
+	    {
+		if (line.startsWith("endlevel"))
+		{
+		    doingLevel = false;
+		    //System.out.println(level);
+		    levels.add(new Level(level));
+		    level = "";
+		    continue;
+		}
+		//System.out.println(line);
+
+		level += line + "\n";
+	    }
+	}
     }
 }
