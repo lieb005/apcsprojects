@@ -36,7 +36,6 @@ public final class Level
     public Level(String levelName, String level)
     {
 	name = levelName;
-	//System.out.println("Making Level");
 	try
 	{
 	    if (tiles == null)
@@ -143,8 +142,8 @@ public final class Level
 
     public BufferedImage makeFull()
     {
-	
-	Graphics g = ((OffScreenImage) fullLevel).getGraphics();
+	OffScreenImage buffer = new OffScreenImage(null, fullLevel.getColorModel(), fullLevel.getRaster(), fullLevel.isAlphaPremultiplied());
+	Graphics g = buffer.getGraphics();
 	for (int i = 0; i < levelTiles[0].length; i++)
 	{
 	    for (int j = 0; j < levelTiles.length; j++)
@@ -152,6 +151,7 @@ public final class Level
 		g.drawImage(levelTiles[j][i], j * (TILE_WIDTH + 1), i * (TILE_WIDTH + 1), null);
 	    }
 	}
+	fullLevel = buffer.getSubimage(0, 0, buffer.getWidth(), buffer.getHeight());
 	JFrame f = new JFrame("Tiles");
 	f.setSize(300, 300);
 	f.add(new Canvas()

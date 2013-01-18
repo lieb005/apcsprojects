@@ -56,7 +56,7 @@ public class World
     private void createWorld(String data)
     {
 	boolean doingLevel = false;
-	String level = "";
+	String level = "", levelName = "";
 	for (String line : data.split("\n"))
 	{
 	    line = line.trim().toLowerCase();
@@ -73,6 +73,7 @@ public class World
 		}
 		if (line.startsWith("level"))
 		{
+		    levelName = line.split(" ", 2)[1];
 		    doingLevel = true;
 		}
 	    }
@@ -81,12 +82,10 @@ public class World
 		if (line.startsWith("endlevel"))
 		{
 		    doingLevel = false;
-		    //System.out.println(level);
-		    levels.add(new Level(level));
+		    levels.add(new Level(levelName, level));
 		    level = "";
 		    continue;
 		}
-		//System.out.println(line);
 
 		level += line + "\n";
 	    }

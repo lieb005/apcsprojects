@@ -14,9 +14,9 @@ import javax.swing.JPanel;
 public class SupaMobstaBros extends JPanel
 {
 
-    public static final int TILE_WIDTH = 8,
+    public static final int TILE_WIDTH = 32,
             SCREEN_WIDTH = 12,
-            TILE_HEIGHT = 8,
+            TILE_HEIGHT = 32,
             SCREEN_HEIGHT = 12;
     private World currWorld;
 
