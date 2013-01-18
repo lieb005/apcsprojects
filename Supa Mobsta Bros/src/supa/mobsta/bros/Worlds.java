@@ -12,31 +12,33 @@ import java.io.FileNotFoundException;
  */
 public enum Worlds
 {
-    // These are the names of our worlds associated to the files
-    Example("src/Example.wld"),
-    World_1("src/World1.wld");
-    private World world;
-    private String url;
-    // This function makes it so that 
+	// These are the names of our worlds associated to the files
 
-    Worlds(String dataFile)
-    {
-        try
-        {
-	    url = dataFile;
-            world = new World(dataFile);
-        } catch (FileNotFoundException ex)
-        {
-            ex.printStackTrace();
-        }
-    }
+	Example("src/Example.wld"),
+	World_1("src/World1.wld");
+	private World world;
+	private String url;
+	// This function makes it so that 
 
-    public World getWorld()
-    {
-        return world;
-    }
-    public String getFileName()
-    {
-	return url;
-    }
+	Worlds(String dataFile)
+	{
+		try
+		{
+			url = dataFile;
+			world = new World(dataFile);
+		} catch (FileNotFoundException ex)
+		{
+			ex.printStackTrace();
+		}
+	}
+
+	public World getWorld()
+	{
+		return world;
+	}
+
+	public String getFileName()
+	{
+		return url;
+	}
 }

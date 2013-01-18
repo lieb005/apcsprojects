@@ -13,10 +13,13 @@ import java.awt.image.BufferedImage;
 public class MobstaTux extends GoodGuy
 {
 
-    @Override
-    public BufferedImage setFrame(int frame)
-    {
-	throw new UnsupportedOperationException("Not supported yet.");
-    }
-    
+	@Override
+	public BufferedImage setFrame(int frame)
+	{
+		return null;
+	}
+
+	public MobstaTux()
+	{
+	}
 }

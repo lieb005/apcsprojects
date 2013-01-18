@@ -22,278 +22,279 @@ import supa.mobsta.goodguys.MobstaTux;
 public final class Level
 {
 
-    public static final int TILE_WIDTH = SupaMobstaBros.TILE_WIDTH,
-	    SCREEN_WIDTH = SupaMobstaBros.SCREEN_WIDTH,
-	    TILE_HEIGHT = SupaMobstaBros.TILE_HEIGHT,
-	    SCREEN_HEIGHT = SupaMobstaBros.SCREEN_HEIGHT;
-    public final String palletteFile = "src/supa/mobsta/img/pallette.png";
-    private String name;
-    private BufferedImage fullLevel;
-    private Image[][] levelTiles;
-    private Player[] players;
-    private MobstaTux mainTux;
-    private static Image[][] tiles = null;
-    private int currX = 0;
-    public final boolean DEBUG = false;
+	public static final int TILE_WIDTH = SupaMobstaBros.TILE_WIDTH,
+			SCREEN_WIDTH = SupaMobstaBros.SCREEN_WIDTH,
+			TILE_HEIGHT = SupaMobstaBros.TILE_HEIGHT,
+			SCREEN_HEIGHT = SupaMobstaBros.SCREEN_HEIGHT;
+	public final String palletteFile = "src/supa/mobsta/img/pallette.png";
+	private String name;
+	private BufferedImage fullLevel;
+	private Image[][] levelTiles;
+	private Player[] players;
+	private MobstaTux mainTux;
+	private static Image[][] tiles = null;
+	private int currX = 0;
+	public final boolean DEBUG = false;
 
-    /**
-     * This Creates a level from the specified Data with the given name.
-     *
-     * @param levelName The name to give the level
-     * @param level The actual hex data for the level
-     */
-    public Level(String levelName, String level)
-    {
-	name = levelName;
-	try
+	/**
+	 * This Creates a level from the specified Data with the given name.
+	 *
+	 * @param levelName The name to give the level
+	 * @param level The actual hex data for the level
+	 */
+	public Level(String levelName, String level)
 	{
-	    if (tiles == null)
-	    {
-		loadTiles();
-	    }
-	    // here we have to parse out the level from the data
-	    while (level.startsWith("\n"))
-	    {
-		level = level.replaceFirst("\n", "");
-	    }
-	    while (level.endsWith("\n"))
-	    {
-		level = level.substring(0, level.length() - 1);
-	    }
-	    level = level.trim().toLowerCase().replaceAll("[ ]+", " ").replaceAll("[\n]+", "\n");
-	    String[] lev = level.split("\n");
-
-
-
-	    int[][][] rawTiles = new int[lev[0].split(" ").length][SupaMobstaBros.SCREEN_HEIGHT][3];
-	    if (lev.length != SupaMobstaBros.SCREEN_HEIGHT)
-	    {
-		throw new IndexOutOfBoundsException("Level Height Mismatch.  Found: " + lev.length + " Expected: " + SupaMobstaBros.SCREEN_HEIGHT);
-	    }
-	    int j, enemy, col, row;
-	    String line;
-	    for (int i = 0; i < SupaMobstaBros.SCREEN_HEIGHT; i++)
-	    {
-		line = lev[i];
-		if (line == null || line.equals(""))
+		name = levelName;
+		try
 		{
-		    continue;
-		}
-		String[] codes = line.split(" ");
-		String code;
-		for (j = 0; j < codes.length; j++)
-		{
-		    code = codes[j];
-		    enemy = Integer.parseInt(code.substring(0, 1), 16);
-		    col = Integer.parseInt(code.substring(2), 16);
-		    row = Integer.parseInt(code.substring(1, 2), 16);
-		    rawTiles[j][i] = new int[]
-		    {
-			enemy, col, row
-		    };
-		}
-	    }
-	    if (DEBUG)
-	    {
-		System.out.println("This is what is in the Arrays");
-		for (int k = 0; k < SupaMobstaBros.SCREEN_HEIGHT; k++)
-		{
-		    for (int l = 0; l < rawTiles.length; l++)
-		    {
-			System.out.print(rawTiles[l][k][0] + " " + rawTiles[l][k][1] + " " + rawTiles[l][k][2] + " ");
-		    }
-		    System.out.println();
-		}
-	    }
-	    //here we take all of the codes and turn them into tiles
-	    levelTiles = new Image[rawTiles.length][SCREEN_HEIGHT];
-	    Image[] currCol;
-	    players = new Player[rawTiles.length];
-	    for (int i = 0; i < rawTiles.length; i++)
-	    {
-		currCol = new Image[SCREEN_HEIGHT];
-		for (int u = 0; u < SCREEN_HEIGHT; u++)
-		{
-		    currCol[u] = tiles[rawTiles[i][u][1]][rawTiles[i][u][2]];
-		}
-		enemy = 0;
-		for (int n = 0; n < SCREEN_HEIGHT; n++)
-		{
-		    if (rawTiles[i][n][2] != 0)
-		    {
-			if (enemy == 0)
+			if (tiles == null)
 			{
-			    enemy = rawTiles[i][i][2];
+				loadTiles();
 			}
-			else
+			// here we have to parse out the level from the data
+			while (level.startsWith("\n"))
 			{
-			    throw new Exception("Too many Enemies in column " + n + ".  Please place only one.");
+				level = level.replaceFirst("\n", "");
 			}
-		    }
-		}
-		mainTux = new MobstaTux();
-		players[i] = Player.createPlayer(rawTiles[i][i][2]);
-		levelTiles[i] = currCol;
-	    }
-	    if (DEBUG)
-	    {
-		JFrame f = new JFrame("Level ");
-		f.setSize(300, 300);
-		f.add(new Canvas()
-		{
-		    @Override
-		    public void paint(Graphics g)
-		    {
-			super.paint(g);
-			for (int i = 0; i < levelTiles[0].length; i++)
+			while (level.endsWith("\n"))
 			{
-			    for (int j = 0; j < levelTiles.length; j++)
-			    {
-				g.drawImage(levelTiles[j][i], j * (TILE_WIDTH + 1), i * (TILE_WIDTH + 1), null);
-			    }
+				level = level.substring(0, level.length() - 1);
 			}
+			level = level.trim().toLowerCase().replaceAll("[ ]+", " ").replaceAll("[\n]+", "\n");
+			String[] lev = level.split("\n");
 
-		    }
-		});
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.pack();
-		f.setVisible(true);
-	    }
 
-	} catch (Exception ex)
-	{
-	    System.out.println("ERROR");
-	    ex.printStackTrace();
-	} finally
-	{
-	    System.out.println("End");
-	}
 
-    }
-
-    /**
-     * Creates the Full Level image
-     *
-     * @return The full level Image
-     */
-    public BufferedImage makeFull()
-    {
-	OffScreenImage buffer = new OffScreenImage(null, fullLevel.getColorModel(), fullLevel.getRaster(), fullLevel.isAlphaPremultiplied());
-	Graphics g = buffer.getGraphics();
-	for (int i = 0; i < levelTiles[0].length; i++)
-	{
-	    for (int j = 0; j < levelTiles.length; j++)
-	    {
-		g.drawImage(levelTiles[j][i], j * TILE_WIDTH, i * TILE_WIDTH, null);
-	    }
-	}
-	fullLevel = buffer.getSubimage(0, 0, buffer.getWidth(), buffer.getHeight());
-	if (DEBUG)
-	{
-	    JFrame f = new JFrame("Tiles");
-	    f.setSize(300, 300);
-	    f.add(new Canvas()
-	    {
-		@Override
-		public void paint(Graphics g)
-		{
-		    super.paint(g);
-		    g.drawImage(fullLevel, 0, 0, null);
-		}
-	    });
-	    f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    f.pack();
-	    f.setVisible(true);
-	}
-	return fullLevel;
-    }
-
-    /**
-     * Returns the Full level image
-     *
-     * @return A full view of the level
-     */
-    public BufferedImage getFull()
-    {
-	return fullLevel;
-    }
-
-    public BufferedImage getSegment(int startx)
-    {
-	currX = startx;
-	return getFull().getSubimage(startx, 0, TILE_WIDTH * SCREEN_WIDTH, TILE_HEIGHT * SCREEN_HEIGHT);
-    }
-
-    /**
-     * Loads the pallette into memory.
-     */
-    public void loadTiles()
-    {
-	try
-	{
-	    BufferedImage pallette = ImageIO.read(new File(palletteFile));
-	    //width x height
-	    tiles = new Image[16][5];
-	    for (int i = 0; i < 16; i++)
-	    {
-		for (int j = 0; j < 5; j++)
-		{
-		    tiles[i][j] = pallette.getSubimage(i * TILE_WIDTH, j * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
-		}
-	    }
-	    if (DEBUG)
-	    {
-		JFrame f = new JFrame("Tiles");
-		f.setSize(300, 300);
-		f.add(new Canvas()
-		{
-		    @Override
-		    public void paint(Graphics g)
-		    {
-			super.paint(g);
-			for (int i = 0; i < 5; i++)
+			int[][][] rawTiles = new int[lev[0].split(" ").length][SupaMobstaBros.SCREEN_HEIGHT][3];
+			if (lev.length != SupaMobstaBros.SCREEN_HEIGHT)
 			{
-			    for (int j = 0; j < 16; j++)
-			    {
-				g.drawImage(tiles[j][i], j * (TILE_WIDTH + 1), i * (TILE_WIDTH + 1), null);
-			    }
+				throw new IndexOutOfBoundsException("Level Height Mismatch.  Found: " + lev.length + " Expected: " + SupaMobstaBros.SCREEN_HEIGHT);
+			}
+			int j, enemy, col, row;
+			String line;
+			for (int i = 0; i < SupaMobstaBros.SCREEN_HEIGHT; i++)
+			{
+				line = lev[i];
+				if (line == null || line.isEmpty())
+				{
+					continue;
+				}
+				String[] codes = line.split(" ");
+				String code;
+				for (j = 0; j < codes.length; j++)
+				{
+					code = codes[j];
+					enemy = Integer.parseInt(code.substring(0, 1), 16);
+					col = Integer.parseInt(code.substring(2), 16);
+					row = Integer.parseInt(code.substring(1, 2), 16);
+					rawTiles[j][i] = new int[]
+					{
+						enemy, col, row
+					};
+				}
+			}
+			if (DEBUG)
+			{
+				System.out.println("This is what is in the Arrays");
+				for (int k = 0; k < SupaMobstaBros.SCREEN_HEIGHT; k++)
+				{
+					for (int l = 0; l < rawTiles.length; l++)
+					{
+						System.out.print(rawTiles[l][k][0] + " " + rawTiles[l][k][1] + " " + rawTiles[l][k][2] + " ");
+					}
+					System.out.println();
+				}
+			}
+			//here we take all of the codes and turn them into tiles
+			levelTiles = new Image[rawTiles.length][SCREEN_HEIGHT];
+			Image[] currCol;
+			players = new Player[rawTiles.length];
+			for (int i = 0; i < rawTiles.length; i++)
+			{
+				currCol = new Image[SCREEN_HEIGHT];
+				for (int u = 0; u < SCREEN_HEIGHT; u++)
+				{
+					currCol[u] = tiles[rawTiles[i][u][1]][rawTiles[i][u][2]];
+				}
+				enemy = 0;
+				for (int n = 0; n < SCREEN_HEIGHT; n++)
+				{
+					if (rawTiles[i][n][2] != 0)
+					{
+						if (enemy == 0)
+						{
+							enemy = rawTiles[i][i][2];
+						}
+						else
+						{
+							throw new Exception("Too many Enemies in column " + n + ".  Please place only one.");
+						}
+					}
+				}
+				mainTux = new MobstaTux();
+				players[i] = Player.createPlayer(rawTiles[i][i][2]);
+				levelTiles[i] = currCol;
+			}
+			if (DEBUG)
+			{
+				JFrame f = new JFrame("Level ");
+				f.setSize(300, 300);
+				f.add(new Canvas()
+				{
+					@Override
+					public void paint(Graphics g)
+					{
+						super.paint(g);
+						for (int i = 0; i < levelTiles[0].length; i++)
+						{
+							for (int j = 0; j < levelTiles.length; j++)
+							{
+								g.drawImage(levelTiles[j][i], j * (TILE_WIDTH + 1), i * (TILE_WIDTH + 1), null);
+							}
+						}
+
+					}
+				});
+				f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				f.pack();
+				f.setVisible(true);
 			}
 
-		    }
-		});
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.pack();
-		f.setVisible(true);
-		System.out.println("Loaded Tiles");
-	    }
-	} catch (IOException ex)
-	{
+		} catch (Exception ex)
+		{
+			System.out.println("ERROR");
+			ex.printStackTrace();
+		} finally
+		{
+			System.out.println("End");
+		}
+
 	}
 
-    }
+	/**
+	 * Creates the Full Level image
+	 *
+	 * @return The full level Image
+	 */
+	public BufferedImage makeFull()
+	{
+		OffScreenImage buffer = new OffScreenImage(null, fullLevel.getColorModel(), fullLevel.getRaster(), fullLevel.isAlphaPremultiplied());
+		Graphics g = buffer.getGraphics();
+		for (int i = 0; i < levelTiles[0].length; i++)
+		{
+			for (int j = 0; j < levelTiles.length; j++)
+			{
+				g.drawImage(levelTiles[j][i], j * TILE_WIDTH, i * TILE_WIDTH, null);
+			}
+		}
+		fullLevel = buffer.getSubimage(0, 0, buffer.getWidth(), buffer.getHeight());
+		if (DEBUG)
+		{
+			JFrame f = new JFrame("Tiles");
+			f.setSize(300, 300);
+			f.add(new Canvas()
+			{
+				@Override
+				public void paint(Graphics g)
+				{
+					super.paint(g);
+					g.drawImage(fullLevel, 0, 0, null);
+				}
+			});
+			f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			f.pack();
+			f.setVisible(true);
+		}
+		return fullLevel;
+	}
 
-    /**
-     * This moves the Level Image by the specified amount.
-     *
-     * @param amount Positive = move the view to the right, negative = right.
-     * @return The new View of the image
-     */
-    public BufferedImage move(int amount)
-    {
-	return getSegment(currX + amount);
-    }
+	/**
+	 * Returns the Full level image
+	 *
+	 * @return A full view of the level
+	 */
+	public BufferedImage getFull()
+	{
+		return fullLevel;
+	}
 
-    public void setLocation(int x)
-    {
-	currX = x;
-	getSegment(currX);
-    }
-    public BufferedImage getView()
-    {
-	OffScreenImage buffer = new OffScreenImage(null, fullLevel.getColorModel(), fullLevel.getRaster(), fullLevel.isAlphaPremultiplied());
-	Graphics g = buffer.getGraphics();
-	g.drawImage(getSegment(currX), 0, 0, null);
-	g.drawImage(mainTux.getImage(), mainTux.getX(), mainTux.getY(), null);
-	return buffer.getSubimage(0, 0, buffer.getWidth(), buffer.getHeight());
-    }
+	public BufferedImage getSegment(int startx)
+	{
+		currX = startx;
+		return getFull().getSubimage(startx, 0, TILE_WIDTH * SCREEN_WIDTH, TILE_HEIGHT * SCREEN_HEIGHT);
+	}
+
+	/**
+	 * Loads the pallette into memory.
+	 */
+	public void loadTiles()
+	{
+		try
+		{
+			BufferedImage pallette = ImageIO.read(new File(palletteFile));
+			//width x height
+			tiles = new Image[16][5];
+			for (int i = 0; i < 16; i++)
+			{
+				for (int j = 0; j < 5; j++)
+				{
+					tiles[i][j] = pallette.getSubimage(i * TILE_WIDTH, j * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
+				}
+			}
+			if (DEBUG)
+			{
+				JFrame f = new JFrame("Tiles");
+				f.setSize(300, 300);
+				f.add(new Canvas()
+				{
+					@Override
+					public void paint(Graphics g)
+					{
+						super.paint(g);
+						for (int i = 0; i < 5; i++)
+						{
+							for (int j = 0; j < 16; j++)
+							{
+								g.drawImage(tiles[j][i], j * (TILE_WIDTH + 1), i * (TILE_WIDTH + 1), null);
+							}
+						}
+
+					}
+				});
+				f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				f.pack();
+				f.setVisible(true);
+				System.out.println("Loaded Tiles");
+			}
+		} catch (IOException ex)
+		{
+		}
+
+	}
+
+	/**
+	 * This moves the Level Image by the specified amount.
+	 *
+	 * @param amount Positive = move the view to the right, negative = right.
+	 * @return The new View of the image
+	 */
+	public BufferedImage move(int amount)
+	{
+		return getSegment(currX + amount);
+	}
+
+	public void setLocation(int x)
+	{
+		currX = x;
+		getSegment(currX);
+	}
+
+	public BufferedImage getView()
+	{
+		OffScreenImage buffer = new OffScreenImage(null, fullLevel.getColorModel(), fullLevel.getRaster(), fullLevel.isAlphaPremultiplied());
+		Graphics g = buffer.getGraphics();
+		g.drawImage(getSegment(currX), 0, 0, null);
+		g.drawImage(mainTux.getImage(), mainTux.getX(), mainTux.getY(), null);
+		return buffer.getSubimage(0, 0, buffer.getWidth(), buffer.getHeight());
+	}
 }

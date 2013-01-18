@@ -12,8 +12,14 @@ import supa.mobsta.bros.Player;
  */
 public abstract class GoodGuy extends Player
 {
-    public static GoodGuy createGoodGuy(int type)
-    {
-	    return (GoodGuy)Player.createPlayer(type);
-    }
+
+	/**
+	 *
+	 * @param type
+	 * @return
+	 */
+	public static GoodGuy createGoodGuy(int type)
+	{
+		return (GoodGuy) Player.createPlayer(type);
+	}
 }
