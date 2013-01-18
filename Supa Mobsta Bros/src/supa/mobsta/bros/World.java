@@ -19,7 +19,7 @@ public class World
 {
 
     private ArrayList<Level> levels = new ArrayList<Level>();
-    private String name;
+    private String name = "";
 
     public World(String file) throws FileNotFoundException
     {
@@ -90,5 +90,9 @@ public class World
 		level += line + "\n";
 	    }
 	}
+    }
+    public Level getLevel(int level)
+    {
+	return levels.get(level);
     }
 }
