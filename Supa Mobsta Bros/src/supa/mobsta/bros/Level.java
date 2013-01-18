@@ -27,7 +27,7 @@ public final class Level
 	    SCREEN_HEIGHT = SupaMobstaBros.SCREEN_HEIGHT;
     public final String palletteFile = "src/supa/mobsta/img/pallette.png";
     private BufferedImage fullLevel;
-    private ArrayList<Image[]> levelTiles = new ArrayList<Image[]>();
+    private Image[][] levelTiles;
     private ArrayList<ArrayList<Player>> players = new ArrayList<ArrayList<Player>>();
     private static Image[][] tiles = null;
 
@@ -43,17 +43,11 @@ public final class Level
 	    // here we have to parse out the level from the data
 	    while (level.startsWith("\n"))
 	    {
-		//System.out.println("before");
-		//System.out.println(level.substring(level.length() - 5));
 		level = level.replaceFirst("\n", "");
-		//System.out.println(level.substring(level.length() - 5));
 	    }
 	    while (level.endsWith("\n"))
 	    {
-		//System.out.println("after");
-		//System.out.println(level.substring(level.length() - 5));
 		level = level.substring(0, level.length() - 1);
-		//System.out.println(level.substring(level.length() - 5));
 	    }
 	    level = level.trim().toLowerCase().replaceAll("[ ]+", " ").replaceAll("[\n]+", "\n");
 	    String[] lev = level.split("\n");
@@ -65,7 +59,6 @@ public final class Level
 	    {
 		throw new IndexOutOfBoundsException("Level Height Mismatch.  Found: " + lev.length + " Expected: " + SupaMobstaBros.SCREEN_HEIGHT);
 	    }
-	    //System.out.println("\n\n");
 	    int j, enemy, col, row;
 	    String line;
 	    for (int i = 0; i < SupaMobstaBros.SCREEN_HEIGHT; i++)
@@ -83,7 +76,6 @@ public final class Level
 		    enemy = Integer.parseInt(code.substring(0, 1), 16);
 		    col = Integer.parseInt(code.substring(2), 16);
 		    row = Integer.parseInt(code.substring(1, 2), 16);
-		    //System.out.println(enemy + " " + row + " " + col);
 		    rawTiles[j][i] = new int[]
 		    {
 			enemy, col, row
@@ -99,6 +91,42 @@ public final class Level
 		}
 		System.out.println();
 	    }
+
+	    //here we take all of the codes and turn them into tiles
+	    levelTiles = new Image[rawTiles.length][SCREEN_HEIGHT];
+	    Image[] currCol;
+	    for (int i = 0; i < rawTiles.length; i++)
+	    {
+		currCol = new Image[rawTiles[0].length];
+		for (int u = 0; u < rawTiles[0].length; u++)
+		{
+		    currCol[u] = tiles[rawTiles[i][u][1]][rawTiles[i][u][2]];
+		}
+		levelTiles[i] = currCol;
+	    }
+	    JFrame f = new JFrame("Level ");
+	    f.setSize(300, 300);
+	    f.add(new Canvas()
+	    {
+		@Override
+		public void paint(Graphics g)
+		{
+		    super.paint(g);
+		    for (int i = 0; i < levelTiles[0].length; i++)
+		    {
+			for (int j = 0; j < levelTiles.length; j++)
+			{
+			    g.drawImage(levelTiles[j][i], j * (TILE_WIDTH + 1), i * (TILE_WIDTH + 1), null);
+			}
+		    }
+
+		}
+	    });
+	    f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    f.pack();
+	    f.setVisible(true);
+
+
 	} catch (Exception ex)
 	{
 	    System.out.println("ERROR");
