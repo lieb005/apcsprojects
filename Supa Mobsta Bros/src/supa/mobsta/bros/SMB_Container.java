@@ -26,11 +26,12 @@ public class SMB_Container extends JApplet
         JFrame f = new JFrame("Supa Mobsta Bros");
         SMB_Container c = new SMB_Container();
         f.add(c);
-        f.setSize(SupaMobstaBros.SCREEN_WIDTH * SupaMobstaBros.TILE_WIDTH, SupaMobstaBros.SCREEN_HEIGHT * SupaMobstaBros.TILE_HEIGHT);
         c.init();
         c.start();
+	f.pack();
         f.setVisible(true);
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	f.invalidate();
     }
 
     @Override
@@ -46,5 +47,6 @@ public class SMB_Container extends JApplet
             s = new SupaMobstaBros();
         }
         add(s);
+	//repaint();
     }
 }
