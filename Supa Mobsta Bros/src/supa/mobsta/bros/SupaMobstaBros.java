@@ -4,8 +4,11 @@
  */
 package supa.mobsta.bros;
 
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import javax.swing.JPanel;
 
@@ -15,17 +18,17 @@ import javax.swing.JPanel;
  */
 public class SupaMobstaBros extends JPanel implements KeyListener
 {
-
     public static final int TILE_WIDTH = 32,
 	    SCREEN_WIDTH = 12,
 	    TILE_HEIGHT = 32,
 	    SCREEN_HEIGHT = 12;
     private World currWorld;
-
+    private BufferedImage view;
+    private int currLevel = 0;
+    
     SupaMobstaBros()
     {
-	currWorld = Worlds.Example.getWorld();
-	//currWorld = Worlds.World_1.getWorld();
+	this(Worlds.Example.getFileName());
     }
 
     /**
@@ -34,6 +37,7 @@ public class SupaMobstaBros extends JPanel implements KeyListener
      */
     SupaMobstaBros(String string)
     {
+	setPreferredSize(new Dimension(SCREEN_WIDTH*TILE_WIDTH, SCREEN_HEIGHT * TILE_HEIGHT));
 	try
 	{
 	    currWorld = new World(string);
@@ -57,10 +61,14 @@ public class SupaMobstaBros extends JPanel implements KeyListener
 		if ((ke.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) != 0)
 		{
 		    //run left
+		    currWorld.getLevel(currLevel).move(-5);
+		    view = currWorld.getLevel(currLevel).getView();
 		}
 		else
 		{
 		    //walk Left
+		    currWorld.getLevel(currLevel).move(-2);
+		    view = currWorld.getLevel(currLevel).getView();
 		}
 		break;
 	    case KeyEvent.VK_RIGHT:
@@ -68,20 +76,22 @@ public class SupaMobstaBros extends JPanel implements KeyListener
 		if ((ke.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) != 0)
 		{
 		    //run Right
+		    currWorld.getLevel(currLevel).move(5);
+		    view = currWorld.getLevel(currLevel).getView();
 		}
 		else
 		{
 		    //walk Right
+		    currWorld.getLevel(currLevel).move(3);
+		    view = currWorld.getLevel(currLevel).getView();
 		}
 		break;
 	    case KeyEvent.VK_DOWN:
 		//duck or pipe
 		break;
-	    case KeyEvent.VK_SHIFT:
-		
-		break;
 
 	}
+	repaint();
     }
 
     @Override
@@ -100,5 +110,12 @@ public class SupaMobstaBros extends JPanel implements KeyListener
 		// end Jump
 		break;
 	}
+    }
+
+    @Override
+    public void paint(Graphics g)
+    {
+	super.paint(g);
+	g.drawImage(view, 0, 0, null);
     }
 }

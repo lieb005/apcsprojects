@@ -4,7 +4,7 @@
  */
 package supa.mobsta.enemies;
 
-import supa.mobsta.bros.Player;
+import java.awt.image.BufferedImage;
 
 /**
  *
@@ -12,5 +12,11 @@ import supa.mobsta.bros.Player;
  */
 public class Dames extends Enemy
 {
+
+    @Override
+    public BufferedImage setFrame(int frame)
+    {
+	throw new UnsupportedOperationException("Not supported yet.");
+    }
     
 }

@@ -10,6 +10,10 @@ import supa.mobsta.bros.Player;
  *
  * @author mark
  */
-public class GoodGuy extends Player
+public abstract class GoodGuy extends Player
 {
+    public static GoodGuy createGoodGuy(int type)
+    {
+	    return (GoodGuy)Player.createPlayer(type);
+    }
 }

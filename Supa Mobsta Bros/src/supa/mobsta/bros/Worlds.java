@@ -16,12 +16,14 @@ public enum Worlds
     Example("src/Example.wld"),
     World_1("src/World1.wld");
     private World world;
+    private String url;
     // This function makes it so that 
 
     Worlds(String dataFile)
     {
         try
         {
+	    url = dataFile;
             world = new World(dataFile);
         } catch (FileNotFoundException ex)
         {
@@ -32,5 +34,9 @@ public enum Worlds
     public World getWorld()
     {
         return world;
+    }
+    public String getFileName()
+    {
+	return url;
     }
 }

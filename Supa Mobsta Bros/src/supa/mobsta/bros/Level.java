@@ -13,6 +13,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import sun.awt.image.OffScreenImage;
+import supa.mobsta.goodguys.MobstaTux;
 
 /**
  *
@@ -30,6 +31,7 @@ public final class Level
     private BufferedImage fullLevel;
     private Image[][] levelTiles;
     private Player[] players;
+    private MobstaTux mainTux;
     private static Image[][] tiles = null;
     private int currX = 0;
     public final boolean DEBUG = false;
@@ -129,7 +131,8 @@ public final class Level
 			}
 		    }
 		}
-		players[i] = new Player(rawTiles[i][i][2]);
+		mainTux = new MobstaTux();
+		players[i] = Player.createPlayer(rawTiles[i][i][2]);
 		levelTiles[i] = currCol;
 	    }
 	    if (DEBUG)
@@ -181,7 +184,7 @@ public final class Level
 	{
 	    for (int j = 0; j < levelTiles.length; j++)
 	    {
-		g.drawImage(levelTiles[j][i], j * (TILE_WIDTH + 1), i * (TILE_WIDTH + 1), null);
+		g.drawImage(levelTiles[j][i], j * TILE_WIDTH, i * TILE_WIDTH, null);
 	    }
 	}
 	fullLevel = buffer.getSubimage(0, 0, buffer.getWidth(), buffer.getHeight());
@@ -277,7 +280,20 @@ public final class Level
      */
     public BufferedImage move(int amount)
     {
-
 	return getSegment(currX + amount);
+    }
+
+    public void setLocation(int x)
+    {
+	currX = x;
+	getSegment(currX);
+    }
+    public BufferedImage getView()
+    {
+	OffScreenImage buffer = new OffScreenImage(null, fullLevel.getColorModel(), fullLevel.getRaster(), fullLevel.isAlphaPremultiplied());
+	Graphics g = buffer.getGraphics();
+	g.drawImage(getSegment(currX), 0, 0, null);
+	g.drawImage(mainTux.getImage(), mainTux.getX(), mainTux.getY(), null);
+	return buffer.getSubimage(0, 0, buffer.getWidth(), buffer.getHeight());
     }
 }

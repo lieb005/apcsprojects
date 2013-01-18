@@ -4,22 +4,32 @@
  */
 package supa.mobsta.bros;
 
+import java.awt.image.BufferedImage;
+import supa.mobsta.goodguys.MobstaTux;
+
 /**
  *
  * @author mark
  */
-public class Player
-{
-
-    Player whoWeAre;
+public abstract class Player
+{    
+    //coordinates for the top-Left of the player
+    private int x, y;
+    // size of the player
+    private int width, height;
+    // Image of ourselves
+    BufferedImage selfImage;
+    
     /**
-     * This creates a new player (hopefully on a level). of integer type "type".
+     * This creates a new player of integer type "type".
      * The key for types can be found in codes.txt
      * @param type Type of Player to make ourselves
+     * @return player The player of the specified type
      * @throws TypeNotPresentException 
      */
-    Player(int type) throws TypeNotPresentException
+    public static Player createPlayer(int type) throws TypeNotPresentException
     {
+	Player player = null;
 	// Here we have to use the index to create a player of the proper type
 	switch (type)
 	{
@@ -50,10 +60,35 @@ public class Player
 	    case 12:
 		break;
 	    case 13:
-	    case 14:
+		break;
 	    case 15:
+		player = new MobstaTux();
+		break;
+	    case 14:
 	    default:
 		throw new TypeNotPresentException(String.valueOf(type), new Throwable("This Type is not real!"));
 	}
+	return player;
     }
+    public int getX()
+    {
+	return x;
+    }
+    public int getY()
+    {
+	return y;
+    }
+    public int getHeight()
+    {
+	return height;
+    }
+    public int getWidth()
+    {
+	return width;
+    }
+    public BufferedImage getImage()
+    {
+	return selfImage;
+    }
+    public abstract BufferedImage setFrame(int frame);
 }

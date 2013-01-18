@@ -90,4 +90,4 @@ B00 vert_transport
 C00 bowser
 D00 finish
 #E00
-#F00
+F00 main_player
