@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import sun.awt.image.OffScreenImage;
 
 /**
  *
@@ -26,14 +27,16 @@ public final class Level
 	    TILE_HEIGHT = SupaMobstaBros.TILE_HEIGHT,
 	    SCREEN_HEIGHT = SupaMobstaBros.SCREEN_HEIGHT;
     public final String palletteFile = "src/supa/mobsta/img/pallette.png";
+    private String name;
     private BufferedImage fullLevel;
     private Image[][] levelTiles;
     private ArrayList<ArrayList<Player>> players = new ArrayList<ArrayList<Player>>();
     private static Image[][] tiles = null;
 
-    public Level(String level)
+    public Level(String levelName, String level)
     {
-	System.out.println("Making Level");
+	name = levelName;
+	//System.out.println("Making Level");
 	try
 	{
 	    if (tiles == null)
@@ -140,8 +143,30 @@ public final class Level
 
     public BufferedImage makeFull()
     {
-	fullLevel.getRaster();
-	return null;
+	
+	Graphics g = ((OffScreenImage) fullLevel).getGraphics();
+	for (int i = 0; i < levelTiles[0].length; i++)
+	{
+	    for (int j = 0; j < levelTiles.length; j++)
+	    {
+		g.drawImage(levelTiles[j][i], j * (TILE_WIDTH + 1), i * (TILE_WIDTH + 1), null);
+	    }
+	}
+	JFrame f = new JFrame("Tiles");
+	f.setSize(300, 300);
+	f.add(new Canvas()
+	{
+	    @Override
+	    public void paint(Graphics g)
+	    {
+		super.paint(g);
+		g.drawImage(fullLevel, 0, 0, null);
+	    }
+	});
+	f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	f.pack();
+	f.setVisible(true);
+	return fullLevel;
     }
 
     public BufferedImage getFull()
