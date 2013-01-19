@@ -4,28 +4,29 @@
  */
 package supa.mobsta.bros;
 
+import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
-import javax.swing.JPanel;
 
 /**
  *
  * @author 314Chan Telecommunications, LLC.
  */
-public class SupaMobstaBros extends JPanel implements KeyListener
+public class SupaMobstaBros extends Canvas implements KeyListener
 {
 
 	public static final int TILE_WIDTH = 32,
-			SCREEN_WIDTH = 12,
-			TILE_HEIGHT = 32,
+			SCREEN_WIDTH = 20,
+			TILE_HEIGHT = TILE_WIDTH,
 			SCREEN_HEIGHT = 12;
 	private World currWorld;
 	private BufferedImage view;
 	private int currLevel = 0;
+	public final static boolean DEBUG = true;
 
 	SupaMobstaBros()
 	{
@@ -63,13 +64,11 @@ public class SupaMobstaBros extends JPanel implements KeyListener
 				{
 					//run left
 					currWorld.getLevel(currLevel).move(-5);
-					view = currWorld.getLevel(currLevel).getView();
 				}
 				else
 				{
 					//walk Left
 					currWorld.getLevel(currLevel).move(-2);
-					view = currWorld.getLevel(currLevel).getView();
 				}
 				break;
 			case KeyEvent.VK_RIGHT:
@@ -78,13 +77,11 @@ public class SupaMobstaBros extends JPanel implements KeyListener
 				{
 					//run Right
 					currWorld.getLevel(currLevel).move(5);
-					view = currWorld.getLevel(currLevel).getView();
 				}
 				else
 				{
 					//walk Right
 					currWorld.getLevel(currLevel).move(3);
-					view = currWorld.getLevel(currLevel).getView();
 				}
 				break;
 			case KeyEvent.VK_DOWN:
@@ -117,6 +114,29 @@ public class SupaMobstaBros extends JPanel implements KeyListener
 	public void paint(Graphics g)
 	{
 		super.paint(g);
+		view = getView();
 		g.drawImage(view, 0, 0, null);
+		/*if (DEBUG)
+		 {
+		 JFrame f = new JFrame("Full Level");
+		 f.setSize(600, 600);
+		 f.add(new Canvas()
+		 {
+		 @Override
+		 public void paint(Graphics g)
+		 {
+		 super.paint(g);
+		 g.drawImage(view, 0, 0, null);
+		 }
+		 });
+		 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		 f.pack();
+		 f.setVisible(true);
+		 }*/
+	}
+
+	public BufferedImage getView()
+	{
+		return currWorld.getLevel(currLevel).getView();
 	}
 }

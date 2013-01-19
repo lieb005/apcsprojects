@@ -4,6 +4,8 @@
  */
 package supa.mobsta.bros;
 
+import java.awt.Canvas;
+import java.awt.Graphics;
 import java.io.File;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
@@ -16,6 +18,7 @@ public class SMB_Container extends JApplet
 {
 
 	private static String[] arg;
+	SupaMobstaBros s;
 
 	/**
 	 * @param args the command line arguments
@@ -31,14 +34,14 @@ public class SMB_Container extends JApplet
 		f.pack();
 		f.setVisible(true);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.invalidate();
+		f.validate();
+		c.requestFocusInWindow();
 	}
 
 	@Override
 	public void init()
 	{
 		super.init();
-		SupaMobstaBros s;
 		if ((arg.length > 0) && new File(arg[0]).exists())
 		{
 			s = new SupaMobstaBros(arg[0]);
@@ -48,6 +51,24 @@ public class SMB_Container extends JApplet
 			s = new SupaMobstaBros();
 		}
 		add(s);
-		//repaint();
+		if (Level.DEBUG)
+		{
+			JFrame f = new JFrame("View");
+			f.setSize(300, 300);
+			f.add(new Canvas()
+			{
+				@Override
+				public void paint(Graphics g)
+				{
+					super.paint(g);
+					g.drawImage(s.getView(), 0, 0, null);
+
+				}
+			});
+			f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			f.pack();
+			f.setVisible(true);
+		}
+		repaint();
 	}
 }

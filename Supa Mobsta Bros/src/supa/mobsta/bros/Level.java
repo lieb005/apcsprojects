@@ -5,6 +5,8 @@
 package supa.mobsta.bros;
 
 import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -13,6 +15,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import sun.awt.image.OffScreenImage;
+import sun.java2d.jules.TileWorker;
 import supa.mobsta.goodguys.MobstaTux;
 
 /**
@@ -28,7 +31,7 @@ public final class Level
 			SCREEN_HEIGHT = SupaMobstaBros.SCREEN_HEIGHT;
 	public final String palletteFile = "src/supa/mobsta/img/pallette.png";
 	private String name;
-	private BufferedImage fullLevel;
+	private BufferedImage fullLevel, view;
 	private Image[][] levelTiles;
 	private Player[] players;
 	private MobstaTux mainTux;
@@ -63,14 +66,12 @@ public final class Level
 			level = level.trim().toLowerCase().replaceAll("[ ]+", " ").replaceAll("[\n]+", "\n");
 			String[] lev = level.split("\n");
 
-
-
 			int[][][] rawTiles = new int[lev[0].split(" ").length][SupaMobstaBros.SCREEN_HEIGHT][3];
 			if (lev.length != SupaMobstaBros.SCREEN_HEIGHT)
 			{
 				throw new IndexOutOfBoundsException("Level Height Mismatch.  Found: " + lev.length + " Expected: " + SupaMobstaBros.SCREEN_HEIGHT);
 			}
-			int j, enemy, col, row;
+			int j, enemy, enemyY = 0, col, row;
 			String line;
 			for (int i = 0; i < SupaMobstaBros.SCREEN_HEIGHT; i++)
 			{
@@ -109,6 +110,8 @@ public final class Level
 			levelTiles = new Image[rawTiles.length][SCREEN_HEIGHT];
 			Image[] currCol;
 			players = new Player[rawTiles.length];
+			players[0] = new MobstaTux();
+			mainTux = (MobstaTux) players[0];
 			for (int i = 0; i < rawTiles.length; i++)
 			{
 				currCol = new Image[SCREEN_HEIGHT];
@@ -119,11 +122,12 @@ public final class Level
 				enemy = 0;
 				for (int n = 0; n < SCREEN_HEIGHT; n++)
 				{
-					if (rawTiles[i][n][2] != 0)
+					if (rawTiles[i][n][0] != 0)
 					{
 						if (enemy == 0)
 						{
-							enemy = rawTiles[i][i][2];
+							enemy = rawTiles[i][n][0];
+							enemyY = n;
 						}
 						else
 						{
@@ -131,8 +135,12 @@ public final class Level
 						}
 					}
 				}
-				mainTux = new MobstaTux();
-				players[i] = Player.createPlayer(rawTiles[i][i][2]);
+				players[i] = Player.createPlayer(enemy);
+
+				if (players[i] != null)
+				{
+					players[i].setLocation(i * TILE_WIDTH, enemyY * TILE_HEIGHT);
+				}
 				levelTiles[i] = currCol;
 			}
 			if (DEBUG)
@@ -178,8 +186,10 @@ public final class Level
 	 */
 	public BufferedImage makeFull()
 	{
-		OffScreenImage buffer = new OffScreenImage(null, fullLevel.getColorModel(), fullLevel.getRaster(), fullLevel.isAlphaPremultiplied());
-		Graphics g = buffer.getGraphics();
+		fullLevel = new BufferedImage(levelTiles.length * TILE_WIDTH, TILE_HEIGHT * SCREEN_HEIGHT, BufferedImage.TYPE_INT_ARGB_PRE);
+		Graphics g = fullLevel.getGraphics();
+		g.setColor(Color.WHITE);
+		g.fillRect(0, 0, fullLevel.getWidth(), fullLevel.getHeight());
 		for (int i = 0; i < levelTiles[0].length; i++)
 		{
 			for (int j = 0; j < levelTiles.length; j++)
@@ -187,11 +197,11 @@ public final class Level
 				g.drawImage(levelTiles[j][i], j * TILE_WIDTH, i * TILE_WIDTH, null);
 			}
 		}
-		fullLevel = buffer.getSubimage(0, 0, buffer.getWidth(), buffer.getHeight());
+		//fullLevel = full.getSubimage(0, 0, buffer.getWidth(), buffer.getHeight());
 		if (DEBUG)
 		{
-			JFrame f = new JFrame("Tiles");
-			f.setSize(300, 300);
+			JFrame f = new JFrame("Full Level");
+			f.setSize(600, 600);
 			f.add(new Canvas()
 			{
 				@Override
@@ -220,8 +230,17 @@ public final class Level
 
 	public BufferedImage getSegment(int startx)
 	{
+		BufferedImage ret;
 		currX = startx;
-		return getFull().getSubimage(startx, 0, TILE_WIDTH * SCREEN_WIDTH, TILE_HEIGHT * SCREEN_HEIGHT);
+		if (getFull().getWidth() >= TILE_WIDTH * SCREEN_WIDTH)
+		{
+			ret = getFull().getSubimage(Math.max(Math.min(startx, getFull().getWidth() - TILE_WIDTH * SCREEN_WIDTH), 0), 0, TILE_WIDTH * SCREEN_WIDTH, TILE_HEIGHT * SCREEN_HEIGHT);
+		}
+		else
+		{
+			ret = getFull();
+		}
+		return ret;
 	}
 
 	/**
@@ -280,7 +299,8 @@ public final class Level
 	 */
 	public BufferedImage move(int amount)
 	{
-		return getSegment(currX + amount);
+		view = getSegment(currX + amount);
+		return view;
 	}
 
 	public void setLocation(int x)
@@ -291,10 +311,46 @@ public final class Level
 
 	public BufferedImage getView()
 	{
-		OffScreenImage buffer = new OffScreenImage(null, fullLevel.getColorModel(), fullLevel.getRaster(), fullLevel.isAlphaPremultiplied());
+		if (fullLevel == null)
+		{
+			makeFull();
+		}
+		view = getSegment(currX);
+		BufferedImage buffer = new BufferedImage(TILE_WIDTH * SCREEN_WIDTH, TILE_HEIGHT * SCREEN_HEIGHT, BufferedImage.TYPE_INT_ARGB_PRE);
 		Graphics g = buffer.getGraphics();
-		g.drawImage(getSegment(currX), 0, 0, null);
-		g.drawImage(mainTux.getImage(), mainTux.getX(), mainTux.getY(), null);
+		g.drawImage(view, 0, 0, null);
+		//g.drawImage(mainTux.getImage(), mainTux.getX(), mainTux.getY(), null);
+		g.drawImage(drawPlayers(), 0, 0, null);
 		return buffer.getSubimage(0, 0, buffer.getWidth(), buffer.getHeight());
+	}
+
+	private BufferedImage drawPlayers()
+	{
+		BufferedImage ret = new BufferedImage(TILE_WIDTH * SCREEN_WIDTH, TILE_HEIGHT * SCREEN_HEIGHT, BufferedImage.TYPE_INT_ARGB_PRE);
+		Graphics g = ret.getGraphics();
+		if (DEBUG)
+		{
+			g.setColor(new Color(255, 255, 0, 100));
+		}
+		else
+		{
+			g.setColor(new Color(255, 255, 255, 100));
+
+		}
+		g.fillRect(0, 0, ret.getWidth(), ret.getHeight());
+		g.setColor(new Color(0, 0, 0, 255));
+		for (Player player : players)
+		{
+			if (player != null)
+			{
+				//player.setFrame(0);
+				//if (player.getX() >= ((int) (currX / TILE_WIDTH) * TILE_WIDTH)*SCREEN_WIDTH && player.getX() < ((int) (currX / TILE_WIDTH + 1) * TILE_WIDTH)*SCREEN_WIDTH)
+				//{
+				g.drawImage(player.getImage(), player.getX(), player.getY(), player.getWidth(), player.getHeight(), null);
+				//}
+			}
+		}
+
+		return ret;
 	}
 }

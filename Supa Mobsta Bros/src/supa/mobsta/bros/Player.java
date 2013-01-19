@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import supa.mobsta.goodguys.EndZone;
 import supa.mobsta.goodguys.MobstaTux;
 
 /**
@@ -19,13 +20,14 @@ public abstract class Player
 {
 	//coordinates for the top-Left of the player
 
-	private int x, y;
+	private int x = 0, y = 0;
 	// size of the player
-	private int width, height;
+	private int width = SupaMobstaBros.TILE_WIDTH, height = SupaMobstaBros.TILE_HEIGHT;
 	// Image of ourselves
-	private BufferedImage selfImage;
+	private BufferedImage selfImage = null;
 	//Frames for moving and powerups and stuff
 	private Image[] frames;
+	private int frame = 0;
 
 	/**
 	 * This creates a new player of integer type "type". The key for types can
@@ -68,6 +70,7 @@ public abstract class Player
 			case 12:
 				break;
 			case 13:
+				player = new EndZone();
 				break;
 			case 15:
 				player = new MobstaTux();
@@ -89,6 +92,12 @@ public abstract class Player
 		return y;
 	}
 
+	void setLocation(int x, int y)
+	{
+		this.x = x;
+		this.y = y;
+	}
+
 	public int getHeight()
 	{
 		return height;
@@ -99,9 +108,23 @@ public abstract class Player
 		return width;
 	}
 
+	public void setSize(int width, int height)
+	{
+		this.height = height;
+		this.width = width;
+	}
+
 	public BufferedImage getImage()
 	{
-		return selfImage;
+		height = frames[0].getHeight(null);
+		if (selfImage != null)
+		{
+			return selfImage;
+		}
+		else
+		{
+			return (BufferedImage) setFrame(frame);
+		}
 	}
 
 	public Image[] getFrames()
@@ -114,7 +137,24 @@ public abstract class Player
 		frames = newFrames;
 	}
 
-	public Image[] loadImage(String file) throws IOException
+	/**
+	 *
+	 * @param frame
+	 * @return
+	 */
+	public Image setFrame(int frame)
+	{
+		this.frame = frame;
+		selfImage = (BufferedImage) frames[frame];
+		return selfImage;
+	}
+
+	public int getFrame()
+	{
+		return frame;
+	}
+
+	public static Image[] loadImage(String file) throws IOException
 	{
 		BufferedImage img = ImageIO.read(new File(file));
 		Image[] tmp = new Image[img.getWidth() / SupaMobstaBros.TILE_WIDTH];
@@ -124,11 +164,4 @@ public abstract class Player
 		}
 		return tmp;
 	}
-
-	/**
-	 *
-	 * @param frame
-	 * @return
-	 */
-	public abstract BufferedImage setFrame(int frame);
 }

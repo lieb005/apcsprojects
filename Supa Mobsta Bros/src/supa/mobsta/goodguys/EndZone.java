@@ -6,7 +6,6 @@ package supa.mobsta.goodguys;
 
 import java.awt.Canvas;
 import java.awt.Graphics;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.swing.JFrame;
 import supa.mobsta.bros.Level;
@@ -16,23 +15,21 @@ import supa.mobsta.bros.SupaMobstaBros;
  *
  * @author mark
  */
-public class MobstaTux extends GoodGuy
+public class EndZone extends GoodGuy
 {
 
-	public MobstaTux()
+	public EndZone()
 	{
 		try
 		{
-			setFrames(loadImage("src/supa/mobsta/img/Tux.png"));
-			//setFrame(0);
-			//setSize(32, 32);
+			setFrames(loadImage("src/supa/mobsta/img/EndZone.png"));
 		} catch (IOException ex)
 		{
 			ex.printStackTrace();
 		}
 		if (Level.DEBUG)
 		{
-			JFrame f = new JFrame("Tux");
+			JFrame f = new JFrame("EndZone");
 			f.setSize(300, 300);
 			f.add(new Canvas()
 			{
@@ -40,7 +37,7 @@ public class MobstaTux extends GoodGuy
 				public void paint(Graphics g)
 				{
 					super.paint(g);
-					for (int i = 0; i < 5; i++)
+					for (int i = 0; i < 1; i++)
 					{
 						g.drawImage(getFrames()[i], i * (SupaMobstaBros.TILE_WIDTH + 1), (SupaMobstaBros.TILE_WIDTH), null);
 					}
