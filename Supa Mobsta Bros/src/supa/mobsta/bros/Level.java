@@ -34,7 +34,7 @@ public final class Level
 	private MobstaTux mainTux;
 	private static Image[][] tiles = null;
 	private int currX = 0;
-	public final boolean DEBUG = false;
+	public static final boolean DEBUG = false;
 
 	/**
 	 * This Creates a level from the specified Data with the given name.
