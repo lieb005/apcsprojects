@@ -36,6 +36,7 @@ public class SMB_Container extends JApplet
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.validate();
 		c.requestFocusInWindow();
+		f.addKeyListener(c.getKeyListeners()[0]);
 	}
 
 	@Override
@@ -70,5 +71,7 @@ public class SMB_Container extends JApplet
 			f.setVisible(true);
 		}
 		repaint();
+		s.requestFocusInWindow();
+		addKeyListener(s);
 	}
 }

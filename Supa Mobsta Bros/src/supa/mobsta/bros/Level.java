@@ -6,7 +6,6 @@ package supa.mobsta.bros;
 
 import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -14,8 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
-import sun.awt.image.OffScreenImage;
-import sun.java2d.jules.TileWorker;
 import supa.mobsta.goodguys.MobstaTux;
 
 /**
@@ -299,7 +296,11 @@ public final class Level
 	 */
 	public BufferedImage move(int amount)
 	{
-		view = getSegment(currX + amount);
+		if (!((currX + amount) < 0 && (currX + amount) > (fullLevel.getWidth() - SCREEN_WIDTH * TILE_WIDTH)))
+		{
+			currX += amount;
+		}
+			view = getSegment(currX);
 		return view;
 	}
 
@@ -334,8 +335,7 @@ public final class Level
 		}
 		else
 		{
-			g.setColor(new Color(255, 255, 255, 100));
-
+			g.setColor(new Color(255, 255, 255, 0));
 		}
 		g.fillRect(0, 0, ret.getWidth(), ret.getHeight());
 		g.setColor(new Color(0, 0, 0, 255));

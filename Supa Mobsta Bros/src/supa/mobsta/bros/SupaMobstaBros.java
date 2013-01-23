@@ -20,7 +20,7 @@ public class SupaMobstaBros extends Canvas implements KeyListener
 {
 
 	public static final int TILE_WIDTH = 32,
-			SCREEN_WIDTH = 20,
+			SCREEN_WIDTH = 5,
 			TILE_HEIGHT = TILE_WIDTH,
 			SCREEN_HEIGHT = 12;
 	private World currWorld;
@@ -56,6 +56,7 @@ public class SupaMobstaBros extends Canvas implements KeyListener
 	@Override
 	public void keyPressed(KeyEvent ke)
 	{
+		System.out.println(ke.getKeyChar());
 		switch (ke.getKeyCode())
 		{
 			case KeyEvent.VK_LEFT:

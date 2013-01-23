@@ -18,9 +18,15 @@ import supa.mobsta.goodguys.MobstaTux;
  */
 public abstract class Player
 {
+	// only jump 5 blocks hight (from the top)
+	public static final int JUMP_MAX = SupaMobstaBros.TILE_HEIGHT*5;
+	
 	//coordinates for the top-Left of the player
-
 	private int x = 0, y = 0;
+	// curent level on which we stand
+	private int standx = 0;
+	// Current step in a jump
+	private int currJump = 0;
 	// size of the player
 	private int width = SupaMobstaBros.TILE_WIDTH, height = SupaMobstaBros.TILE_HEIGHT;
 	// Image of ourselves
@@ -163,5 +169,16 @@ public abstract class Player
 			tmp[i] = img.getSubimage(i * SupaMobstaBros.TILE_WIDTH, 0, SupaMobstaBros.TILE_WIDTH, img.getHeight());
 		}
 		return tmp;
+	}
+	public void jump(int currCount)
+	{
+		currJump = currCount;
+		//eqn: y = ((x-1.5)+1.5)((x-1.5)-1.5) + max
+		y = standx + ((x)*(x-3)+JUMP_MAX)*SupaMobstaBros.TILE_HEIGHT;
+		
+	}
+	public void jump()
+	{
+		jump(currJump++);
 	}
 }

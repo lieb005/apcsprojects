@@ -18,7 +18,6 @@ import supa.mobsta.bros.SupaMobstaBros;
  */
 public class MobstaTux extends GoodGuy
 {
-
 	public MobstaTux()
 	{
 		try
