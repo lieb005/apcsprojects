@@ -20,32 +20,40 @@ public class SupaMobstaBros extends Canvas implements KeyListener
 {
 
 	public static final int TILE_WIDTH = 32,
-			SCREEN_WIDTH = 5,
+			SCREEN_WIDTH = 12,
 			TILE_HEIGHT = TILE_WIDTH,
 			SCREEN_HEIGHT = 12;
 	private World currWorld;
 	private BufferedImage view;
 	private int currLevel = 0;
 	public final static boolean DEBUG = true;
+	public static final int RUN = 8, WALK = 4;
 
-	SupaMobstaBros()
+	SupaMobstaBros() throws FileNotFoundException
 	{
 		this(Worlds.Example.getFileName());
+	}
+
+	SupaMobstaBros(Worlds world) throws FileNotFoundException
+	{
+		this(world.getFileName());
+	}
+
+	SupaMobstaBros(World world)
+	{
+		setPreferredSize(new Dimension(SCREEN_WIDTH * TILE_WIDTH, SCREEN_HEIGHT * TILE_HEIGHT));
+		currWorld = world;
+		repaint();
+		requestFocus();
 	}
 
 	/**
 	 *
 	 * @param string Level file to import
 	 */
-	SupaMobstaBros(String string)
+	SupaMobstaBros(String string) throws FileNotFoundException
 	{
-		setPreferredSize(new Dimension(SCREEN_WIDTH * TILE_WIDTH, SCREEN_HEIGHT * TILE_HEIGHT));
-		try
-		{
-			currWorld = new World(string);
-		} catch (FileNotFoundException ex)
-		{
-		}
+		this(new World(string));
 	}
 
 	@Override
@@ -56,7 +64,7 @@ public class SupaMobstaBros extends Canvas implements KeyListener
 	@Override
 	public void keyPressed(KeyEvent ke)
 	{
-		System.out.println(ke.getKeyChar());
+		//System.out.println(ke.getKeyChar());
 		switch (ke.getKeyCode())
 		{
 			case KeyEvent.VK_LEFT:
@@ -64,12 +72,12 @@ public class SupaMobstaBros extends Canvas implements KeyListener
 				if ((ke.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) != 0)
 				{
 					//run left
-					currWorld.getLevel(currLevel).move(-5);
+					currWorld.getLevel(currLevel).move(-RUN);
 				}
 				else
 				{
 					//walk Left
-					currWorld.getLevel(currLevel).move(-2);
+					currWorld.getLevel(currLevel).move(-WALK);
 				}
 				break;
 			case KeyEvent.VK_RIGHT:
@@ -77,18 +85,24 @@ public class SupaMobstaBros extends Canvas implements KeyListener
 				if ((ke.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) != 0)
 				{
 					//run Right
-					currWorld.getLevel(currLevel).move(5);
+					currWorld.getLevel(currLevel).move(RUN);
 				}
 				else
 				{
 					//walk Right
-					currWorld.getLevel(currLevel).move(3);
+					currWorld.getLevel(currLevel).move(WALK);
 				}
 				break;
 			case KeyEvent.VK_DOWN:
 				//duck or pipe
 				break;
-
+			case KeyEvent.VK_SPACE:
+				if (currWorld.getLevel(currLevel).getTux().getJump() <= 0)
+				{
+					currWorld.getLevel(currLevel).getTux().setJump(1);
+				}
+				currWorld.getLevel(currLevel).getTux().jump();
+				break;
 		}
 		repaint();
 	}
@@ -107,6 +121,7 @@ public class SupaMobstaBros extends Canvas implements KeyListener
 				break;
 			case KeyEvent.VK_SPACE:
 				// end Jump
+				//currWorld.getLevel(currLevel).getTux().fall();
 				break;
 		}
 	}
@@ -114,8 +129,8 @@ public class SupaMobstaBros extends Canvas implements KeyListener
 	@Override
 	public void paint(Graphics g)
 	{
-		super.paint(g);
 		view = getView();
+		super.paint(g);
 		g.drawImage(view, 0, 0, null);
 		/*if (DEBUG)
 		 {
@@ -136,8 +151,19 @@ public class SupaMobstaBros extends Canvas implements KeyListener
 		 }*/
 	}
 
+	@Override
+	public void update(Graphics g)
+	{
+		paint(g);
+	}
+
 	public BufferedImage getView()
 	{
 		return currWorld.getLevel(currLevel).getView();
+	}
+
+	public static void lose()
+	{
+		System.out.println("You Lose");
 	}
 }

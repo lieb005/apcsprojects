@@ -26,10 +26,11 @@ public final class Level
 			SCREEN_WIDTH = SupaMobstaBros.SCREEN_WIDTH,
 			TILE_HEIGHT = SupaMobstaBros.TILE_HEIGHT,
 			SCREEN_HEIGHT = SupaMobstaBros.SCREEN_HEIGHT;
-	public final String palletteFile = "src/supa/mobsta/img/pallette.png";
+	public static final String palletteFile = "src/supa/mobsta/img/pallette.png";
 	private String name;
 	private BufferedImage fullLevel, view;
 	private Image[][] levelTiles;
+	private int[][][] levelCodes;
 	private Player[] players;
 	private MobstaTux mainTux;
 	private static Image[][] tiles = null;
@@ -91,6 +92,7 @@ public final class Level
 					};
 				}
 			}
+			levelCodes = rawTiles;
 			if (DEBUG)
 			{
 				System.out.println("This is what is in the Arrays");
@@ -139,6 +141,7 @@ public final class Level
 					players[i].setLocation(i * TILE_WIDTH, enemyY * TILE_HEIGHT);
 				}
 				levelTiles[i] = currCol;
+				mainTux.setLevelTiles(rawTiles);
 			}
 			if (DEBUG)
 			{
@@ -228,15 +231,24 @@ public final class Level
 	public BufferedImage getSegment(int startx)
 	{
 		BufferedImage ret;
-		currX = startx;
 		if (getFull().getWidth() >= TILE_WIDTH * SCREEN_WIDTH)
 		{
+			currX = startx;
 			ret = getFull().getSubimage(Math.max(Math.min(startx, getFull().getWidth() - TILE_WIDTH * SCREEN_WIDTH), 0), 0, TILE_WIDTH * SCREEN_WIDTH, TILE_HEIGHT * SCREEN_HEIGHT);
 		}
 		else
 		{
+			currX = 0;
 			ret = getFull();
 		}
+		for (int i = (currX / TILE_WIDTH); i < ret.getWidth() / TILE_WIDTH; i++)
+		{
+			if (players[i] != null)
+			{
+				players[i].repaint();
+			}
+		}
+		mainTux.setX(currX + (SCREEN_WIDTH / 2) * TILE_WIDTH);
 		return ret;
 	}
 
@@ -300,7 +312,7 @@ public final class Level
 		{
 			currX += amount;
 		}
-			view = getSegment(currX);
+		view = getSegment(currX);
 		return view;
 	}
 
@@ -352,5 +364,20 @@ public final class Level
 		}
 
 		return ret;
+	}
+
+	public MobstaTux getTux()
+	{
+		return mainTux;
+	}
+
+	public Image[][] getTiles()
+	{
+		return levelTiles;
+	}
+
+	public int[][][] getLevelCodes()
+	{
+		return levelCodes;
 	}
 }

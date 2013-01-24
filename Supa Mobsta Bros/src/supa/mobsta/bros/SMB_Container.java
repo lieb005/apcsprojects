@@ -7,6 +7,7 @@ package supa.mobsta.bros;
 import java.awt.Canvas;
 import java.awt.Graphics;
 import java.io.File;
+import java.io.FileNotFoundException;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
 
@@ -43,13 +44,18 @@ public class SMB_Container extends JApplet
 	public void init()
 	{
 		super.init();
-		if ((arg.length > 0) && new File(arg[0]).exists())
+		try
 		{
-			s = new SupaMobstaBros(arg[0]);
-		}
-		else
+			if ((arg.length > 0) && new File(arg[0]).exists())
+			{
+				s = new SupaMobstaBros(arg[0]);
+			}
+			else
+			{
+				s = new SupaMobstaBros();
+			}
+		} catch (FileNotFoundException ex)
 		{
-			s = new SupaMobstaBros();
 		}
 		add(s);
 		if (Level.DEBUG)
