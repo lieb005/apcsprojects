@@ -18,15 +18,9 @@ import supa.mobsta.goodguys.MobstaTux;
  */
 public abstract class Player
 {
-	// only jump 5 blocks hight (from the top)
-	public static final int JUMP_MAX = SupaMobstaBros.TILE_HEIGHT*5;
-	
 	//coordinates for the top-Left of the player
+
 	private int x = 0, y = 0;
-	// curent level on which we stand
-	private int standx = 0;
-	// Current step in a jump
-	private int currJump = 0;
 	// size of the player
 	private int width = SupaMobstaBros.TILE_WIDTH, height = SupaMobstaBros.TILE_HEIGHT;
 	// Image of ourselves
@@ -34,6 +28,13 @@ public abstract class Player
 	//Frames for moving and powerups and stuff
 	private Image[] frames;
 	private int frame = 0;
+	// Level we are in
+	private int[][][] currLevelCodes;
+
+	public void setLevelTiles(int[][][] currLevel)
+	{
+		this.currLevelCodes = currLevel.clone();
+	}
 
 	/**
 	 * This creates a new player of integer type "type". The key for types can
@@ -98,9 +99,19 @@ public abstract class Player
 		return y;
 	}
 
-	void setLocation(int x, int y)
+	public void setLocation(int x, int y)
 	{
 		this.x = x;
+		this.y = y;
+	}
+
+	public void setX(int x)
+	{
+		this.x = x;
+	}
+
+	public void setY(int y)
+	{
 		this.y = y;
 	}
 
@@ -170,15 +181,14 @@ public abstract class Player
 		}
 		return tmp;
 	}
-	public void jump(int currCount)
+
+	public int[][][] getTileCodes()
 	{
-		currJump = currCount;
-		//eqn: y = ((x-1.5)+1.5)((x-1.5)-1.5) + max
-		y = standx + ((x)*(x-3)+JUMP_MAX)*SupaMobstaBros.TILE_HEIGHT;
-		
+		return getTileCodes();
 	}
-	public void jump()
+
+	public void repaint()
 	{
-		jump(currJump++);
+		setFrame(frame);
 	}
 }

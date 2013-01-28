@@ -44,6 +44,7 @@ public class World
 			{
 				data += reader.readLine() + "\n";
 			}
+			reader.close();
 			//System.out.println(data);
 			createWorld(data);
 		} catch (IOException ex)
