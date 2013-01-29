@@ -22,37 +22,19 @@ import supa.mobsta.goodguys.MobstaTux;
 public final class Level
 {
 
-	/**
-	 *
-	 */
 	public static final int TILE_WIDTH = SupaMobstaBros.TILE_WIDTH,
-			/**
-			 *
-			 */
 			SCREEN_WIDTH = SupaMobstaBros.SCREEN_WIDTH,
-			/**
-			 *
-			 */
 			TILE_HEIGHT = SupaMobstaBros.TILE_HEIGHT,
-			/**
-			 *
-			 */
 			SCREEN_HEIGHT = SupaMobstaBros.SCREEN_HEIGHT;
-	/**
-	 *
-	 */
 	public static final String palletteFile = "src/supa/mobsta/img/pallette.png";
 	private String name;
 	private BufferedImage fullLevel, view;
 	private Image[][] levelTiles;
 	private int[][][] levelCodes;
 	private Player[] players;
-	private Player mainTux = null;
+	private MobstaTux mainTux;
 	private static Image[][] tiles = null;
 	private int currX = 0;
-	/**
-	 *
-	 */
 	public static final boolean DEBUG = false;
 
 	/**
@@ -64,12 +46,11 @@ public final class Level
 	public Level(String levelName, String level)
 	{
 		name = levelName;
-		System.out.println(name);
 		try
 		{
 			if (tiles == null)
 			{
-				tiles = loadTiles();
+				loadTiles();
 			}
 			// here we have to parse out the level from the data
 			while (level.startsWith("\n"))
@@ -111,7 +92,7 @@ public final class Level
 					};
 				}
 			}
-			levelCodes = rawTiles.clone();
+			levelCodes = rawTiles;
 			if (DEBUG)
 			{
 				System.out.println("This is what is in the Arrays");
@@ -128,6 +109,8 @@ public final class Level
 			levelTiles = new Image[rawTiles.length][SCREEN_HEIGHT];
 			Image[] currCol;
 			players = new Player[rawTiles.length];
+			players[0] = new MobstaTux();
+			mainTux = (MobstaTux) players[0];
 			for (int i = 0; i < rawTiles.length; i++)
 			{
 				currCol = new Image[SCREEN_HEIGHT];
@@ -152,21 +135,17 @@ public final class Level
 					}
 				}
 				players[i] = Player.createPlayer(enemy);
+
 				if (players[i] != null)
 				{
 					players[i].setLocation(i * TILE_WIDTH, enemyY * TILE_HEIGHT);
-					if (players[i] instanceof MobstaTux && mainTux == null)
-					{
-
-						mainTux = players[i].clone();
-					}
-					players[i].setLevelTiles(levelCodes.clone());
 				}
 				levelTiles[i] = currCol;
+				mainTux.setLevelTiles(rawTiles);
 			}
 			if (DEBUG)
 			{
-				JFrame f = new JFrame(name);
+				JFrame f = new JFrame("Level ");
 				f.setSize(300, 300);
 				f.add(new Canvas()
 				{
@@ -188,28 +167,16 @@ public final class Level
 				f.pack();
 				f.setVisible(true);
 			}
-			if (mainTux == null)
-			{
-				throw new NullPointerException("MainTux null!");
-			}
-			else if (levelCodes == null)
-			{
-				throw new NullPointerException("LevelCodes null!");
-			}
+
 		} catch (Exception ex)
 		{
 			System.out.println("ERROR");
 			ex.printStackTrace();
+		} finally
+		{
+			System.out.println("End");
 		}
-	}
 
-	/**
-	 *
-	 * @return
-	 */
-	public Player[] getPlayers()
-	{
-		return players.clone();
 	}
 
 	/**
@@ -261,26 +228,13 @@ public final class Level
 		return fullLevel;
 	}
 
-	/**
-	 *
-	 * @param startx
-	 * @return
-	 */
 	public BufferedImage getSegment(int startx)
 	{
 		BufferedImage ret;
-		currX = Math.min(Math.max(startx, 0), getFull().getWidth() - TILE_WIDTH);
 		if (getFull().getWidth() >= TILE_WIDTH * SCREEN_WIDTH)
 		{
-			if (getFull().getWidth() - currX >= TILE_WIDTH * SCREEN_WIDTH)
-			{
-				ret = getFull().getSubimage(currX, 0, TILE_WIDTH * SCREEN_WIDTH, TILE_HEIGHT * SCREEN_HEIGHT);
-			}
-			else
-			{
-				currX = getFull().getWidth() - TILE_WIDTH * SCREEN_WIDTH;
-				ret = getFull().getSubimage(currX, 0, TILE_WIDTH * SCREEN_WIDTH, TILE_HEIGHT * SCREEN_HEIGHT);
-			}
+			currX = startx;
+			ret = getFull().getSubimage(Math.max(Math.min(startx, getFull().getWidth() - TILE_WIDTH * SCREEN_WIDTH), 0), 0, TILE_WIDTH * SCREEN_WIDTH, TILE_HEIGHT * SCREEN_HEIGHT);
 		}
 		else
 		{
@@ -294,25 +248,25 @@ public final class Level
 				players[i].repaint();
 			}
 		}
-		//mainTux.setX(currX + (SCREEN_WIDTH / 2) * TILE_WIDTH);
+		mainTux.setX(currX + (SCREEN_WIDTH / 2) * TILE_WIDTH);
 		return ret;
 	}
 
 	/**
 	 * Loads the pallette into memory.
 	 */
-	public static Image[][] loadTiles()
+	public void loadTiles()
 	{
-		Image[][] tiled = new Image[16][5];
 		try
 		{
 			BufferedImage pallette = ImageIO.read(new File(palletteFile));
 			//width x height
+			tiles = new Image[16][5];
 			for (int i = 0; i < 16; i++)
 			{
 				for (int j = 0; j < 5; j++)
 				{
-					tiled[i][j] = pallette.getSubimage(i * TILE_WIDTH, j * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
+					tiles[i][j] = pallette.getSubimage(i * TILE_WIDTH, j * TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
 				}
 			}
 			if (DEBUG)
@@ -343,7 +297,7 @@ public final class Level
 		} catch (IOException ex)
 		{
 		}
-		return tiled.clone();
+
 	}
 
 	/**
@@ -362,20 +316,12 @@ public final class Level
 		return view;
 	}
 
-	/**
-	 *
-	 * @param x
-	 */
 	public void setLocation(int x)
 	{
 		currX = x;
 		getSegment(currX);
 	}
 
-	/**
-	 *
-	 * @return
-	 */
 	public BufferedImage getView()
 	{
 		if (fullLevel == null)
@@ -420,28 +366,16 @@ public final class Level
 		return ret;
 	}
 
-	/**
-	 *
-	 * @return
-	 */
-	public Player getTux()
+	public MobstaTux getTux()
 	{
 		return mainTux;
 	}
 
-	/**
-	 *
-	 * @return
-	 */
 	public Image[][] getTiles()
 	{
 		return levelTiles;
 	}
 
-	/**
-	 *
-	 * @return
-	 */
 	public int[][][] getLevelCodes()
 	{
 		return levelCodes;
