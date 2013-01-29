@@ -287,6 +287,7 @@ public final class Level
 			currX = 0;
 			ret = getFull();
 		}
+		// TODO need to make it so that the players draw in the right places, not off-screen
 		for (int i = (currX / TILE_WIDTH); i < ret.getWidth() / TILE_WIDTH; i++)
 		{
 			if (players[i] != null)
