@@ -4,10 +4,13 @@
  */
 package supa.mobsta.bros;
 
+import java.applet.AudioClip;
 import java.awt.Canvas;
 import java.awt.Graphics;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
 
@@ -40,6 +43,9 @@ public class SMB_Container extends JApplet
 		f.addKeyListener(c.getKeyListeners()[0]);
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public void init()
 	{
@@ -79,5 +85,13 @@ public class SMB_Container extends JApplet
 		repaint();
 		s.requestFocusInWindow();
 		addKeyListener(s);
+		getContentPane().addKeyListener(s);
+		try
+		{
+			AudioClip a = getAudioClip(new URL("src/supa/mobsta/bros/music.mp3"));
+			a.play();
+		} catch (MalformedURLException ex)
+		{
+		}
 	}
 }

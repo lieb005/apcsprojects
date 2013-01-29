@@ -30,10 +30,63 @@ public abstract class Player
 	private int frame = 0;
 	// Level we are in
 	private int[][][] currLevelCodes;
+	/** only jump 5 blocks hight (from the top)
+	
+	 *
+	 */
+	public static final int JUMP_LENGTH = SupaMobstaBros.TILE_HEIGHT * 5;
+	/** can only jump 5 blocks horizontally
+	
+	 *
+	 */
+	public static final int JUMP_MAX = SupaMobstaBros.TILE_HEIGHT * 5;
+	/** the number of steps to do a jump in
+	 *
+	 */
+	public static final int JUMP_STEPS = JUMP_LENGTH / SupaMobstaBros.RUN;
+	/**
+	 * Max Acceleration
+	 */
+	public static final int JUMP_ACCEL = 4;
+	/** Starting Velocity
+	
+	 *
+	 */
+	public static final int JUMP_VEL_START = 20;
+	/** Max Velocity
+	
+	 *
+	 */
+	public static final int JUMP_VEL_MAX = 50;
+	/** where to start the the jump
+	
+	 *
+	 */
+	public static final int JUMP_START = JUMP_MAX;
+	// curent level on which we stand
+	private int standy = 0;
+	// Current step in a jump
+	private boolean jumping = false;
+	// velocity of the guy
+	private double velocity = 0;
+	// current jump of player
+	private int currJump = JUMP_START;
 
-	public void setLevelTiles(int[][][] currLevel)
+	/**
+	 *
+	 * @param currLevel
+	 */
+	public void setLevelTiles (int[][][] currLevel)
 	{
-		this.currLevelCodes = currLevel.clone();
+		if (currLevel != null)
+		{
+			this.currLevelCodes = currLevel.clone ();
+		}
+		else
+		{
+			this.currLevelCodes = null;
+		}
+
 	}
 
 	/**
@@ -41,10 +94,12 @@ public abstract class Player
 	 * be found in codes.txt
 	 *
 	 * @param type Type of Player to make ourselves
+	 *
 	 * @return player The player of the specified type
+	 *
 	 * @throws TypeNotPresentException
 	 */
-	public static Player createPlayer(int type) throws TypeNotPresentException
+	public static Player createPlayer (int type) throws TypeNotPresentException
 	{
 		Player player = null;
 		// Here we have to use the index to create a player of the proper type
@@ -77,79 +132,125 @@ public abstract class Player
 			case 12:
 				break;
 			case 13:
-				player = new EndZone();
+				player = new EndZone ();
 				break;
 			case 15:
-				player = new MobstaTux();
+				player = new MobstaTux ();
 				break;
 			case 14:
 			default:
-				throw new TypeNotPresentException(String.valueOf(type), new Throwable("This Type is not real!"));
+				throw new TypeNotPresentException (String.valueOf (type), new Throwable ("This Type is not real!"));
 		}
 		return player;
 	}
 
-	public int getX()
+	/**
+	 *
+	 * @return
+	 */
+	public int getX ()
 	{
 		return x;
 	}
 
-	public int getY()
+	/**
+	 *
+	 * @return
+	 */
+	public int getY ()
 	{
 		return y;
 	}
 
-	public void setLocation(int x, int y)
+	/**
+	 *
+	 * @param x
+	 * @param y
+	 */
+	public void setLocation (int x, int y)
 	{
 		this.x = x;
 		this.y = y;
 	}
 
-	public void setX(int x)
+	/**
+	 *
+	 * @param x
+	 */
+	public void setX (int x)
 	{
 		this.x = x;
 	}
 
-	public void setY(int y)
+	/**
+	 *
+	 * @param y
+	 */
+	public void setY (int y)
 	{
 		this.y = y;
 	}
 
-	public int getHeight()
+	/**
+	 *
+	 * @return
+	 */
+	public int getHeight ()
 	{
 		return height;
 	}
 
-	public int getWidth()
+	/**
+	 *
+	 * @return
+	 */
+	public int getWidth ()
 	{
 		return width;
 	}
 
-	public void setSize(int width, int height)
+	/**
+	 *
+	 * @param width
+	 * @param height
+	 */
+	public void setSize (int width, int height)
 	{
 		this.height = height;
 		this.width = width;
 	}
 
-	public BufferedImage getImage()
+	/**
+	 *
+	 * @return
+	 */
+	public BufferedImage getImage ()
 	{
-		height = frames[0].getHeight(null);
+		height = frames[0].getHeight (null);
 		if (selfImage != null)
 		{
 			return selfImage;
 		}
 		else
 		{
-			return (BufferedImage) setFrame(frame);
+			return (BufferedImage) setFrame (frame);
 		}
 	}
 
-	public Image[] getFrames()
+	/**
+	 *
+	 * @return
+	 */
+	public Image[] getFrames ()
 	{
 		return frames;
 	}
 
-	public void setFrames(Image[] newFrames)
+	/**
+	 *
+	 * @param newFrames
+	 */
+	public void setFrames (Image[] newFrames)
 	{
 		frames = newFrames;
 	}
@@ -157,38 +258,138 @@ public abstract class Player
 	/**
 	 *
 	 * @param frame
+	 *
 	 * @return
 	 */
-	public Image setFrame(int frame)
+	public Image setFrame (int frame)
 	{
 		this.frame = frame;
 		selfImage = (BufferedImage) frames[frame];
 		return selfImage;
 	}
 
-	public int getFrame()
+	/**
+	 *
+	 * @return
+	 */
+	public int getFrame ()
 	{
 		return frame;
 	}
 
-	public static Image[] loadImage(String file) throws IOException
+	/**
+	 *
+	 * @param file
+	 *
+	 * @return
+	 *
+	 * @throws IOException
+	 */
+	public static Image[] loadImage (String file) throws IOException
 	{
-		BufferedImage img = ImageIO.read(new File(file));
-		Image[] tmp = new Image[img.getWidth() / SupaMobstaBros.TILE_WIDTH];
-		for (int i = 0; i < (img.getWidth() / SupaMobstaBros.TILE_WIDTH); i++)
+		BufferedImage img = ImageIO.read (new File (file));
+		Image[] tmp = new Image[img.getWidth () / SupaMobstaBros.TILE_WIDTH];
+		for (int i = 0; i < (img.getWidth () / SupaMobstaBros.TILE_WIDTH); i++)
 		{
-			tmp[i] = img.getSubimage(i * SupaMobstaBros.TILE_WIDTH, 0, SupaMobstaBros.TILE_WIDTH, img.getHeight());
+			tmp[i] = img.getSubimage (i * SupaMobstaBros.TILE_WIDTH, 0, SupaMobstaBros.TILE_WIDTH, img.getHeight ());
 		}
 		return tmp;
 	}
 
-	public int[][][] getTileCodes()
+	/**
+	 *
+	 * @return
+	 */
+	public int[][][] getTileCodes ()
 	{
-		return getTileCodes();
+		if (currLevelCodes != null)
+		{
+			return currLevelCodes.clone ();
+		}
+		else
+		{
+			throw new NullPointerException ("LevelTiles NULL!");
+		}
 	}
 
-	public void repaint()
+	/**
+	 *
+	 */
+	public void repaint ()
 	{
-		setFrame(frame);
+		setFrame (frame);
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	@Override
+	public Player clone ()
+	{
+		Player p = new Player ()
+		{
+		};
+		p.setFrames (this.getFrames ());
+		p.setFrame (this.getFrame ());
+		p.setLevelTiles (this.getTileCodes ());
+		p.setLocation (this.getX (), this.getY ());
+		return p;
+	}
+
+	/**
+	 *
+	 */
+	public void jump ()
+	{
+		if (velocity == 0 && !getSurroundings ()[0])
+		{
+			velocity = JUMP_VEL_START;
+		}
+		//jumping = true;
+	}
+
+	//public void fall()
+	//{
+	//	jump();
+	//	velocity = 0;
+	//}
+	//public boolean getJump()
+	//{
+	//	return jumping;
+	//}
+	/**
+	 *
+	 */
+	public void move ()
+	{
+		if (!getSurroundings ()[2])
+		{
+			velocity -= JUMP_ACCEL;
+			setY ((int) (getY () + velocity));
+		}
+	}
+
+	private boolean[] getSurroundings ()
+	{
+		//System.out.println(currLevelCodes);
+		// above, right, below, left
+		boolean[] surrounds = new boolean[4];
+		int[][][] tiles = getTileCodes ();
+		if (getY () / SupaMobstaBros.TILE_HEIGHT >= SupaMobstaBros.TILE_HEIGHT)
+		{
+			surrounds[0] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT)][2] > 0);
+		}
+		if (getX () / SupaMobstaBros.TILE_WIDTH + 1 < tiles.length)
+		{
+			surrounds[1] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT)][2] > 0);
+		}
+		surrounds[2] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT)][2] > 0);
+		if (getX () / SupaMobstaBros.TILE_WIDTH - 1 > 0)
+		{
+			surrounds[3] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH - 1][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT)][2] > 0);
+		}
+
+		return surrounds;
 	}
 }
