@@ -155,12 +155,11 @@ public final class Level
 				if (players[i] != null)
 				{
 					players[i].setLocation(i * TILE_WIDTH, enemyY * TILE_HEIGHT);
+					players[i].setLevelTiles(levelCodes);
 					if (players[i] instanceof MobstaTux && mainTux == null)
 					{
-
-						mainTux = players[i].clone();
+						mainTux = players[i];
 					}
-					players[i].setLevelTiles(levelCodes.clone());
 				}
 				levelTiles[i] = currCol;
 			}

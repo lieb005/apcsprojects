@@ -53,7 +53,8 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 	 *
 	 */
 	WALK = 4;
-	private Timer drawer = new Timer(1000 / 2, this);
+	private final static int time = 1000 / 24;
+	private Timer drawer = new Timer(time, this);
 
 	SupaMobstaBros() throws FileNotFoundException
 	{

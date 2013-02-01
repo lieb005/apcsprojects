@@ -30,17 +30,20 @@ public abstract class Player
 	private int frame = 0;
 	// Level we are in
 	private int[][][] currLevelCodes;
-	/** only jump 5 blocks hight (from the top)
-	
+	/**
+	 * only jump 5 blocks hight (from the top)
+	 *
 	 *
 	 */
 	public static final int JUMP_LENGTH = SupaMobstaBros.TILE_HEIGHT * 5;
-	/** can only jump 5 blocks horizontally
-	
+	/**
+	 * can only jump 5 blocks horizontally
+	 *
 	 *
 	 */
 	public static final int JUMP_MAX = SupaMobstaBros.TILE_HEIGHT * 5;
-	/** the number of steps to do a jump in
+	/**
+	 * the number of steps to do a jump in
 	 *
 	 */
 	public static final int JUMP_STEPS = JUMP_LENGTH / SupaMobstaBros.RUN;
@@ -48,18 +51,21 @@ public abstract class Player
 	 * Max Acceleration
 	 */
 	public static final int JUMP_ACCEL = 4;
-	/** Starting Velocity
-	
+	/**
+	 * Starting Velocity
+	 *
 	 *
 	 */
 	public static final int JUMP_VEL_START = 20;
-	/** Max Velocity
-	
+	/**
+	 * Max Velocity
+	 *
 	 *
 	 */
 	public static final int JUMP_VEL_MAX = 50;
-	/** where to start the the jump
-	
+	/**
+	 * where to start the the jump
+	 *
 	 *
 	 */
 	public static final int JUMP_START = JUMP_MAX;
@@ -145,8 +151,9 @@ public abstract class Player
 	}
 
 	/**
+	 * Returns X coordinate
 	 *
-	 * @return
+	 * @return X value
 	 */
 	public int getX ()
 	{
@@ -154,8 +161,9 @@ public abstract class Player
 	}
 
 	/**
+	 * Returns Y coordinate
 	 *
-	 * @return
+	 * @return Y value
 	 */
 	public int getY ()
 	{
@@ -308,6 +316,7 @@ public abstract class Player
 		}
 		else
 		{
+			//System.out.println (currLevelCodes);
 			throw new NullPointerException ("LevelTiles NULL!");
 		}
 	}
@@ -322,23 +331,6 @@ public abstract class Player
 
 	/**
 	 *
-	 * @return
-	 */
-	@Override
-	public Player clone ()
-	{
-		Player p = new Player ()
-		{
-		};
-		p.setFrames (this.getFrames ());
-		p.setFrame (this.getFrame ());
-		p.setLevelTiles (this.getTileCodes ());
-		p.setLocation (this.getX (), this.getY ());
-		return p;
-	}
-
-	/**
-	 *
 	 */
 	public void jump ()
 	{
@@ -349,23 +341,16 @@ public abstract class Player
 		//jumping = true;
 	}
 
-	//public void fall()
-	//{
-	//	jump();
-	//	velocity = 0;
-	//}
-	//public boolean getJump()
-	//{
-	//	return jumping;
-	//}
 	/**
 	 *
 	 */
 	public void move ()
 	{
+		System.out.println (getSurroundings ()[2]);
 		if (!getSurroundings ()[2])
 		{
-			velocity -= JUMP_ACCEL;
+			velocity += JUMP_ACCEL;
+			if (velocity > 0);
 			setY ((int) (getY () + velocity));
 		}
 	}
@@ -378,18 +363,21 @@ public abstract class Player
 		int[][][] tiles = getTileCodes ();
 		if (getY () / SupaMobstaBros.TILE_HEIGHT >= SupaMobstaBros.TILE_HEIGHT)
 		{
-			surrounds[0] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT)][2] > 0);
+			surrounds[0] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT)][1] > 0);
 		}
-		if (getX () / SupaMobstaBros.TILE_WIDTH + 1 < tiles.length)
+		if ((getX () / SupaMobstaBros.TILE_WIDTH) < tiles.length - 1)
 		{
-			surrounds[1] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT)][2] > 0);
+			surrounds[1] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT)][1] > 0);
 		}
-		surrounds[2] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT)][2] > 0);
+		surrounds[2] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT)][1] > 0);
 		if (getX () / SupaMobstaBros.TILE_WIDTH - 1 > 0)
 		{
-			surrounds[3] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH - 1][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT)][2] > 0);
+			surrounds[3] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH - 1][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT)][1] > 0);
 		}
-
+		for (boolean b : surrounds)
+		{
+			System.out.println (b);
+		}
 		return surrounds;
 	}
 }
