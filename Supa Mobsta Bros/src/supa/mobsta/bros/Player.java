@@ -361,7 +361,7 @@ public abstract class Player
 		// above, right, below, left
 		boolean[] surrounds = new boolean[4];
 		int[][][] tiles = getTileCodes ();
-		if (getY () / SupaMobstaBros.TILE_HEIGHT >= SupaMobstaBros.TILE_HEIGHT)
+		if (getY () / SupaMobstaBros.TILE_HEIGHT < SupaMobstaBros.TILE_HEIGHT)
 		{
 			surrounds[0] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT)][1] > 0);
 		}

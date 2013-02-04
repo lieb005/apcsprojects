@@ -17,12 +17,13 @@ import supa.mobsta.bros.SupaMobstaBros;
  */
 public class MobstaTux extends GoodGuy
 {
-
+	private boolean mainTuxness;
 	/**
 	 *
 	 */
-	public MobstaTux()
+	public MobstaTux(boolean isItCouldItBe___ItIs__MainTux)
 	{
+		mainTuxness = isItCouldItBe___ItIs__MainTux;
 		try
 		{
 			setFrames(loadImage("src/supa/mobsta/img/Tux.png"));
@@ -54,6 +55,10 @@ public class MobstaTux extends GoodGuy
 			f.setVisible(true);
 		}
 	}
+	public MobstaTux()
+	{
+		this(true);
+	}
 
 	/**
 	 *
@@ -63,5 +68,9 @@ public class MobstaTux extends GoodGuy
 	{
 		super.repaint();
 		move();
+	}
+	public boolean isMainTux()
+	{
+		return mainTuxness;
 	}
 }
