@@ -346,7 +346,7 @@ public abstract class Player
 	 */
 	public void move ()
 	{
-		System.out.println (getSurroundings ()[2]);
+		//System.out.println (getSurroundings ()[2]);
 		if (!getSurroundings ()[2])
 		{
 			velocity += JUMP_ACCEL;
@@ -359,24 +359,40 @@ public abstract class Player
 	{
 		//System.out.println(currLevelCodes);
 		// above, right, below, left
-		boolean[] surrounds = new boolean[4];
+		boolean[] surrounds = new boolean[]
+		{
+			false, false, false, false
+		};
 		int[][][] tiles = getTileCodes ();
-		if (getY () / SupaMobstaBros.TILE_HEIGHT < SupaMobstaBros.TILE_HEIGHT)
+
+		if (getY () / SupaMobstaBros.TILE_HEIGHT - 1 > SupaMobstaBros.TILE_HEIGHT)
 		{
-			surrounds[0] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT)][1] > 0);
+			surrounds[0] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT) - 1][1] > 0);
 		}
-		if ((getX () / SupaMobstaBros.TILE_WIDTH) < tiles.length - 1)
+		if ((getX () / SupaMobstaBros.TILE_WIDTH) + 1 < tiles.length)
 		{
-			surrounds[1] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT)][1] > 0);
+			surrounds[1] = (tiles[(getX () / SupaMobstaBros.TILE_WIDTH) + 1][ Math.min (SupaMobstaBros.SCREEN_HEIGHT - 1, (getY () / SupaMobstaBros.TILE_HEIGHT))][1] > 0);
 		}
-		surrounds[2] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT)][1] > 0);
+		if ((getY () / SupaMobstaBros.TILE_HEIGHT) + 1 < SupaMobstaBros.SCREEN_HEIGHT - 1)
+		{
+			//System.out.println ((getY () / SupaMobstaBros.TILE_HEIGHT) + 1);
+			//System.out.println (SupaMobstaBros.SCREEN_HEIGHT - 1);
+			if (false)
+			{
+				surrounds[2] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT) + 1][1] > 0);
+			}
+			else
+			{
+				surrounds[2] = true;
+			}
+		}
 		if (getX () / SupaMobstaBros.TILE_WIDTH - 1 > 0)
 		{
-			surrounds[3] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH - 1][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT)][1] > 0);
+			surrounds[3] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH - 1][ Math.min (SupaMobstaBros.SCREEN_HEIGHT - 1, (getY () / SupaMobstaBros.TILE_HEIGHT))][1] > 0);
 		}
 		for (boolean b : surrounds)
 		{
-			System.out.println (b);
+			//System.out.println (b);
 		}
 		return surrounds;
 	}

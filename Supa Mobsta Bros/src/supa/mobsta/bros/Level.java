@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.awt.image.RasterFormatException;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -49,11 +50,14 @@ public final class Level
 	private Player[] players;
 	private Player mainTux = null;
 	private static Image[][] tiles = null;
+	// current location of tux
 	private int currX = 0;
 	/**
 	 *
 	 */
 	public static final boolean DEBUG = false;
+	// have we gotten to the end yet?
+	public boolean win;
 
 	/**
 	 * This Creates a level from the specified Data with the given name.
@@ -261,41 +265,45 @@ public final class Level
 	}
 
 	/**
+	 * Get a segment of the level
 	 *
 	 * @param startx
 	 *
-	 * @return
+	 * @return The segment starting at location "startx"
 	 */
 	public BufferedImage getSegment (int startx)
 	{
 		BufferedImage ret;
 		int x;
-		x = Math.min (Math.max (startx, 0), getFull ().getWidth () - TILE_WIDTH);
+		x = Math.min (Math.max (startx, 0), getFull ().getWidth () - SCREEN_WIDTH * TILE_WIDTH);
 		if (getFull ().getWidth () >= TILE_WIDTH * SCREEN_WIDTH)
 		{
-			if (getFull ().getWidth () - getCurrX () >= TILE_WIDTH * SCREEN_WIDTH)
+			if (getFull ().getWidth () - x >= TILE_WIDTH * SCREEN_WIDTH)
 			{
-				ret = getFull ().getSubimage (getCurrX (), 0, TILE_WIDTH * SCREEN_WIDTH, TILE_HEIGHT * SCREEN_HEIGHT);
+				ret = getFull ().getSubimage (x, 0, TILE_WIDTH * SCREEN_WIDTH, TILE_HEIGHT * SCREEN_HEIGHT);
 			}
 			else
 			{
 				x = getFull ().getWidth () - TILE_WIDTH * SCREEN_WIDTH;
-				ret = getFull ().getSubimage (getCurrX (), 0, TILE_WIDTH * SCREEN_WIDTH, TILE_HEIGHT * SCREEN_HEIGHT);
+				ret = getFull ().getSubimage (x, 0, TILE_WIDTH * SCREEN_WIDTH, TILE_HEIGHT * SCREEN_HEIGHT);
 			}
 		}
 		else
 		{
-			x = 0;
 			ret = getFull ();
 		}
-		// TODO need to make it so that the players draw in the right places, not off-screen
-		for (int i = (x / TILE_WIDTH); i < ret.getWidth () / TILE_WIDTH; i++)
-		{
-			if (players[i] != null)
-			{
-				players[i].repaint ();
-			}
-		}
+		/*
+		 * // TODO need to make it so that the players draw in the right
+		 * places,
+		 * not off-screen
+		 * for (int i = (x / TILE_WIDTH); i < ret.getWidth () / TILE_WIDTH; i++)
+		 * {
+		 * if (players[i] != null)
+		 * {
+		 * players[i].repaint ();
+		 * }
+		 * }
+		 */
 		//mainTux.setX(x + (SCREEN_WIDTH / 2) * TILE_WIDTH);
 		return ret;
 	}
@@ -356,7 +364,7 @@ public final class Level
 	 *
 	 * @param amount Positive = move the view to the right, negative = right.
 	 *
-	 * @return The new View of the image
+	 * @return The new View of the level(ish)
 	 */
 	public BufferedImage move (int amount)
 	{
@@ -364,8 +372,9 @@ public final class Level
 		{
 			currX += amount;
 		}
+		mainTux.setX (currX);
 		// padded so that Tux is Centered
-		view = getSegment (getCurrX () - SCREEN_WIDTH * TILE_WIDTH / 2);
+		view = getSegment (getStartX ());
 		return view;
 	}
 
@@ -376,7 +385,8 @@ public final class Level
 	public void setLocation (int x)
 	{
 		currX = x;
-		getSegment (getCurrX () - SCREEN_WIDTH * TILE_WIDTH);
+		// so that we get the view of the level, not tux
+		getSegment (getStartX ());
 	}
 
 	/**
@@ -394,11 +404,11 @@ public final class Level
 		Graphics g = buffer.getGraphics ();
 		g.drawImage (view, 0, 0, null);
 		//g.drawImage(mainTux.getImage(), mainTux.getX(), mainTux.getY(), null);
-		g.drawImage (drawPlayers (), 0, 0, null);
+		g.drawImage (drawPlayers (getStartX ()), 0, 0, null);
 		return buffer.getSubimage (0, 0, buffer.getWidth (), buffer.getHeight ());
 	}
 
-	private BufferedImage drawPlayers ()
+	private BufferedImage drawPlayers (int startx)
 	{
 		BufferedImage ret = new BufferedImage (TILE_WIDTH * SCREEN_WIDTH, TILE_HEIGHT * SCREEN_HEIGHT, BufferedImage.TYPE_INT_ARGB_PRE);
 		Graphics g = ret.getGraphics ();
@@ -412,18 +422,59 @@ public final class Level
 		}
 		g.fillRect (0, 0, ret.getWidth (), ret.getHeight ());
 		g.setColor (new Color (0, 0, 0, 255));
-		for (Player player : players)
+		Player player;
+		try
 		{
-			if (player != null)
+			for (int i = startx / TILE_WIDTH; i < startx / TILE_WIDTH + SCREEN_WIDTH + 1; i++)
 			{
-				//player.setFrame(0);
-				//if (player.getX() >= ((int) (getCurrX () / TILE_WIDTH) * TILE_WIDTH)*SCREEN_WIDTH && player.getX() < ((int) (getCurrX () / TILE_WIDTH + 1) * TILE_WIDTH)*SCREEN_WIDTH)
-				//{
-				g.drawImage (player.getImage (), player.getX (), player.getY (), player.getWidth (), player.getHeight (), null);
-				//}
+				player = players[i];
+				if (player != null)
+				{
+					//player.setFrame(0);
+					//if (player.getX() >= ((int) (getCurrX () / TILE_WIDTH) * TILE_WIDTH)*SCREEN_WIDTH && player.getX() < ((int) (getCurrX () / TILE_WIDTH + 1) * TILE_WIDTH)*SCREEN_WIDTH)
+					//{
+
+					// this number gets the location to draw the player at
+					/*
+					 * EnemyX = 6, startx = 4, screenw = 3
+					 *
+					 * 012
+					 * |||
+					 * | E |
+					 * |---|
+					 * 456
+					 * startx = 4
+					 * (Ex - startx) = 2
+					 *
+					 * | E |
+					 * |---|
+					 * 567
+					 * startx = 5
+					 * (Ex - startx) = 1
+					 *
+					 *
+					 * |E |
+					 * |---|
+					 * 678
+					 * startx = 6
+					 * (Ex - startx) = 0
+					 *
+					 *
+					 */
+					int dx = (player.getX () - getStartX ());
+					g.drawImage (player.getImage (), dx, player.getY (), player.getWidth (), player.getHeight (), null);
+					//}
+				}
+			}
+			g.drawImage (mainTux.getImage (), getCurrX () - getStartX (), mainTux.getY (), mainTux.getWidth (), mainTux.getHeight (), null);
+		} catch (IndexOutOfBoundsException r)
+		{
+			if (Integer.decode (r.getMessage ()) > SCREEN_HEIGHT)
+			{
+				win = true;
 			}
 		}
-		return ret.getSubimage (getCurrX () - SCREEN_WIDTH * TILE_WIDTH / 2, 0, SCREEN_WIDTH * TILE_WIDTH, SCREEN_HEIGHT * TILE_HEIGHT);
+		return ret;
 	}
 
 	/**
@@ -467,6 +518,27 @@ public final class Level
 		else
 		{
 			ret = currX;
+		}
+		currX = ret;
+		return ret;
+	}
+
+	private int getStartX ()
+	{
+
+		int ret;
+		int cX = getCurrX () - SCREEN_WIDTH * TILE_WIDTH / 2;
+		if (cX > (getFull ().getWidth () - SCREEN_WIDTH * TILE_WIDTH))
+		{
+			ret = (getFull ().getWidth () - SCREEN_WIDTH * TILE_WIDTH);
+		}
+		else if (cX < 0)
+		{
+			ret = 0;
+		}
+		else
+		{
+			ret = cX;
 		}
 		return ret;
 	}
