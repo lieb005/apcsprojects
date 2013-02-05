@@ -11,6 +11,8 @@ import java.awt.Graphics;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
@@ -23,7 +25,7 @@ import javax.swing.Timer;
  *
  * @author 314Chan Telecommunications, LLC.
  */
-public class SupaMobstaBros extends Canvas implements KeyListener, ActionListener
+public class SupaMobstaBros extends Canvas implements KeyListener, ActionListener, FocusListener
 {
 
 	/**
@@ -52,7 +54,7 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 	/**
 	 *
 	 */
-	public static final int RUN = 16,
+	public static final int RUN = 12,
 			/**
 			 *
 			 */
@@ -350,5 +352,16 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 		{
 			currLevel++;
 		}
+	}
+
+	@Override
+	public void focusGained (FocusEvent fe)
+	{
+	}
+
+	@Override
+	public void focusLost (FocusEvent fe)
+	{
+		keys = new boolean[]{false, false, false, false, false, false};
 	}
 }

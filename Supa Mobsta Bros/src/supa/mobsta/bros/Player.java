@@ -365,6 +365,21 @@ public abstract class Player
 			velocity = 0;
 			setY ((int) (getY () / SupaMobstaBros.TILE_HEIGHT) * SupaMobstaBros.TILE_HEIGHT);
 		}
+		//if (getSurroundings ()[0] && velocity < 0)
+		//{
+		//	fall ();
+		//}
+	}
+
+	public boolean[] canMove ()
+	{
+		boolean[] ret = new boolean[]
+		{
+			false, false
+		};
+		ret[0] = getSurroundings ()[1];
+		ret[1] = getSurroundings ()[3];
+		return ret;
 	}
 
 	private boolean[] getSurroundings ()
@@ -380,15 +395,15 @@ public abstract class Player
 		{
 			if (getX () / SupaMobstaBros.TILE_WIDTH >= 0 && getX () / SupaMobstaBros.TILE_WIDTH < tiles.length)
 			{
-		//above
+				//above
 				if (getY () / SupaMobstaBros.TILE_HEIGHT - 1 > SupaMobstaBros.TILE_HEIGHT)
 				{
 					surrounds[0] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT) - 1][1] > 0);
 				}
 				//right
-				if ((getX () / SupaMobstaBros.TILE_WIDTH) + 1 < tiles.length)
+				if ((getX () / SupaMobstaBros.TILE_WIDTH) + 2 < tiles.length)
 				{
-					surrounds[1] = (tiles[(getX () / SupaMobstaBros.TILE_WIDTH) + 1][ Math.min (SupaMobstaBros.SCREEN_HEIGHT - 1, (getY () / SupaMobstaBros.TILE_HEIGHT))][1] > 0);
+					surrounds[1] = (tiles[(getX () / SupaMobstaBros.TILE_WIDTH) + 2][ Math.min (SupaMobstaBros.SCREEN_HEIGHT - 1, (getY () / SupaMobstaBros.TILE_HEIGHT))][1] > 0);
 				}
 				//below
 				if ((getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT) < SupaMobstaBros.SCREEN_HEIGHT)
@@ -426,12 +441,12 @@ public abstract class Player
 				}
 			}
 		}
-		/*
-		 * for (boolean b : surrounds)
-		 * {
-		 * //System.out.println (b);
-		 * }
-		 */
+
+		/*System.out.println ("\nNew vals");
+		for (boolean b : surrounds)
+		{
+			System.out.println (b);
+		}*/
 		return surrounds;
 	}
 }

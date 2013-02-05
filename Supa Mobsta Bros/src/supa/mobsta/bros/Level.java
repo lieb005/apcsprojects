@@ -367,11 +367,31 @@ public final class Level
 	 * @return The new View of the level(ish)
 	 */
 	public BufferedImage move (int amount)
-	{
+	{/*
+		 * if (Math.signum (amount) == -1)
+		 * {
+		 * if (mainTux.canMove ()[1])
+		 * {
+		 * if (!((getCurrX () + amount) < 0 && (getCurrX () + amount) > (getFull
+		 * ().getWidth () - TILE_WIDTH)))
+		 * {
+		 * currX += amount;
+		 * }
+		 * }
+		 * }
+		 * else if (Math.signum (amount) == 1)
+		 * {
+		 * if (mainTux.canMove ()[0])
+		 * {
+		 */
 		if (!((getCurrX () + amount) < 0 && (getCurrX () + amount) > (getFull ().getWidth () - TILE_WIDTH)))
 		{
 			currX += amount;
 		}
+		/*
+		 * }
+		 * }
+		 */
 		mainTux.setX (getCurrX ());
 		// padded so that Tux is Centered
 		if (getCurrX () + TILE_WIDTH >= getFull ().getWidth ())
