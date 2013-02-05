@@ -56,7 +56,8 @@ public final class Level
 	 */
 	public static final boolean DEBUG = false;
 	// have we gotten to the end yet?
-	public boolean win;
+	public boolean win = false;
+	public boolean lose = false;
 
 	/**
 	 * This Creates a level from the specified Data with the given name.
@@ -466,6 +467,10 @@ public final class Level
 				g.drawImage (player.getImage (), dx, player.getY (), player.getWidth (), player.getHeight (), null);
 				//}
 			}
+		}
+		if (mainTux.getY () >= SCREEN_HEIGHT * TILE_HEIGHT - 1)
+		{
+			lose = true;
 		}
 		g.drawImage (mainTux.getImage (), getCurrX () - getStartX (), mainTux.getY (), mainTux.getWidth (), mainTux.getHeight (), null);
 		return ret;

@@ -17,59 +17,63 @@ import supa.mobsta.bros.SupaMobstaBros;
  */
 public class MobstaTux extends GoodGuy
 {
+
 	private boolean mainTuxness;
+
 	/**
 	 *
 	 */
-	public MobstaTux(boolean isItCouldItBe___ItIs__MainTux)
+	public MobstaTux (boolean isItCouldItBe___ItIs__MainTux)
 	{
 		mainTuxness = isItCouldItBe___ItIs__MainTux;
 		try
 		{
-			setFrames(loadImage("src/supa/mobsta/img/Tux.png"));
+			setFrames (loadImage ("src/supa/mobsta/img/Tux.png"));
 			//setFrame(0);
 			//setSize(32, 32);
 		} catch (IOException ex)
 		{
-			ex.printStackTrace();
+			ex.printStackTrace ();
 		}
 		if (Level.DEBUG)
 		{
-			JFrame f = new JFrame("Tux");
-			f.setSize(300, 300);
-			f.add(new Canvas()
+			JFrame f = new JFrame ("Tux");
+			f.setSize (300, 300);
+			f.add (new Canvas ()
 			{
 				@Override
-				public void paint(Graphics g)
+				public void paint (Graphics g)
 				{
-					super.paint(g);
+					super.paint (g);
 					for (int i = 0; i < 5; i++)
 					{
-						g.drawImage(getFrames()[i], i * (SupaMobstaBros.TILE_WIDTH + 1), (SupaMobstaBros.TILE_WIDTH), null);
+						g.drawImage (getFrames ()[i], i * (SupaMobstaBros.TILE_WIDTH + 1), (SupaMobstaBros.TILE_WIDTH), null);
 					}
 
 				}
 			});
-			f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			f.pack();
-			f.setVisible(true);
+			f.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
+			f.pack ();
+			f.setVisible (true);
 		}
 	}
-	public MobstaTux()
+
+	public MobstaTux ()
 	{
-		this(true);
+		this (true);
 	}
 
 	/**
 	 *
 	 */
 	@Override
-	public void repaint()
+	public void repaint ()
 	{
-		super.repaint();
-		move();
+		super.repaint ();
+		move ();
 	}
-	public boolean isMainTux()
+
+	public boolean isMainTux ()
 	{
 		return mainTuxness;
 	}

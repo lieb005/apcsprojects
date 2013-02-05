@@ -13,7 +13,7 @@ import javax.swing.JApplet;
 public class LevelDesigner extends JApplet
 {
 
-	public static void main(String[] args)
+	public static void main (String[] args)
 	{
 	}
 }

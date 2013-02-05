@@ -16,10 +16,11 @@ public abstract class GoodGuy extends Player
 	/**
 	 *
 	 * @param type
+	 *
 	 * @return
 	 */
-	public static GoodGuy createGoodGuy(int type)
+	public static GoodGuy createGoodGuy (int type)
 	{
-		return (GoodGuy) Player.createPlayer(type);
+		return (GoodGuy) Player.createPlayer (type);
 	}
 }

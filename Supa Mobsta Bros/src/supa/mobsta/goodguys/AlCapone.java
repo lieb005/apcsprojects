@@ -14,8 +14,8 @@ public class AlCapone extends GoodGuy
 {
 
 	@Override
-	public BufferedImage setFrame(int frame)
+	public BufferedImage setFrame (int frame)
 	{
-		throw new UnsupportedOperationException("Not supported yet.");
+		throw new UnsupportedOperationException ("Not supported yet.");
 	}
 }

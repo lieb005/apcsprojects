@@ -13,8 +13,8 @@ import supa.mobsta.bros.Player;
 public abstract class Enemy extends Player
 {
 
-	public static Enemy createEnemy(int type)
+	public static Enemy createEnemy (int type)
 	{
-		return (Enemy) Player.createPlayer(type);
+		return (Enemy) Player.createPlayer (type);
 	}
 }

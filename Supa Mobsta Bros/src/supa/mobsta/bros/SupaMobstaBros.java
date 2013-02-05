@@ -52,13 +52,19 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 	/**
 	 *
 	 */
-	public static final int RUN = 8,
+	public static final int RUN = 16,
 			/**
 			 *
 			 */
-			WALK = 4;
+			WALK = 8;
 	private final static int time = 1000 / 24;
 	private Timer drawer = new Timer (time, this);
+	// up, down, left, right, jump, shift
+	private boolean[] keys = new boolean[]
+	{
+		false, false, false, false, false, false
+	};
+	private boolean oldSpace = false;
 
 	SupaMobstaBros () throws FileNotFoundException
 	{
@@ -109,45 +115,27 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 		{
 			case KeyEvent.VK_LEFT:
 				//move Left
-				if ((ke.getModifiersEx () & KeyEvent.SHIFT_DOWN_MASK) != 0)
-				{
-					//run left
-					currWorld.getLevel (currLevel).move (-RUN);
-				}
-				else
-				{
-					//walk Left
-					currWorld.getLevel (currLevel).move (-WALK);
-				}
+				keys[2] = true;
 				break;
 			case KeyEvent.VK_RIGHT:
 				//move Right
-				if ((ke.getModifiersEx () & KeyEvent.SHIFT_DOWN_MASK) != 0)
-				{
-					//run Right
-					currWorld.getLevel (currLevel).move (RUN);
-				}
-				else
-				{
-					//walk Right
-					currWorld.getLevel (currLevel).move (WALK);
-				}
+				keys[3] = true;
 				break;
 			case KeyEvent.VK_DOWN:
 				//duck or pipe
+				keys[1] = true;
 				break;
 			case KeyEvent.VK_SPACE:
-				currWorld.getLevel (currLevel).getTux ().jump ();
+				oldSpace = keys[4];
+				keys[4] = true;
 				break;
 		}
+		keys[5] = ke.isShiftDown ();
 		if (ke.getKeyChar () - 0x30 >= 0 && ke.getKeyChar () - 0x30 < 10)
 		{
 			currLevel = ke.getKeyChar () - 0x30;
 		}
-		if (currWorld.getLevel (currLevel).win)
-		{
-			currLevel++;
-		}
+
 		repaint ();
 	}
 
@@ -161,17 +149,26 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 		switch (ke.getKeyCode ())
 		{
 			case KeyEvent.VK_LEFT:
+				keys[2] = false;
+				break;
 			case KeyEvent.VK_RIGHT:
-				//stop
+				keys[3] = false;
+				break;
+			case KeyEvent.VK_UP:
+				//stand up
+				keys[0] = true;
 				break;
 			case KeyEvent.VK_DOWN:
 				//stand up
+				keys[1] = true;
 				break;
 			case KeyEvent.VK_SPACE:
 				// end Jump
-				//currWorld.getLevel(currLevel).getTux().fall();
+				oldSpace = keys[5];
+				keys[5] = false;
 				break;
 		}
+		keys[5] = ke.isShiftDown ();
 		repaint ();
 	}
 
@@ -300,10 +297,58 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 		{
 			win ();
 		}
-		if (currWorld.getLevel (currLevel).getTux ().lose)
+		if (currWorld.getLevel (currLevel).lose)
 		{
 			lose ();
 		}
 		repaint ();
+		//up
+		if (keys[0]);
+		//down
+		if (keys[1]);
+		//left
+		if (keys[2])
+		{
+			if (keys[5])
+			{
+				//run left
+				currWorld.getLevel (currLevel).move (-RUN);
+			}
+			else
+			{
+				//walk Left
+				currWorld.getLevel (currLevel).move (-WALK);
+			}
+		}
+		//right
+		if (keys[3])
+		{
+			if (keys[5])
+			{
+				//run Right
+				currWorld.getLevel (currLevel).move (RUN);
+			}
+			else
+			{
+				//walk Right
+				currWorld.getLevel (currLevel).move (WALK);
+			}
+		}
+		//space
+		if (keys[4])
+		{
+			System.out.println ("space pressed");
+			currWorld.getLevel (currLevel).getTux ().jump ();
+		}
+		//else if (oldSpace != keys[4])
+		else
+		{
+			System.out.println ("space not pressed");
+			currWorld.getLevel (currLevel).getTux ().fall ();
+		}
+		if (currWorld.getLevel (currLevel).win)
+		{
+			currLevel++;
+		}
 	}
 }
