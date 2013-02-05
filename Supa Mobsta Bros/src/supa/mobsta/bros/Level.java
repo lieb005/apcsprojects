@@ -9,7 +9,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.awt.image.RasterFormatException;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -372,8 +371,12 @@ public final class Level
 		{
 			currX += amount;
 		}
-		mainTux.setX (currX);
+		mainTux.setX (getCurrX ());
 		// padded so that Tux is Centered
+		if (getCurrX () + TILE_WIDTH >= getFull ().getWidth ())
+		{
+			win = true;
+		}
 		view = getSegment (getStartX ());
 		return view;
 	}
@@ -423,57 +426,48 @@ public final class Level
 		g.fillRect (0, 0, ret.getWidth (), ret.getHeight ());
 		g.setColor (new Color (0, 0, 0, 255));
 		Player player;
-		try
+		for (int i = startx / TILE_WIDTH; i < ((startx + TILE_WIDTH - 1) / TILE_WIDTH) + SCREEN_WIDTH; i++)
 		{
-			for (int i = startx / TILE_WIDTH; i < startx / TILE_WIDTH + SCREEN_WIDTH + 1; i++)
+			player = players[i];
+			if (player != null)
 			{
-				player = players[i];
-				if (player != null)
-				{
-					//player.setFrame(0);
-					//if (player.getX() >= ((int) (getCurrX () / TILE_WIDTH) * TILE_WIDTH)*SCREEN_WIDTH && player.getX() < ((int) (getCurrX () / TILE_WIDTH + 1) * TILE_WIDTH)*SCREEN_WIDTH)
-					//{
+				//player.setFrame(0);
+				//if (player.getX() >= ((int) (getCurrX () / TILE_WIDTH) * TILE_WIDTH)*SCREEN_WIDTH && player.getX() < ((int) (getCurrX () / TILE_WIDTH + 1) * TILE_WIDTH)*SCREEN_WIDTH)
+				//{
 
-					// this number gets the location to draw the player at
+				// this number gets the location to draw the player at
 					/*
-					 * EnemyX = 6, startx = 4, screenw = 3
-					 *
-					 * 012
-					 * |||
-					 * | E |
-					 * |---|
-					 * 456
-					 * startx = 4
-					 * (Ex - startx) = 2
-					 *
-					 * | E |
-					 * |---|
-					 * 567
-					 * startx = 5
-					 * (Ex - startx) = 1
-					 *
-					 *
-					 * |E |
-					 * |---|
-					 * 678
-					 * startx = 6
-					 * (Ex - startx) = 0
-					 *
-					 *
-					 */
-					int dx = (player.getX () - getStartX ());
-					g.drawImage (player.getImage (), dx, player.getY (), player.getWidth (), player.getHeight (), null);
-					//}
-				}
-			}
-			g.drawImage (mainTux.getImage (), getCurrX () - getStartX (), mainTux.getY (), mainTux.getWidth (), mainTux.getHeight (), null);
-		} catch (IndexOutOfBoundsException r)
-		{
-			if (Integer.decode (r.getMessage ()) > SCREEN_HEIGHT)
-			{
-				win = true;
+				 * EnemyX = 6, startx = 4, screenw = 3
+				 *
+				 * 012
+				 * |||
+				 * | E |
+				 * |---|
+				 * 456
+				 * startx = 4
+				 * (Ex - startx) = 2
+				 *
+				 * | E |
+				 * |---|
+				 * 567
+				 * startx = 5
+				 * (Ex - startx) = 1
+				 *
+				 *
+				 * |E |
+				 * |---|
+				 * 678
+				 * startx = 6
+				 * (Ex - startx) = 0
+				 *
+				 *
+				 */
+				int dx = (player.getX () - getStartX ());
+				g.drawImage (player.getImage (), dx, player.getY (), player.getWidth (), player.getHeight (), null);
+				//}
 			}
 		}
+		g.drawImage (mainTux.getImage (), getCurrX () - getStartX (), mainTux.getY (), mainTux.getWidth (), mainTux.getHeight (), null);
 		return ret;
 	}
 
@@ -507,13 +501,13 @@ public final class Level
 	public int getCurrX ()
 	{
 		int ret;
-		if (currX > (getFull ().getWidth () - SCREEN_WIDTH * TILE_WIDTH / 2))
+		if (currX > getFull ().getWidth () - TILE_WIDTH)
 		{
-			ret = (getFull ().getWidth () - SCREEN_WIDTH * TILE_WIDTH / 2);
+			ret = (getFull ().getWidth () - TILE_WIDTH);
 		}
-		else if (currX < (SCREEN_WIDTH * TILE_WIDTH / 2))
+		else if (currX < 0)
 		{
-			ret = (SCREEN_WIDTH * TILE_WIDTH / 2);
+			ret = 0;
 		}
 		else
 		{

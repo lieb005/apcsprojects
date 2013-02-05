@@ -56,7 +56,7 @@ public abstract class Player
 	 *
 	 *
 	 */
-	public static final int JUMP_VEL_START = 20;
+	public static final int JUMP_VEL_START = -20;
 	/**
 	 * Max Velocity
 	 *
@@ -77,6 +77,7 @@ public abstract class Player
 	private double velocity = 0;
 	// current jump of player
 	private int currJump = JUMP_START;
+	public boolean lose;
 
 	/**
 	 *
@@ -338,7 +339,6 @@ public abstract class Player
 		{
 			velocity = JUMP_VEL_START;
 		}
-		//jumping = true;
 	}
 
 	/**
@@ -346,12 +346,20 @@ public abstract class Player
 	 */
 	public void move ()
 	{
-		//System.out.println (getSurroundings ()[2]);
 		if (!getSurroundings ()[2])
 		{
 			velocity += JUMP_ACCEL;
-			if (velocity > 0);
+			//if (velocity > 0);
 			setY ((int) (getY () + velocity));
+			if (getY () < SupaMobstaBros.TILE_HEIGHT)
+			{
+				lose = true;
+			}
+		}
+		if (getSurroundings ()[2])
+		{
+			velocity = 0;
+			setY ((int) (getY () / SupaMobstaBros.TILE_HEIGHT) * SupaMobstaBros.TILE_HEIGHT);
 		}
 	}
 
@@ -373,17 +381,22 @@ public abstract class Player
 		{
 			surrounds[1] = (tiles[(getX () / SupaMobstaBros.TILE_WIDTH) + 1][ Math.min (SupaMobstaBros.SCREEN_HEIGHT - 1, (getY () / SupaMobstaBros.TILE_HEIGHT))][1] > 0);
 		}
-		if ((getY () / SupaMobstaBros.TILE_HEIGHT) + 1 < SupaMobstaBros.SCREEN_HEIGHT - 1)
+		if ((getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT) < SupaMobstaBros.SCREEN_HEIGHT)
 		{
-			//System.out.println ((getY () / SupaMobstaBros.TILE_HEIGHT) + 1);
+			//System.out.println ((getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT) + 1);
 			//System.out.println (SupaMobstaBros.SCREEN_HEIGHT - 1);
-			if (false)
+			if (true)
 			{
-				surrounds[2] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT) + 1][1] > 0);
+				surrounds[2] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT)][1] > 0);
 			}
 			else
 			{
 				surrounds[2] = true;
+			}
+			//System.out.println (surrounds[2]);
+			if ((getY () / SupaMobstaBros.TILE_HEIGHT) + 1 > SupaMobstaBros.SCREEN_HEIGHT)
+			{
+				System.out.println ("You lost!");
 			}
 		}
 		if (getX () / SupaMobstaBros.TILE_WIDTH - 1 > 0)

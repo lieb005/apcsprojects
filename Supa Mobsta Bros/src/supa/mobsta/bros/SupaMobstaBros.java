@@ -6,13 +6,17 @@ package supa.mobsta.bros;
 
 import java.awt.Canvas;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.Timer;
 
 /**
@@ -236,7 +240,46 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 	 */
 	public static void lose ()
 	{
-		System.out.println ("You Lose");
+		for (Window w : JFrame.getOwnerlessWindows ())
+		{
+			if (w.getName ().equals ("lose"))
+			{
+				return;
+			}
+		}
+		JFrame f = new JFrame ("You Lose.");
+		JLabel l = new JLabel ("You Lose.");
+		// I set the name so that we don't create more than one of these windows
+		f.setName ("lose");
+		l.setFont (new Font ("Ariel", Font.BOLD, 100 / 6));
+		f.setSize (100, 100);
+		f.add (l);
+		f.setVisible (true);
+
+		System.out.println ("You Lose.");
+	}
+
+	/**
+	 *
+	 */
+	public static void win ()
+	{
+		for (Window w : JFrame.getOwnerlessWindows ())
+		{
+			if (w.getName ().equals ("win"))
+			{
+				return;
+			}
+		}
+		JFrame f = new JFrame ("You Won!");
+		JLabel l = new JLabel ("You Won!");
+		// I set the name so that we don't create more than one of these windows
+		f.setName ("win");
+		l.setFont (new Font ("Ariel", Font.BOLD, 100 / 6));
+		f.setSize (100, 100);
+		f.add (l);
+		f.setVisible (true);
+		System.out.println ("You Win!");
 	}
 
 	/**
@@ -252,6 +295,14 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 			{
 				p.move ();
 			}
+		}
+		if (currWorld.getLevel (currLevel).win)
+		{
+			win ();
+		}
+		if (currWorld.getLevel (currLevel).getTux ().lose)
+		{
+			lose ();
 		}
 		repaint ();
 	}
