@@ -460,28 +460,26 @@ public final class Level
 					/*
 				 * EnemyX = 6, startx = 4, screenw = 3
 				 *
-				 * 012
-				 * |||
-				 * | E |
+				 *  012
+				 *  |||
+				 * |  E|
 				 * |---|
-				 * 456
+				 *  456
 				 * startx = 4
 				 * (Ex - startx) = 2
 				 *
 				 * | E |
 				 * |---|
-				 * 567
+				 *  567
 				 * startx = 5
 				 * (Ex - startx) = 1
 				 *
 				 *
-				 * |E |
+				 * |E  |
 				 * |---|
-				 * 678
+				 *  678
 				 * startx = 6
 				 * (Ex - startx) = 0
-				 *
-				 *
 				 */
 				int dx = (player.getX () - getStartX ());
 				g.drawImage (player.getImage (), dx, player.getY (), player.getWidth (), player.getHeight (), null);

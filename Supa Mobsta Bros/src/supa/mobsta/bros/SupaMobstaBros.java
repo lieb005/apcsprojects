@@ -35,7 +35,7 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 			/**
 			 *
 			 */
-			SCREEN_WIDTH = 12,
+			SCREEN_WIDTH = 24,
 			/**
 			 *
 			 */
@@ -59,7 +59,7 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 			 *
 			 */
 			WALK = 8;
-	private final static int time = 1000 / 24;
+	private final static int time = 1000 / 20;
 	private Timer drawer = new Timer (time, this);
 	// up, down, left, right, jump, shift
 	private boolean[] keys = new boolean[]
@@ -133,11 +133,10 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 				break;
 		}
 		keys[5] = ke.isShiftDown ();
-		if (ke.getKeyChar () - 0x30 >= 0 && ke.getKeyChar () - 0x30 < 10)
+		if (ke.getKeyChar () - 0x2F >= 0 && ke.getKeyChar () - 0x2F < 10)
 		{
-			currLevel = ke.getKeyChar () - 0x30;
+			currLevel = ke.getKeyChar () - 0x2F;
 		}
-
 		repaint ();
 	}
 
@@ -342,12 +341,12 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 			//System.out.println ("space pressed");
 			currWorld.getLevel (currLevel).getTux ().jump ();
 		}
-		else if (oldSpace != keys[4])
+		//else if (oldSpace != keys[4])
 		//else
-		{
+		//{
 			//System.out.println ("space not pressed");
-			currWorld.getLevel (currLevel).getTux ().fall ();
-		}
+		//	currWorld.getLevel (currLevel).getTux ().fall ();
+		//}
 		if (currWorld.getLevel (currLevel).win)
 		{
 			currLevel++;
