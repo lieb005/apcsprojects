@@ -164,8 +164,8 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 				break;
 			case KeyEvent.VK_SPACE:
 				// end Jump
-				oldSpace = keys[5];
-				keys[5] = false;
+				oldSpace = keys[4];
+				keys[4] = false;
 				break;
 		}
 		keys[5] = ke.isShiftDown ();
@@ -340,8 +340,8 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 			System.out.println ("space pressed");
 			currWorld.getLevel (currLevel).getTux ().jump ();
 		}
-		//else if (oldSpace != keys[4])
-		else
+		else if (oldSpace != keys[4])
+		//else
 		{
 			System.out.println ("space not pressed");
 			currWorld.getLevel (currLevel).getTux ().fall ();
