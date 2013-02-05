@@ -1,0 +1,93 @@
+#Grid						Collide?
+
+000 white					no
+001 checkered_box			yes
+002 arnold_palmer			yes
+003 stone					yes
+004 slash_box				yes
+005 white_box				yes
+006 grass_start				yes
+007 grass_middle			yes
+008 grass_end				yes
+009 black_collide			yes
+00A log_start				yes
+00B log_middle				yes
+00C log_end					yes
+00D pipe_top_left			yes
+00C pipe_bottom_left		yes
+00D pipe_top_right			yes
+00E pipe_bottom_right		yes
+00F mystery_coin			yes
+010 mystery_powerup			yes
+011 mystery_star			yes
+012 mystery_life			yes
+013 break					yes
+014 bricks					yes
+015 music					yes
+016 sparkle_top_right		yes
+017 sparkle_top_middle		yes
+018 sparkle_top_right		yes
+019 sparkle_bottom_left		yes
+01A sparkle_bottom_middle	yes
+01B sparkle_bottom_right	yes
+01C sand_island				yes
+01D sand_middle				yes
+01E sand_shallow_bottom_up	yes
+01F sand_shallow_top_up		yes
+020 sand_steep_up			yes
+021 sand_shallow_bot_down	yes
+022 sand_shallow_top_down	yes
+023 sand_steep_down			yes
+024 box_top_left			yes
+025 box_top_middle			yes
+026 box_top_right			yes
+027 box_middle_left			no
+028 box_middle_right		no
+029 box_bottom_left			no
+02A box_bottom_middle		no
+02B box_bottom_right		no
+02C asterisk				yes
+02D coin					no
+02E sparse					no
+02F flat					yes
+030 bush					no
+031 thing_left_white		no
+032 black_non_collide		no
+033 thing_right_white		no
+034 thing_left_black		no
+035 thing_right_blacks		no
+036 cloud_left				no
+037 cloud_right				no
+038 horiz_line_slope		no
+039 horiz_line_straight		no
+03A checker_square			no
+03B checker_slope			no
+03C iron_circle				yes
+03D black_shroom			no
+03E star					no
+03F barber_pole_top			no
+040 barber_shop_middle		no
+041 window_top				no
+042 window_bottom			no
+043 bullet_bill				yes
+044 cannon_up				yes
+045 cannon_down				yes
+
+#Enemies
+
+000 none
+100 goomba
+200 kuppa
+300 flying_kuppa
+400 flower
+500 fireball
+600 spinny_fireballs
+700 bullet_bill
+800 cannon_up
+900 cannon_down
+A00 horiz_transport
+B00 vert_transport
+C00 bowser
+D00 finish
+#E00
+F00 main_player
