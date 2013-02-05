@@ -339,13 +339,13 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 		//space
 		if (keys[4])
 		{
-			System.out.println ("space pressed");
+			//System.out.println ("space pressed");
 			currWorld.getLevel (currLevel).getTux ().jump ();
 		}
 		else if (oldSpace != keys[4])
 		//else
 		{
-			System.out.println ("space not pressed");
+			//System.out.println ("space not pressed");
 			currWorld.getLevel (currLevel).getTux ().fall ();
 		}
 		if (currWorld.getLevel (currLevel).win)
