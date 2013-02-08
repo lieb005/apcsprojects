@@ -50,19 +50,19 @@ public abstract class Player
 	/**
 	 * Max Acceleration
 	 */
-	public static final int JUMP_ACCEL = 4;
+	public static final int JUMP_ACCEL = 3;
 	/**
 	 * Starting Velocity
 	 *
 	 *
 	 */
-	public static final int JUMP_VEL_START = -35;
+	public static final int JUMP_VEL_START = -30;
 	/**
 	 * Max Velocity
 	 *
 	 *
 	 */
-	public static final int JUMP_VEL_MAX = 50;
+	public static final int JUMP_VEL_MAX = 30;
 	/**
 	 * where to start the the jump
 	 *
@@ -352,6 +352,22 @@ public abstract class Player
 	public void move ()
 	{
 		velocity += JUMP_ACCEL;
+		System.out.println (velocity + " old");
+		if (velocity > 0)
+		{
+			if (velocity > JUMP_VEL_MAX)
+			{
+				velocity = JUMP_VEL_MAX;
+			}
+		}
+		if (velocity < 0)
+		{
+			if (velocity < -JUMP_VEL_MAX)
+			{
+				velocity = -JUMP_VEL_MAX;
+			}
+		}
+		System.out.println (velocity + " new\n\n");
 		if (velocity < 0)
 		{
 			setY ((int) (getY () + velocity));
@@ -365,10 +381,10 @@ public abstract class Player
 			velocity = 0;
 			setY ((int) (getY () / SupaMobstaBros.TILE_HEIGHT) * SupaMobstaBros.TILE_HEIGHT);
 		}
-		//if (getSurroundings ()[0] && velocity < 0)
-		//{
-		//	fall ();
-		//}
+		if (getSurroundings ()[0] && velocity < 0)
+		{
+			fall ();
+		}
 	}
 
 	public boolean[] canMove ()
@@ -396,7 +412,7 @@ public abstract class Player
 			if (getX () / SupaMobstaBros.TILE_WIDTH >= 0 && getX () / SupaMobstaBros.TILE_WIDTH < tiles.length)
 			{
 				//above
-				if (getY () / SupaMobstaBros.TILE_HEIGHT - 1 > SupaMobstaBros.TILE_HEIGHT)
+				if (getY () / SupaMobstaBros.TILE_HEIGHT > SupaMobstaBros.TILE_HEIGHT)
 				{
 					surrounds[0] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT) - 1][1] > 0);
 				}
@@ -442,11 +458,11 @@ public abstract class Player
 			}
 		}
 
-		/*System.out.println ("\nNew vals");
+		System.out.println ("\nNew vals");
 		for (boolean b : surrounds)
 		{
 			System.out.println (b);
-		}*/
+		}
 		return surrounds;
 	}
 }
