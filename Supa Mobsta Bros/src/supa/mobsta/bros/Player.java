@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import javax.naming.OperationNotSupportedException;
 import supa.mobsta.goodguys.EndZone;
 import supa.mobsta.goodguys.MobstaTux;
 
@@ -352,7 +353,6 @@ public abstract class Player
 	public void move ()
 	{
 		velocity += JUMP_ACCEL;
-		System.out.println (velocity + " old");
 		if (velocity > 0)
 		{
 			if (velocity > JUMP_VEL_MAX)
@@ -367,7 +367,6 @@ public abstract class Player
 				velocity = -JUMP_VEL_MAX;
 			}
 		}
-		System.out.println (velocity + " new\n\n");
 		if (velocity < 0)
 		{
 			setY ((int) (getY () + velocity));
@@ -385,6 +384,7 @@ public abstract class Player
 		{
 			fall ();
 		}
+		System.out.println (velocity + " new");
 	}
 
 	public boolean[] canMove ()
@@ -458,11 +458,20 @@ public abstract class Player
 			}
 		}
 
-		System.out.println ("\nNew vals");
+		/*System.out.println ("\nNew vals");
 		for (boolean b : surrounds)
 		{
 			System.out.println (b);
-		}
+		}*/
 		return surrounds;
 	}
+	public void walk() throws OperationNotSupportedException
+	{
+		throw new OperationNotSupportedException ("Override walk!!");
+	}
+	public void run() throws OperationNotSupportedException
+	{
+		throw new OperationNotSupportedException ("Override run!!");
+	}
+	
 }

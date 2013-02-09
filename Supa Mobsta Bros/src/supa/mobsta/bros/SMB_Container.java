@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Logger;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
 
@@ -88,10 +89,17 @@ public class SMB_Container extends JApplet
 		getContentPane ().addKeyListener (s);
 		try
 		{
-			AudioClip a = getAudioClip (new URL ("src/supa/mobsta/bros/music.mp3"));
-			a.play ();
+			AudioClip a;
+			File f = new File ("src/music.mid");
+			//System.out.println (f.getAbsolutePath ());
+			URL u = f.toURI ().toURL ();
+			System.out.println (u);
+			System.out.println ("Does the file exist? " + f.exists ());
+			a = newAudioClip (u);
+			a.loop ();
 		} catch (MalformedURLException ex)
 		{
+			System.out.println ("asoichzgjx,hcimbrhceufhci9udfhmhihovgivvrnhz9");
 		}
 	}
 }

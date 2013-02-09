@@ -133,9 +133,9 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 				break;
 		}
 		keys[5] = ke.isShiftDown ();
-		if (ke.getKeyChar () - 0x2F >= 0 && ke.getKeyChar () - 0x2F < 10)
+		if (ke.getKeyChar () - 0x30 >= 0 && ke.getKeyChar () - 30 < 10)
 		{
-			currLevel = ke.getKeyChar () - 0x2F;
+			currLevel = ke.getKeyChar () - 0x30;
 		}
 		repaint ();
 	}
@@ -341,12 +341,14 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 			//System.out.println ("space pressed");
 			currWorld.getLevel (currLevel).getTux ().jump ();
 		}
-		//else if (oldSpace != keys[4])
+		else if (oldSpace != keys[4])
 		//else
-		//{
+		{
 			//System.out.println ("space not pressed");
-		//	currWorld.getLevel (currLevel).getTux ().fall ();
-		//}
+			currWorld.getLevel (currLevel).getTux ().fall ();
+			keys[4] = false;
+			oldSpace = false;
+		}
 		if (currWorld.getLevel (currLevel).win)
 		{
 			currLevel++;

@@ -151,7 +151,7 @@ public final class Level
 						}
 						else
 						{
-							throw new Exception ("Too many Enemies in column " + n + ".  Please place only one.");
+							throw new Exception ("Too many Enemies in column " + i + ".  Please place only one." + "\nThe level is " + name);
 						}
 					}
 				}

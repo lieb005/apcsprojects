@@ -4,16 +4,12 @@
  */
 package supa.mobsta.bros;
 
-import java.awt.Font;
-import java.awt.Window;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 
 /**
  *
