@@ -14,30 +14,30 @@ public enum Worlds
 {
 	// These are the names of our worlds associated to the files
 
-	Example("src/Example.wld"),
-	World_1("src/World1.wld");
+	Example ("src/Example.wld"),
+	World_1 ("src/World1.wld");
 	private World world;
 	private String url;
 	// This function makes it so that 
 
-	Worlds(String dataFile)
+	Worlds (String dataFile)
 	{
 		try
 		{
 			url = dataFile;
-			world = new World(dataFile);
+			world = new World (dataFile);
 		} catch (FileNotFoundException ex)
 		{
-			ex.printStackTrace();
+			ex.printStackTrace ();
 		}
 	}
 
-	public World getWorld()
+	public World getWorld ()
 	{
 		return world;
 	}
 
-	public String getFileName()
+	public String getFileName ()
 	{
 		return url;
 	}

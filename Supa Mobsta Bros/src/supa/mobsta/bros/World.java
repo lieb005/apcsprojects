@@ -18,35 +18,35 @@ import java.util.ArrayList;
 public class World
 {
 
-	private ArrayList<Level> levels = new ArrayList<Level>();
+	private ArrayList<Level> levels = new ArrayList<Level> ();
 	private String name = "";
 
-	public World(String file) throws FileNotFoundException
+	public World (String file) throws FileNotFoundException
 	{
-		this(new File(file));
+		this (new File (file));
 	}
 
-	public World(File file) throws FileNotFoundException
+	public World (File file) throws FileNotFoundException
 	{
-		if (!file.exists())
+		if (!file.exists ())
 		{
-			throw new FileNotFoundException(file.getAbsolutePath() + " does not exist!");
+			throw new FileNotFoundException (file.getAbsolutePath () + " does not exist!");
 		}
 		else
 		{
-			System.out.println("File Exists");
+			System.out.println ("File Exists");
 		}
 		try
 		{
 			String data = "";
-			BufferedReader reader = new BufferedReader(new FileReader(file));
-			while (reader.ready())
+			BufferedReader reader = new BufferedReader (new FileReader (file));
+			while (reader.ready ())
 			{
-				data += reader.readLine() + "\n";
+				data += reader.readLine () + "\n";
 			}
-			reader.close();
+			reader.close ();
 			//System.out.println(data);
-			createWorld(data);
+			createWorld (data);
 		} catch (IOException ex)
 		{
 		}
@@ -54,36 +54,36 @@ public class World
 
 	// This function decodes the data in the world file.
 	// It will be annoying to write
-	private void createWorld(String data)
+	private void createWorld (String data)
 	{
 		boolean doingLevel = false;
 		String level = "", levelName = "";
-		for (String line : data.split("\n"))
+		for (String line : data.split ("\n"))
 		{
-			line = line.trim().toLowerCase();
-			if (line.isEmpty() || line.startsWith("#") || line.startsWith("//") || line.matches("[\n]+") || line.isEmpty())
+			line = line.trim ().toLowerCase ();
+			if (line.isEmpty () || line.startsWith ("#") || line.startsWith ("//") || line.matches ("[\n]+") || line.isEmpty ())
 			{
 				continue;
 			}
 			if (!doingLevel)
 			{
-				if (line.startsWith("name"))
+				if (line.startsWith ("name"))
 				{
 					// cut off "name " (with space)
-					name = line.substring(5);
+					name = line.substring (5);
 				}
-				if (line.startsWith("level"))
+				if (line.startsWith ("level"))
 				{
-					levelName = line.split(" ", 2)[1];
+					levelName = line.split (" ", 2)[1];
 					doingLevel = true;
 				}
 			}
 			else
 			{
-				if (line.startsWith("endlevel"))
+				if (line.startsWith ("endlevel"))
 				{
 					doingLevel = false;
-					levels.add(new Level(levelName, level));
+					levels.add (new Level (levelName, level));
 					level = "";
 					continue;
 				}
@@ -93,8 +93,12 @@ public class World
 		}
 	}
 
-	public Level getLevel(int level)
+	public Level getLevel (int level)
 	{
-		return levels.get(level);
+		if (level >= levels.size ())
+		{
+			level = levels.size () - 1;
+		}
+		return levels.get (level);
 	}
 }
