@@ -27,7 +27,6 @@ public class GW4
 		ActorWorld w = new ActorWorld (g);
 		w.setMessage ("ljdscc");
 		w.add (new Location (0, 0), new FlowerCritter ());
-		w.add (new Rock());
 		w.show ();
 	}
 }

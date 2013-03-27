@@ -12,58 +12,60 @@ import info.gridworld.grid.Location;
  *
  * @author mark
  */
-public class FlowerCritter extends Critter
+public
+	class FlowerCritter extends Critter
 {
 
-	public FlowerCritter ()
+	boolean up = false;
+
+	public
+		FlowerCritter()
 	{
-		setDirection (90);
+		setDirection(90);
 	}
 
-	public Location selectMoveLocation ()
+	public
+		Location selectMoveLocation()
 	{
-		System.out.println (getLocation ().toString ());
-		if (getDirection () == 90)
+		System.out.println(getLocation().toString());
+		if (getDirection() == 90)
 		{
-			Location l = new Location (getLocation ().getRow (), getLocation ().getCol () + 1);
-			if (getLocation ().getCol () == getGrid ().getNumCols () - 1)
+			Location l = new Location(getLocation().getRow(), getLocation().getCol() + 1);
+			if (getLocation().getCol() == getGrid().getNumCols() - 1)
 			{
-				setDirection (270);
-				return new Location (getLocation ().getRow () + 1, getLocation ().getCol ());
+				setDirection(270);
+				return new Location(getLocation().getRow() + (up ? -1 : 1), getLocation().getCol());
 			}
-			else if (getGrid ().isValid (l) && getGrid ().get (l) == null)
+			else if (getGrid().isValid(l))
 			{
 				return l;
 			}
 		}
-		else if (getDirection ()
-				== 270)
+		else if (getDirection()
+			 == 270)
 		{
-			Location l = new Location (getLocation ().getRow (), getLocation ().getCol () - 1);
+			Location l = new Location(getLocation().getRow(), getLocation().getCol() - 1);
 
-			if (getLocation ().getCol () == 0)
+			if (getLocation().getCol() == 0)
 			{
-				setDirection (90);
-				return new Location (getLocation ().getRow () + 1, getLocation ().getCol ());
+				setDirection(90);
+				return new Location(getLocation().getRow() + (up ? 1 : -1), getLocation().getCol());
 			}
-			else if (getGrid ().isValid (l) && getGrid ().get (l) == null)
+			else if (getGrid().isValid(l))
 			{
 				return l;
 			}
 		}
 
-		return null;
+		return getLocation();
 	}
 
 	@Override
-	public void makeMove (Location loc)
+	public
+		void makeMove(Location loc)
 	{
-		if (getLocation () == null)
-		{
-			return;
-		}
-		Location l = getLocation ();
-		moveTo (selectMoveLocation ());
-		getGrid ().put (l, new Flower ());
+		Location l = getLocation();
+		moveTo(selectMoveLocation());
+		getGrid().put(l, new Flower());
 	}
 }
