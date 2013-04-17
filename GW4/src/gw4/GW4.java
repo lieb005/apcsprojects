@@ -26,7 +26,7 @@ public class GW4
 		Grid g = new BoundedGrid (10, 10);
 		ActorWorld w = new ActorWorld (g);
 		w.setMessage ("ljdscc");
-		w.add (new Location (0, 0), new FlowerCritter ());
+		w.add (new Location (0, 0), new CornerCritter ());
 		w.show ();
 	}
 }

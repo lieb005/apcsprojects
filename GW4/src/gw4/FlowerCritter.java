@@ -4,6 +4,7 @@
  */
 package gw4;
 
+import info.gridworld.actor.Bug;
 import info.gridworld.actor.Critter;
 import info.gridworld.actor.Flower;
 import info.gridworld.grid.Location;
@@ -12,60 +13,63 @@ import info.gridworld.grid.Location;
  *
  * @author mark
  */
-public
-	class FlowerCritter extends Critter
+public class FlowerCritter extends Bug
 {
 
 	boolean up = false;
 
-	public
-		FlowerCritter()
+	public FlowerCritter ()
 	{
-		setDirection(90);
-	}
-
-	public
-		Location selectMoveLocation()
-	{
-		System.out.println(getLocation().toString());
-		if (getDirection() == 90)
-		{
-			Location l = new Location(getLocation().getRow(), getLocation().getCol() + 1);
-			if (getLocation().getCol() == getGrid().getNumCols() - 1)
-			{
-				setDirection(270);
-				return new Location(getLocation().getRow() + (up ? -1 : 1), getLocation().getCol());
-			}
-			else if (getGrid().isValid(l))
-			{
-				return l;
-			}
-		}
-		else if (getDirection()
-			 == 270)
-		{
-			Location l = new Location(getLocation().getRow(), getLocation().getCol() - 1);
-
-			if (getLocation().getCol() == 0)
-			{
-				setDirection(90);
-				return new Location(getLocation().getRow() + (up ? 1 : -1), getLocation().getCol());
-			}
-			else if (getGrid().isValid(l))
-			{
-				return l;
-			}
-		}
-
-		return getLocation();
+		setDirection (90);
 	}
 
 	@Override
-	public
-		void makeMove(Location loc)
+	public void move ()
 	{
-		Location l = getLocation();
-		moveTo(selectMoveLocation());
-		getGrid().put(l, new Flower());
+		Location l = null;
+		// is it facing up or down?
+		if (getDirection () % 180 == 0)
+		{
+			// is it facing up?
+			if ((getDirection ()) / 180 == 0)
+			{
+				l = new Location (getLocation ().getRow () - 1, getLocation ().getCol ());
+			}
+			//is it facing down?
+			else if ((getDirection ()) / 180 == 1)
+			{
+				l = new Location (getLocation ().getRow () + 1, getLocation ().getCol ());
+			}
+
+		}
+		// is it facing left or right?
+		else
+		{
+			// right?
+			if ((getDirection () - 90) / 180 == 0)
+			{
+				l = new Location (getLocation ().getRow (), getLocation ().getCol () + 1);
+			}
+			// left?
+			else if ((getDirection () - 90) / 180 == 1)
+			{
+				l = new Location (getLocation ().getRow (), getLocation ().getCol ()  - 1);
+			}
+		}
+		if (getGrid ().isValid (l))
+		{
+			if (getGrid ().get (l) instanceof Flower)
+			{
+				turn ();
+			}
+		}
+
+		super.move ();
+	}
+
+	@Override
+	public void turn ()
+	{
+		setDirection (getDirection () + Location.RIGHT);
 	}
 }
