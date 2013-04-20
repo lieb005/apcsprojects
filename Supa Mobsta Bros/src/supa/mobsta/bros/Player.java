@@ -352,6 +352,11 @@ public abstract class Player
 	 */
 	public void move ()
 	{
+		// we don't want thee endzone to fall
+		if (this instanceof EndZone)
+		{
+			return;
+		}
 		velocity += JUMP_ACCEL;
 		if (velocity > 0)
 		{
@@ -384,7 +389,7 @@ public abstract class Player
 		{
 			fall ();
 		}
-		System.out.println (velocity + " new");
+		//System.out.println (velocity + " new");
 	}
 
 	public boolean[] canMove ()
@@ -429,16 +434,17 @@ public abstract class Player
 					if (true)
 					{
 						boolean below, belowright;
-						below = (tiles[getX () / SupaMobstaBros.TILE_WIDTH][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT)][1] > 0);
 
+						below = (tiles[getX () / SupaMobstaBros.TILE_WIDTH][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT)][1] > 0);
 						if (getX () / SupaMobstaBros.TILE_WIDTH + 1 < tiles.length)
 						{
 							belowright = (tiles[getX () / SupaMobstaBros.TILE_WIDTH + 1][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT)][1] > 0);
 						}
 						else
 						{
-							belowright = true;
+							belowright = false;
 						}
+						System.out.println ("below: " + below + "        belowright: " + belowright);
 						surrounds[2] = below || belowright;
 					}
 					else
@@ -447,7 +453,7 @@ public abstract class Player
 					}
 					if ((getY () / SupaMobstaBros.TILE_HEIGHT) + 1 > SupaMobstaBros.SCREEN_HEIGHT)
 					{
-						System.out.println ("You lost!");
+						//System.out.println ("You lost!");
 					}
 				}
 				//left
@@ -458,20 +464,31 @@ public abstract class Player
 			}
 		}
 
-		/*System.out.println ("\nNew vals");
-		for (boolean b : surrounds)
+		if (false && (getX () % SupaMobstaBros.TILE_WIDTH == 0 || getY () % SupaMobstaBros.TILE_HEIGHT == 0))
 		{
-			System.out.println (b);
-		}*/
+			System.out.println ();
+			System.out.printf ("      T:%b       \n", surrounds[0]);
+			System.out.printf ("L:%b         R:%b\n", surrounds[3], surrounds[1]);
+			System.out.printf ("      B:%b       \n", surrounds[2]);
+			System.out.println ();
+		}
+		/*
+		 * System.out.println ("\nNew vals");
+		 * for (boolean b : surrounds)
+		 * {
+		 * System.out.println (b);
+		 * }
+		 */
 		return surrounds;
 	}
-	public void walk() throws OperationNotSupportedException
+
+	public void walk () throws OperationNotSupportedException
 	{
 		throw new OperationNotSupportedException ("Override walk!!");
 	}
-	public void run() throws OperationNotSupportedException
+
+	public void run () throws OperationNotSupportedException
 	{
 		throw new OperationNotSupportedException ("Override run!!");
 	}
-	
 }
