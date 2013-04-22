@@ -56,6 +56,7 @@ public final class Level
 	 */
 	public static final boolean DEBUG = false;
 	// have we gotten to the end yet?
+        // protip: to skip to last level, set 'win' to true, and run. (Perfect for the situation.)
 	public boolean win = false;
 	public boolean lose = false;
 
