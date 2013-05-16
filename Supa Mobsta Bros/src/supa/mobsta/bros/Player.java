@@ -392,16 +392,10 @@ public abstract class Player
 			velocity = 0;
 		}
 		//System.out.println (velocity + " new");
-		
-		if ((canMove ()[0] && speed < 0) || (canMove ()[1] && speed > 0))
-		{
-			setX ((int) (getX () + speed));
 		}
-	}
 
 	public boolean[] canMove ()
 	{
-		// forward, backward
 		boolean[] ret = new boolean[]
 		{
 			false, false

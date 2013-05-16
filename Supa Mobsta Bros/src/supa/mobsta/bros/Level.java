@@ -16,30 +16,30 @@ import javax.swing.JFrame;
 import supa.mobsta.goodguys.MobstaTux;
 
 /**
- *
- * @author mark
+
+ @author mark
  */
 public final class Level
 {
 
 	/**
-	 *
+
 	 */
 	public static final int TILE_WIDTH = SupaMobstaBros.TILE_WIDTH,
 			/**
-			 *
+
 			 */
 			SCREEN_WIDTH = SupaMobstaBros.SCREEN_WIDTH,
 			/**
-			 *
+
 			 */
 			TILE_HEIGHT = SupaMobstaBros.TILE_HEIGHT,
 			/**
-			 *
+
 			 */
 			SCREEN_HEIGHT = SupaMobstaBros.SCREEN_HEIGHT;
 	/**
-	 *
+
 	 */
 	public static final String palletteFile = "src/supa/mobsta/img/pallette.png";
 	private String name;
@@ -52,7 +52,7 @@ public final class Level
 	// current location of tux
 	private int currX = 0;
 	/**
-	 *
+
 	 */
 	public static final boolean DEBUG = false;
 	// have we gotten to the end yet?
@@ -60,10 +60,10 @@ public final class Level
 	public boolean lose = false;
 
 	/**
-	 * This Creates a level from the specified Data with the given name.
-	 *
-	 * @param levelName The name to give the level
-	 * @param level     The actual hex data for the level
+	 This Creates a level from the specified Data with the given name.
+
+	 @param levelName The name to give the level
+	 @param level     The actual hex data for the level
 	 */
 	public Level (String levelName, String level)
 	{
@@ -90,11 +90,11 @@ public final class Level
 			int[][][] rawTiles = new int[lev[0].split (" ").length][SupaMobstaBros.SCREEN_HEIGHT][3];
 			if (lev.length != SupaMobstaBros.SCREEN_HEIGHT)
 			{
-				throw new IndexOutOfBoundsException ("Level Height Mismatch.  Found: " + lev.length + " Expected: " + SupaMobstaBros.SCREEN_HEIGHT);
+				throw new IndexOutOfBoundsException ("Level Height Mismatch.  Found: " + lev.length + ", Expected: " + SupaMobstaBros.SCREEN_HEIGHT);
 			}
 			int j, enemy, enemyY = 0, col, row;
 			String line;
-			for (int i = 0; i < SupaMobstaBros.SCREEN_HEIGHT; i++)
+			for (int i = SupaMobstaBros.SCREEN_HEIGHT - 1; i >= 0; i--)
 			{
 				line = lev[i];
 				if (line == null || line.isEmpty ())
@@ -106,20 +106,31 @@ public final class Level
 				for (j = 0; j < codes.length; j++)
 				{
 					code = codes[j];
-					enemy = Integer.parseInt (code.substring (0, 1), 16);
-					col = Integer.parseInt (code.substring (2), 16);
-					row = Integer.parseInt (code.substring (1, 2), 16);
-					rawTiles[j][i] = new int[]
+					try
 					{
-						enemy, col, row
-					};
+
+						enemy = Integer.parseInt (code.substring (0, 1), 16);
+						col = Integer.parseInt (code.substring (2), 16);
+						row = Integer.parseInt (code.substring (1, 2), 16);
+						rawTiles[j][i] = new int[]
+						{
+							enemy, col, row
+						};
+					} catch (NumberFormatException e)
+					{
+						rawTiles[j][i] = new int[]
+						{
+							0, 0, 0
+						};
+						System.out.println ("Error parsing block at " + j + ", " + i);
+					}
 				}
 			}
 			levelCodes = rawTiles.clone ();
 			if (DEBUG)
 			{
 				System.out.println ("This is what is in the Arrays");
-				for (int k = 0; k < SupaMobstaBros.SCREEN_HEIGHT; k++)
+				for (int k = SupaMobstaBros.SCREEN_HEIGHT - 1; k <= 0; k--)
 				{
 					for (int l = 0; l < rawTiles.length; l++)
 					{
@@ -135,12 +146,12 @@ public final class Level
 			for (int i = 0; i < rawTiles.length; i++)
 			{
 				currCol = new Image[SCREEN_HEIGHT];
-				for (int u = 0; u < SCREEN_HEIGHT; u++)
+				for (int n = SCREEN_HEIGHT - 1; n >= 0; n--)
 				{
-					currCol[u] = tiles[rawTiles[i][u][1]][rawTiles[i][u][2]];
+					currCol[n] = tiles[rawTiles[i][n][1]][rawTiles[i][n][2]];
 				}
 				enemy = 0;
-				for (int n = 0; n < SCREEN_HEIGHT; n++)
+				for (int n = SCREEN_HEIGHT - 1; n >= 0; n--)
 				{
 					if (rawTiles[i][n][0] != 0)
 					{
@@ -159,7 +170,7 @@ public final class Level
 				if (players[i] != null)
 				{
 					players[i].setLocation (i * TILE_WIDTH, enemyY * TILE_HEIGHT);
-					players[i].setLevelTiles (levelCodes);
+					players[i].setLevel (this);
 					if (players[i] instanceof MobstaTux && mainTux == null)
 					{
 						mainTux = players[i];
@@ -177,7 +188,7 @@ public final class Level
 					public void paint (Graphics g)
 					{
 						super.paint (g);
-						for (int i = 0; i < levelTiles[0].length; i++)
+						for (int i = levelTiles[0].length - 1; i >= 0; i--)
 						{
 							for (int j = 0; j < levelTiles.length; j++)
 							{
@@ -207,8 +218,8 @@ public final class Level
 	}
 
 	/**
-	 *
-	 * @return
+
+	 @return
 	 */
 	public Player[] getPlayers ()
 	{
@@ -216,9 +227,9 @@ public final class Level
 	}
 
 	/**
-	 * Creates the Full Level image
-	 *
-	 * @return The full level Image
+	 Creates the Full Level image
+
+	 @return The full level Image
 	 */
 	public BufferedImage makeFull ()
 	{
@@ -226,7 +237,7 @@ public final class Level
 		Graphics g = fullLevel.getGraphics ();
 		g.setColor (Color.WHITE);
 		g.fillRect (0, 0, fullLevel.getWidth (), fullLevel.getHeight ());
-		for (int i = 0; i < levelTiles[0].length; i++)
+		for (int i = levelTiles[0].length - 1; i >= 0; i--)
 		{
 			for (int j = 0; j < levelTiles.length; j++)
 			{
@@ -255,9 +266,9 @@ public final class Level
 	}
 
 	/**
-	 * Returns the Full level image
-	 *
-	 * @return A full view of the level
+	 Returns the Full level image
+
+	 @return A full view of the level
 	 */
 	public BufferedImage getFull ()
 	{
@@ -265,11 +276,11 @@ public final class Level
 	}
 
 	/**
-	 * Get a segment of the level
-	 *
-	 * @param startx
-	 *
-	 * @return The segment starting at location "startx"
+	 Get a segment of the level
+
+	 @param startx
+
+	 @return The segment starting at location "startx"
 	 */
 	public BufferedImage getSegment (int startx)
 	{
@@ -309,10 +320,10 @@ public final class Level
 	}
 
 	/**
-	 * Loads the pallette into memory.
-	 * This has to be assigned to something since it is static.
-	 *
-	 * @return The tiles that were loaded
+	 Loads the pallette into memory.
+	 This has to be assigned to something since it is static.
+
+	 @return The tiles that were loaded
 	 */
 	public static Image[][] loadTiles ()
 	{
@@ -360,11 +371,11 @@ public final class Level
 	}
 
 	/**
-	 * This moves the Level Image by the specified amount.
-	 *
-	 * @param amount Positive = move the view to the right, negative = right.
-	 *
-	 * @return The new View of the level(ish)
+	 This moves the Level Image by the specified amount.
+
+	 @param amount Positive = move the view to the right, negative = right.
+
+	 @return The new View of the level(ish)
 	 */
 	public BufferedImage move (int amount)
 	{/*
@@ -403,8 +414,8 @@ public final class Level
 	}
 
 	/**
-	 *
-	 * @param x
+
+	 @param x
 	 */
 	public void setLocation (int x)
 	{
@@ -414,8 +425,8 @@ public final class Level
 	}
 
 	/**
-	 *
-	 * @return
+
+	 @return
 	 */
 	public BufferedImage getView ()
 	{
@@ -460,24 +471,24 @@ public final class Level
 					/*
 				 * EnemyX = 6, startx = 4, screenw = 3
 				 *
-				 *  012
-				 *  |||
-				 * |  E|
+				 * 012
+				 * |||
+				 * | E|
 				 * |---|
-				 *  456
+				 * 456
 				 * startx = 4
 				 * (Ex - startx) = 2
 				 *
 				 * | E |
 				 * |---|
-				 *  567
+				 * 567
 				 * startx = 5
 				 * (Ex - startx) = 1
 				 *
 				 *
-				 * |E  |
+				 * |E |
 				 * |---|
-				 *  678
+				 * 678
 				 * startx = 6
 				 * (Ex - startx) = 0
 				 */
@@ -486,7 +497,7 @@ public final class Level
 				//}
 			}
 		}
-		if (mainTux.getY () >= SCREEN_HEIGHT * TILE_HEIGHT - 1)
+		if (mainTux.getY () < 0)
 		{
 			lose = true;
 		}
@@ -495,8 +506,8 @@ public final class Level
 	}
 
 	/**
-	 *
-	 * @return
+
+	 @return
 	 */
 	public Player getTux ()
 	{
@@ -504,8 +515,8 @@ public final class Level
 	}
 
 	/**
-	 *
-	 * @return
+
+	 @return
 	 */
 	public Image[][] getTiles ()
 	{
@@ -513,8 +524,8 @@ public final class Level
 	}
 
 	/**
-	 *
-	 * @return
+
+	 @return
 	 */
 	public int[][][] getLevelCodes ()
 	{
@@ -558,5 +569,85 @@ public final class Level
 			ret = cX;
 		}
 		return ret;
+	}
+
+	public boolean[] getSurroundings (int x, int y, int height)
+	{
+		//System.out.println(currLevelCodes);
+		// above, right, below, left
+		boolean[] surrounds = new boolean[]
+		{
+			false, false, false, false
+		};
+		int[][][] tiles = levelCodes;
+		if (y / SupaMobstaBros.TILE_HEIGHT >= 0 && y / SupaMobstaBros.TILE_HEIGHT < SupaMobstaBros.SCREEN_HEIGHT)
+		{
+			if (x / SupaMobstaBros.TILE_WIDTH >= 0 && x / SupaMobstaBros.TILE_WIDTH < tiles.length)
+			{
+				//above
+				if (y / SupaMobstaBros.TILE_HEIGHT > SupaMobstaBros.TILE_HEIGHT)
+				{
+					//+ (height / SupaMobstaBros.TILE_HEIGHT)
+					surrounds[0] = (tiles[x / SupaMobstaBros.TILE_WIDTH][(y / SupaMobstaBros.TILE_HEIGHT)  + 1][1] < SupaMobstaBros.SCREEN_HEIGHT);
+				}
+				//right
+				if ((x / SupaMobstaBros.TILE_WIDTH) + 2 < tiles.length)
+				{
+					surrounds[1] = (tiles[(x / SupaMobstaBros.TILE_WIDTH) + 2][ Math.min (SupaMobstaBros.SCREEN_HEIGHT - 1, (y / SupaMobstaBros.TILE_HEIGHT))][1] > 0);
+				}
+				//below
+				if ((y / SupaMobstaBros.TILE_HEIGHT) - (height / SupaMobstaBros.TILE_HEIGHT) > 0)
+				{
+
+					// set to false if you want to force the ground to be there always
+					if (false)
+					{
+						boolean below, belowright;
+
+						below = (tiles[x / SupaMobstaBros.TILE_WIDTH][(y / SupaMobstaBros.TILE_HEIGHT) - (height / SupaMobstaBros.TILE_HEIGHT)][1] > 0);
+						if (x / SupaMobstaBros.TILE_WIDTH + 1 < tiles.length)
+						{
+							belowright = (tiles[x / SupaMobstaBros.TILE_WIDTH + 1][(y / SupaMobstaBros.TILE_HEIGHT) - (height / SupaMobstaBros.TILE_HEIGHT)][1] > 0);
+						}
+						else
+						{
+							belowright = false;
+						}
+						System.out.println ("below: " + below + "        belowright: " + belowright);
+						surrounds[2] = below || belowright;
+					}
+					else
+					{
+						surrounds[2] = true;
+					}
+					/*if ((y / SupaMobstaBros.TILE_HEIGHT) + 1 > SupaMobstaBros.SCREEN_HEIGHT)
+					 {
+					 //System.out.println ("You lost!");
+					 }*/
+				}
+				//left
+				if (x / SupaMobstaBros.TILE_WIDTH - 1 > 0)
+				{
+					surrounds[3] = (tiles[x / SupaMobstaBros.TILE_WIDTH - 1][ Math.min (SupaMobstaBros.SCREEN_HEIGHT - 1, (y / SupaMobstaBros.TILE_HEIGHT))][1] > 0);
+				}
+			}
+		}
+
+		if (false && (x % SupaMobstaBros.TILE_WIDTH == 0 || y % SupaMobstaBros.TILE_HEIGHT == 0))
+		{
+			System.out.println ();
+			System.out.printf ("      T:%b       \n", surrounds[0]);
+			System.out.printf ("L:%b         R:%b\n", surrounds[3], surrounds[1]);
+			System.out.printf ("      B:%b       \n", surrounds[2]);
+			System.out.println ();
+		}
+		/*
+		 * System.out.println ("\nNew vals");
+		 * for (boolean b : surrounds)
+		 * {
+		 * System.out.println (b);
+		 * }
+		 */
+		return surrounds;
 	}
 }

@@ -7,6 +7,7 @@ package supa.mobsta.goodguys;
 import java.awt.Canvas;
 import java.awt.Graphics;
 import java.io.IOException;
+import javax.naming.OperationNotSupportedException;
 import javax.swing.JFrame;
 import supa.mobsta.bros.Level;
 import supa.mobsta.bros.SupaMobstaBros;
@@ -18,18 +19,30 @@ import supa.mobsta.bros.SupaMobstaBros;
 public class MobstaTux extends GoodGuy
 {
 
+	/**
+	 * Speed at which to change Tux's location each step while running
+	 */
+	public static final int RUN = 12;
+	/**
+	 * Speed at which to change Tux's location each step while walking
+	 */
+	public static final int WALK = 8;
+	/**
+	 * Rate at which to decrease Tux's speed for each step of a stop
+	 */
+	public static final double STOP = .7;
 	private boolean mainTuxness;
 
 	/**
 	 *
 	 */
-	public MobstaTux (boolean isItCouldItBe___ItIs__MainTux)
+	public MobstaTux (boolean isIt_CouldItBe___ItIs__MainTux)
 	{
-		mainTuxness = isItCouldItBe___ItIs__MainTux;
+		mainTuxness = isIt_CouldItBe___ItIs__MainTux;
 		try
 		{
 			setFrames (loadImage ("src/supa/mobsta/img/Tux.png"));
-			//setFrame(0);
+			setFrame(1);
 			//setSize(32, 32);
 		} catch (IOException ex)
 		{
@@ -70,11 +83,71 @@ public class MobstaTux extends GoodGuy
 	public void repaint ()
 	{
 		super.repaint ();
-		move ();
+		//move ();
 	}
 
 	public boolean isMainTux ()
 	{
 		return mainTuxness;
+	}
+
+	/**
+	 * Runs tux forward one step.
+	 *
+	 * @param forward Move the character forward?
+	 */
+	@Override
+	public void run (boolean forward)
+	{
+		if (forward)
+		{
+			setSpeed (RUN);
+		}
+		else
+		{
+			setSpeed (-RUN);
+		}
+		if (getFrame () == 1 || getFrame () == 2)
+		{
+			setFrame (getFrame () % 3);
+		}
+		if (getFrame () == 3 || getFrame () == 4)
+		{
+			setFrame (getFrame () % 7);
+		}
+	}
+
+	@Override
+	public void walk (boolean forward)
+	{
+		if (forward)
+		{
+			setSpeed (WALK);
+		}
+		else
+		{
+			setSpeed (-WALK);
+
+		}
+	}
+
+	@Override
+	public void stop (boolean skid)
+	{
+		if (skid)
+		{
+			setSpeed (0);
+		}
+		else
+		{
+			if (getSpeed () > STOP)
+			{
+				setSpeed ((getSpeed () + 0.5) / 2 - STOP);
+			}
+			else if (getSpeed () < -STOP)
+			{
+				setSpeed ((getSpeed () - 0.5) / 2 + STOP);
+			}
+		}
 	}
 }

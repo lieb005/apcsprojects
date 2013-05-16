@@ -54,11 +54,6 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 	/**
 	 *
 	 */
-	public static final int RUN = 12,
-			/**
-			 *
-			 */
-			WALK = 8;
 	private final static int time = 1000 / 20;
 	private Timer drawer = new Timer (time, this);
 	// up, down, left, right, jump, shift
@@ -313,12 +308,12 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 			if (keys[5])
 			{
 				//run left
-				currWorld.getLevel (currLevel).move (-RUN);
+				currWorld.getLevel (currLevel).getTux ().run (false);
 			}
 			else
 			{
 				//walk Left
-				currWorld.getLevel (currLevel).move (-WALK);
+				currWorld.getLevel (currLevel).getTux ().walk (false);
 			}
 		}
 		//right
@@ -327,14 +322,15 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 			if (keys[5])
 			{
 				//run Right
-				currWorld.getLevel (currLevel).move (RUN);
+				currWorld.getLevel (currLevel).getTux ().run (true);
 			}
 			else
 			{
 				//walk Right
-				currWorld.getLevel (currLevel).move (WALK);
+				currWorld.getLevel (currLevel).getTux ().walk (true);
 			}
 		}
+
 		//space
 		if (keys[4])
 		{
@@ -349,6 +345,10 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 			keys[4] = false;
 			oldSpace = false;
 		}
+		if (!keys[2] && !keys[3])
+		{
+			currWorld.getLevel (currLevel).getTux ().stop(true);
+		}
 		if (currWorld.getLevel (currLevel).win)
 		{
 			currLevel++;
@@ -358,11 +358,19 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 	@Override
 	public void focusGained (FocusEvent fe)
 	{
+		keys = new boolean[]
+		{
+			false, false, false, false, false, false
+		};
+
 	}
 
 	@Override
 	public void focusLost (FocusEvent fe)
 	{
-		keys = new boolean[]{false, false, false, false, false, false};
+		keys = new boolean[]
+		{
+			false, false, false, false, false, false
+		};
 	}
 }
