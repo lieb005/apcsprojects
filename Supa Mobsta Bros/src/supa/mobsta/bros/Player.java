@@ -30,7 +30,7 @@ public abstract class Player
 	private Image[] frames;
 	private int frame = 0;
 	// Level we are in
-	private int[][][] currLevelCodes;
+	private Level currLevel;
 	/**
 	 * only jump 5 blocks hight (from the top)
 	 *
@@ -47,17 +47,17 @@ public abstract class Player
 	 * the number of steps to do a jump in
 	 *
 	 */
-	public static final int JUMP_STEPS = JUMP_LENGTH / SupaMobstaBros.RUN;
+	public static final int JUMP_STEPS = JUMP_LENGTH / MobstaTux.RUN;
 	/**
 	 * Max Acceleration
 	 */
-	public static final int JUMP_ACCEL = 3;
+	public static final int JUMP_ACCEL = -3;
 	/**
 	 * Starting Velocity
 	 *
 	 *
 	 */
-	public static final int JUMP_VEL_START = -30;
+	public static final int JUMP_VEL_START = 30;
 	/**
 	 * Max Velocity
 	 *
@@ -74,8 +74,10 @@ public abstract class Player
 	private int standy = 0;
 	// Current step in a jump
 	private boolean jumping = false;
-	// velocity of the guy
-	private double velocity = 0;
+	// velocity of the guy in a jump
+	private double velocity = 0.0;
+	// Speed of the player horizontally
+	private double speed = 0.0;
 	// current jump of player
 	private int currJump = JUMP_START;
 
@@ -83,15 +85,15 @@ public abstract class Player
 	 *
 	 * @param currLevel
 	 */
-	public void setLevelTiles (int[][][] currLevel)
+	public void setLevel (Level currLevel)
 	{
 		if (currLevel != null)
 		{
-			this.currLevelCodes = currLevel.clone ();
+			this.currLevel = currLevel;
 		}
 		else
 		{
-			this.currLevelCodes = null;
+			this.currLevel = null;
 		}
 
 	}
@@ -311,9 +313,9 @@ public abstract class Player
 	 */
 	public int[][][] getTileCodes ()
 	{
-		if (currLevelCodes != null)
+		if (currLevel != null)
 		{
-			return currLevelCodes.clone ();
+			return currLevel.getLevelCodes ();
 		}
 		else
 		{
@@ -335,7 +337,7 @@ public abstract class Player
 	 */
 	public void jump ()
 	{
-		if (velocity == 0 && !getSurroundings ()[0])
+		if (velocity == 0 && !currLevel.getSurroundings (getX (), getY (), getHeight ())[0])
 		{
 			velocity = JUMP_VEL_START;
 		}
@@ -352,19 +354,12 @@ public abstract class Player
 	 */
 	public void move ()
 	{
-		// we don't want thee endzone to fall
+		// we don't want the endzone to fall
 		if (this instanceof EndZone)
 		{
 			return;
 		}
 		velocity += JUMP_ACCEL;
-		if (velocity > 0)
-		{
-			if (velocity > JUMP_VEL_MAX)
-			{
-				velocity = JUMP_VEL_MAX;
-			}
-		}
 		if (velocity < 0)
 		{
 			if (velocity < -JUMP_VEL_MAX)
@@ -372,123 +367,69 @@ public abstract class Player
 				velocity = -JUMP_VEL_MAX;
 			}
 		}
-		if (velocity < 0)
+		//if (velocity > 0)
+		//{
+		//	if (velocity < -JUMP_VEL_MAX)
+		//	{
+		//		velocity = -JUMP_VEL_MAX;
+		//	}
+		//}
+		if (velocity > 0)
 		{
 			setY ((int) (getY () + velocity));
 		}
-		if (!getSurroundings ()[2] && velocity >= 0)
+		if (!currLevel.getSurroundings (getX (), getY (), getHeight ())[0] && velocity >= 0)
 		{
 			setY ((int) (getY () + velocity));
 		}
-		if (getSurroundings ()[2] && velocity >= 0)
+		if (currLevel.getSurroundings (getX (), getY (), getHeight ())[0] && velocity >= 0)
 		{
 			velocity = 0;
 			setY ((int) (getY () / SupaMobstaBros.TILE_HEIGHT) * SupaMobstaBros.TILE_HEIGHT);
 		}
-		if (getSurroundings ()[0] && velocity < 0)
+		if (currLevel.getSurroundings (getX (), getY (), getHeight ())[2] && velocity < 0)
 		{
-			fall ();
+			velocity = 0;
 		}
 		//System.out.println (velocity + " new");
+		
+		if ((canMove ()[0] && speed < 0) || (canMove ()[1] && speed > 0))
+		{
+			setX ((int) (getX () + speed));
+		}
 	}
 
 	public boolean[] canMove ()
 	{
+		// forward, backward
 		boolean[] ret = new boolean[]
 		{
 			false, false
 		};
-		ret[0] = getSurroundings ()[1];
-		ret[1] = getSurroundings ()[3];
+		ret[0] = currLevel.getSurroundings (getX (), getY (), getHeight ())[1];
+		ret[1] = currLevel.getSurroundings (getX (), getY (), getHeight ())[3];
 		return ret;
 	}
 
-	private boolean[] getSurroundings ()
+	public void setSpeed(double speed)
 	{
-		//System.out.println(currLevelCodes);
-		// above, right, below, left
-		boolean[] surrounds = new boolean[]
-		{
-			false, false, false, false
-		};
-		int[][][] tiles = getTileCodes ();
-		if (getY () / SupaMobstaBros.TILE_HEIGHT >= 0 && getY () / SupaMobstaBros.TILE_HEIGHT < tiles[0].length)
-		{
-			if (getX () / SupaMobstaBros.TILE_WIDTH >= 0 && getX () / SupaMobstaBros.TILE_WIDTH < tiles.length)
-			{
-				//above
-				if (getY () / SupaMobstaBros.TILE_HEIGHT > SupaMobstaBros.TILE_HEIGHT)
-				{
-					surrounds[0] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT) - 1][1] > 0);
-				}
-				//right
-				if ((getX () / SupaMobstaBros.TILE_WIDTH) + 2 < tiles.length)
-				{
-					surrounds[1] = (tiles[(getX () / SupaMobstaBros.TILE_WIDTH) + 2][ Math.min (SupaMobstaBros.SCREEN_HEIGHT - 1, (getY () / SupaMobstaBros.TILE_HEIGHT))][1] > 0);
-				}
-				//below
-				if ((getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT) < SupaMobstaBros.SCREEN_HEIGHT)
-				{
-
-					// set to false if you want to force the ground to be there always
-					if (true)
-					{
-						boolean below, belowright;
-
-						below = (tiles[getX () / SupaMobstaBros.TILE_WIDTH][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT)][1] > 0);
-						if (getX () / SupaMobstaBros.TILE_WIDTH + 1 < tiles.length)
-						{
-							belowright = (tiles[getX () / SupaMobstaBros.TILE_WIDTH + 1][(getY () / SupaMobstaBros.TILE_HEIGHT) + (getHeight () / SupaMobstaBros.TILE_HEIGHT)][1] > 0);
-						}
-						else
-						{
-							belowright = false;
-						}
-						System.out.println ("below: " + below + "        belowright: " + belowright);
-						surrounds[2] = below || belowright;
-					}
-					else
-					{
-						surrounds[2] = true;
-					}
-					if ((getY () / SupaMobstaBros.TILE_HEIGHT) + 1 > SupaMobstaBros.SCREEN_HEIGHT)
-					{
-						//System.out.println ("You lost!");
-					}
-				}
-				//left
-				if (getX () / SupaMobstaBros.TILE_WIDTH - 1 > 0)
-				{
-					surrounds[3] = (tiles[getX () / SupaMobstaBros.TILE_WIDTH - 1][ Math.min (SupaMobstaBros.SCREEN_HEIGHT - 1, (getY () / SupaMobstaBros.TILE_HEIGHT))][1] > 0);
-				}
-			}
-		}
-
-		if (false && (getX () % SupaMobstaBros.TILE_WIDTH == 0 || getY () % SupaMobstaBros.TILE_HEIGHT == 0))
-		{
-			System.out.println ();
-			System.out.printf ("      T:%b       \n", surrounds[0]);
-			System.out.printf ("L:%b         R:%b\n", surrounds[3], surrounds[1]);
-			System.out.printf ("      B:%b       \n", surrounds[2]);
-			System.out.println ();
-		}
-		/*
-		 * System.out.println ("\nNew vals");
-		 * for (boolean b : surrounds)
-		 * {
-		 * System.out.println (b);
-		 * }
-		 */
-		return surrounds;
+		this.speed = speed;
+	}
+	
+	public double getSpeed()
+	{
+		return speed;
+	}
+	
+	public void walk (boolean forward)
+	{
 	}
 
-	public void walk () throws OperationNotSupportedException
+	public void run (boolean forward)
 	{
-		throw new OperationNotSupportedException ("Override walk!!");
 	}
 
-	public void run () throws OperationNotSupportedException
+	public void stop (boolean skid)
 	{
-		throw new OperationNotSupportedException ("Override run!!");
 	}
 }
