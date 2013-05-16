@@ -15,5 +15,6 @@ public class LevelDesigner extends JApplet
 
 	public static void main (String[] args)
 	{
+            System.out.println("Not supported yet.. Dummy.");
 	}
 }
