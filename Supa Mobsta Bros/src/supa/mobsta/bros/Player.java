@@ -14,8 +14,8 @@ import supa.mobsta.goodguys.EndZone;
 import supa.mobsta.goodguys.MobstaTux;
 
 /**
- *
- * @author mark
+
+ @author mark
  */
 public abstract class Player
 {
@@ -23,7 +23,7 @@ public abstract class Player
 
 	private int x = 0, y = 0;
 	// size of the player
-	private int width = SupaMobstaBros.TILE_WIDTH, height = SupaMobstaBros.TILE_HEIGHT;
+	private int width = SupaMobstaBros.TILE_WIDTH, height = 0;
 	// Image of ourselves
 	private BufferedImage selfImage = null;
 	//Frames for moving and powerups and stuff
@@ -32,42 +32,42 @@ public abstract class Player
 	// Level we are in
 	private Level currLevel;
 	/**
-	 * only jump 5 blocks hight (from the top)
-	 *
-	 *
+	 only jump 5 blocks hight (from the top)
+
+
 	 */
 	public static final int JUMP_LENGTH = SupaMobstaBros.TILE_HEIGHT * 5;
 	/**
-	 * can only jump 5 blocks horizontally
-	 *
-	 *
+	 can only jump 5 blocks horizontally
+
+
 	 */
 	public static final int JUMP_MAX = SupaMobstaBros.TILE_HEIGHT * 5;
 	/**
-	 * the number of steps to do a jump in
-	 *
+	 the number of steps to do a jump in
+
 	 */
 	public static final int JUMP_STEPS = JUMP_LENGTH / MobstaTux.RUN;
 	/**
-	 * Max Acceleration
+	 Max Acceleration
 	 */
 	public static final int JUMP_ACCEL = -3;
 	/**
-	 * Starting Velocity
-	 *
-	 *
+	 Starting Velocity
+
+
 	 */
 	public static final int JUMP_VEL_START = 30;
 	/**
-	 * Max Velocity
-	 *
-	 *
+	 Max Velocity
+
+
 	 */
 	public static final int JUMP_VEL_MAX = 30;
 	/**
-	 * where to start the the jump
-	 *
-	 *
+	 where to start the the jump
+
+
 	 */
 	public static final int JUMP_START = JUMP_MAX;
 	// curent level on which we stand
@@ -82,8 +82,8 @@ public abstract class Player
 	private int currJump = JUMP_START;
 
 	/**
-	 *
-	 * @param currLevel
+
+	 @param currLevel
 	 */
 	public void setLevel (Level currLevel)
 	{
@@ -99,14 +99,14 @@ public abstract class Player
 	}
 
 	/**
-	 * This creates a new player of integer type "type". The key for types can
-	 * be found in codes.txt
-	 *
-	 * @param type Type of Player to make ourselves
-	 *
-	 * @return player The player of the specified type
-	 *
-	 * @throws TypeNotPresentException
+	 This creates a new player of integer type "type". The key for types can
+	 be found in codes.txt
+
+	 @param type Type of Player to make ourselves
+
+	 @return player The player of the specified type
+
+	 @throws TypeNotPresentException
 	 */
 	public static Player createPlayer (int type) throws TypeNotPresentException
 	{
@@ -154,9 +154,9 @@ public abstract class Player
 	}
 
 	/**
-	 * Returns X coordinate
-	 *
-	 * @return X value
+	 Returns X coordinate
+
+	 @return X value
 	 */
 	public int getX ()
 	{
@@ -164,9 +164,9 @@ public abstract class Player
 	}
 
 	/**
-	 * Returns Y coordinate
-	 *
-	 * @return Y value
+	 Returns Y coordinate
+
+	 @return Y value
 	 */
 	public int getY ()
 	{
@@ -174,9 +174,9 @@ public abstract class Player
 	}
 
 	/**
-	 *
-	 * @param x
-	 * @param y
+
+	 @param x
+	 @param y
 	 */
 	public void setLocation (int x, int y)
 	{
@@ -185,8 +185,8 @@ public abstract class Player
 	}
 
 	/**
-	 *
-	 * @param x
+
+	 @param x
 	 */
 	public void setX (int x)
 	{
@@ -194,8 +194,8 @@ public abstract class Player
 	}
 
 	/**
-	 *
-	 * @param y
+
+	 @param y
 	 */
 	public void setY (int y)
 	{
@@ -203,8 +203,8 @@ public abstract class Player
 	}
 
 	/**
-	 *
-	 * @return
+
+	 @return
 	 */
 	public int getHeight ()
 	{
@@ -212,8 +212,8 @@ public abstract class Player
 	}
 
 	/**
-	 *
-	 * @return
+
+	 @return
 	 */
 	public int getWidth ()
 	{
@@ -221,23 +221,31 @@ public abstract class Player
 	}
 
 	/**
-	 *
-	 * @param width
-	 * @param height
+
+	 @param width
+	 @param height
 	 */
 	public void setSize (int width, int height)
 	{
-		this.height = height;
+		setHeight (height);
 		this.width = width;
 	}
 
+	public void setHeight (int height)
+	{
+		this.height = height;
+	}
+
 	/**
-	 *
-	 * @return
+
+	 @return
 	 */
 	public BufferedImage getImage ()
 	{
-		height = frames[0].getHeight (null);
+		if (getHeight () == 0)
+		{
+			setHeight (frames[0].getHeight (null) / SupaMobstaBros.TILE_HEIGHT);
+		}
 		if (selfImage != null)
 		{
 			return selfImage;
@@ -249,8 +257,8 @@ public abstract class Player
 	}
 
 	/**
-	 *
-	 * @return
+
+	 @return
 	 */
 	public Image[] getFrames ()
 	{
@@ -258,8 +266,8 @@ public abstract class Player
 	}
 
 	/**
-	 *
-	 * @param newFrames
+
+	 @param newFrames
 	 */
 	public void setFrames (Image[] newFrames)
 	{
@@ -267,10 +275,10 @@ public abstract class Player
 	}
 
 	/**
-	 *
-	 * @param frame
-	 *
-	 * @return
+
+	 @param frame
+
+	 @return
 	 */
 	public Image setFrame (int frame)
 	{
@@ -280,8 +288,8 @@ public abstract class Player
 	}
 
 	/**
-	 *
-	 * @return
+
+	 @return
 	 */
 	public int getFrame ()
 	{
@@ -289,12 +297,12 @@ public abstract class Player
 	}
 
 	/**
-	 *
-	 * @param file
-	 *
-	 * @return
-	 *
-	 * @throws IOException
+
+	 @param file
+
+	 @return
+
+	 @throws IOException
 	 */
 	public static Image[] loadImage (String file) throws IOException
 	{
@@ -308,8 +316,8 @@ public abstract class Player
 	}
 
 	/**
-	 *
-	 * @return
+
+	 @return
 	 */
 	public int[][][] getTileCodes ()
 	{
@@ -325,7 +333,7 @@ public abstract class Player
 	}
 
 	/**
-	 *
+
 	 */
 	public void repaint ()
 	{
@@ -333,7 +341,7 @@ public abstract class Player
 	}
 
 	/**
-	 *
+
 	 */
 	public void jump ()
 	{
@@ -346,11 +354,10 @@ public abstract class Player
 	public void fall ()
 	{
 		velocity = 0;
-		move ();
 	}
 
 	/**
-	 *
+
 	 */
 	public void move ()
 	{
@@ -360,12 +367,13 @@ public abstract class Player
 			return;
 		}
 		velocity += JUMP_ACCEL;
-		if (velocity < 0)
+		if (velocity < -JUMP_VEL_MAX)
 		{
-			if (velocity < -JUMP_VEL_MAX)
-			{
-				velocity = -JUMP_VEL_MAX;
-			}
+			velocity = -JUMP_VEL_MAX;
+		}
+		if (velocity > JUMP_VEL_MAX)
+		{
+			velocity = JUMP_VEL_MAX;
 		}
 		//if (velocity > 0)
 		//{
@@ -374,25 +382,25 @@ public abstract class Player
 		//		velocity = -JUMP_VEL_MAX;
 		//	}
 		//}
-		if (velocity > 0)
+		/*if (velocity > 0)
+		 {
+		 setY ((int) (getY () + velocity));
+		 }*/
+		if (!currLevel.getSurroundings (getX (), getY (), getHeight ())[2] && velocity <= 0)
 		{
 			setY ((int) (getY () + velocity));
 		}
-		if (!currLevel.getSurroundings (getX (), getY (), getHeight ())[0] && velocity >= 0)
+		if (currLevel.getSurroundings (getX (), getY (), getHeight ())[2] && velocity <= 0)
 		{
-			setY ((int) (getY () + velocity));
+			fall ();
+			setY ((int) (getY () / SupaMobstaBros.TILE_HEIGHT) * SupaMobstaBros.TILE_HEIGHT);
 		}
 		if (currLevel.getSurroundings (getX (), getY (), getHeight ())[0] && velocity >= 0)
 		{
-			velocity = 0;
-			setY ((int) (getY () / SupaMobstaBros.TILE_HEIGHT) * SupaMobstaBros.TILE_HEIGHT);
-		}
-		if (currLevel.getSurroundings (getX (), getY (), getHeight ())[2] && velocity < 0)
-		{
-			velocity = 0;
+			fall();
 		}
 		//System.out.println (velocity + " new");
-		}
+	}
 
 	public boolean[] canMove ()
 	{
@@ -405,16 +413,16 @@ public abstract class Player
 		return ret;
 	}
 
-	public void setSpeed(double speed)
+	public void setSpeed (double speed)
 	{
 		this.speed = speed;
 	}
-	
-	public double getSpeed()
+
+	public double getSpeed ()
 	{
 		return speed;
 	}
-	
+
 	public void walk (boolean forward)
 	{
 	}

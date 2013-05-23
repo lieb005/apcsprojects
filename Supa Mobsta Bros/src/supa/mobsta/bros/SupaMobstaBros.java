@@ -5,9 +5,11 @@
 package supa.mobsta.bros;
 
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,40 +24,42 @@ import javax.swing.JLabel;
 import javax.swing.Timer;
 
 /**
- *
- * @author 314Chan Telecommunications, LLC.
+
+ @author 314Chan Telecommunications, LLC.
  */
 public class SupaMobstaBros extends Canvas implements KeyListener, ActionListener, FocusListener
 {
 
 	/**
-	 *
+
 	 */
 	public static final int TILE_WIDTH = 32,
 			/**
-			 *
+
 			 */
 			SCREEN_WIDTH = 24,
 			/**
-			 *
+
 			 */
-			TILE_HEIGHT = TILE_WIDTH,
+			TILE_HEIGHT = 32,
 			/**
-			 *
+
 			 */
 			SCREEN_HEIGHT = 12;
 	private World currWorld;
 	private BufferedImage view;
 	private int currLevel = 0;
 	/**
-	 *
+
 	 */
 	public final static boolean DEBUG = true;
 	/**
-	 *
+
 	 */
 	private final static int time = 1000 / 20;
 	private Timer drawer = new Timer (time, this);
+	private Timer timeout = new Timer (1000/6, this);
+	
 	// up, down, left, right, jump, shift
 	private boolean[] keys = new boolean[]
 	{
@@ -83,8 +87,8 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 	}
 
 	/**
-	 *
-	 * @param string Level file to import
+
+	 @param string Level file to import
 	 */
 	SupaMobstaBros (String string) throws FileNotFoundException
 	{
@@ -92,8 +96,8 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 	}
 
 	/**
-	 *
-	 * @param ke
+
+	 @param ke
 	 */
 	@Override
 	public void keyTyped (KeyEvent ke)
@@ -101,8 +105,8 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 	}
 
 	/**
-	 *
-	 * @param ke
+
+	 @param ke
 	 */
 	@Override
 	public void keyPressed (KeyEvent ke)
@@ -136,8 +140,8 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 	}
 
 	/**
-	 *
-	 * @param ke
+
+	 @param ke
 	 */
 	@Override
 	public void keyReleased (KeyEvent ke)
@@ -169,8 +173,8 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 	}
 
 	/**
-	 *
-	 * @param g
+
+	 @param g
 	 */
 	@Override
 	public void paint (Graphics g)
@@ -186,6 +190,9 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 		i.getGraphics ().drawImage (view, 0, 0, null);
 
 		g.drawImage (i, 0, 0, null);
+		g.setColor (Color.BLUE);
+		g.setFont (new Font ("Ariel", Font.BOLD, 24));
+		g.drawString (currWorld.getLevel (currLevel).getCountdown (), 5, 5);
 		/*
 		 * if (DEBUG)
 		 * {
@@ -208,8 +215,8 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 	}
 
 	/**
-	 *
-	 * @param g
+
+	 @param g
 	 */
 	@Override
 	public void update (Graphics g)
@@ -220,8 +227,8 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 	}
 
 	/**
-	 *
-	 * @return
+
+	 @return
 	 */
 	public BufferedImage getView ()
 	{
@@ -229,7 +236,7 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 	}
 
 	/**
-	 *
+
 	 */
 	public static void lose ()
 	{
@@ -253,7 +260,7 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 	}
 
 	/**
-	 *
+
 	 */
 	public static void win ()
 	{
@@ -276,82 +283,95 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 	}
 
 	/**
-	 *
-	 * @param ae
+
+	 @param ae
 	 */
 	@Override
 	public void actionPerformed (ActionEvent ae)
 	{
-		for (Player p : currWorld.getLevel (currLevel).getPlayers ())
+		String aestr = ae.toString (), drawstr = drawer.toString (), timoutstr = timeout.toString ();
+		aestr = aestr.substring (aestr.lastIndexOf ("javax"));
+				drawstr = drawstr.substring (drawstr.lastIndexOf ("javax"));
+				timoutstr = timoutstr.substring (timoutstr.lastIndexOf ("javax")) ;
+		System.out.println (aestr + ", " + drawstr + ", " + timoutstr+ "    " + aestr.equals (drawstr) + ", " + aestr.equals (timoutstr));
+		if (ae.getSource ().equals (drawer))
 		{
-			if (p != null)
+			for (Player p : currWorld.getLevel (currLevel).getPlayers ())
 			{
-				p.move ();
+				if (p != null)
+				{
+					p.move ();
+				}
 			}
-		}
-		if (currWorld.getLevel (currLevel).win)
-		{
-			win ();
-		}
-		if (currWorld.getLevel (currLevel).lose)
-		{
-			lose ();
-		}
-		repaint ();
-		//up
-		if (keys[0]);
-		//down
-		if (keys[1]);
-		//left
-		if (keys[2])
-		{
-			if (keys[5])
+			if (currWorld.getLevel (currLevel).win)
 			{
-				//run left
-				currWorld.getLevel (currLevel).getTux ().run (false);
+				win ();
 			}
-			else
+			if (currWorld.getLevel (currLevel).lose)
 			{
-				//walk Left
-				currWorld.getLevel (currLevel).getTux ().walk (false);
+				lose ();
 			}
-		}
-		//right
-		if (keys[3])
-		{
-			if (keys[5])
+			repaint ();
+			//up
+			if (keys[0]);
+			//down
+			if (keys[1]);
+			//left
+			if (keys[2])
 			{
-				//run Right
-				currWorld.getLevel (currLevel).getTux ().run (true);
+				if (keys[5])
+				{
+					//run left
+					currWorld.getLevel (currLevel).getTux ().run (false);
+				}
+				else
+				{
+					//walk Left
+					currWorld.getLevel (currLevel).getTux ().walk (false);
+				}
 			}
-			else
+			//right
+			if (keys[3])
 			{
-				//walk Right
-				currWorld.getLevel (currLevel).getTux ().walk (true);
+				if (keys[5])
+				{
+					//run Right
+					currWorld.getLevel (currLevel).getTux ().run (true);
+				}
+				else
+				{
+					//walk Right
+					currWorld.getLevel (currLevel).getTux ().walk (true);
+				}
 			}
-		}
 
-		//space
-		if (keys[4])
-		{
-			//System.out.println ("space pressed");
-			currWorld.getLevel (currLevel).getTux ().jump ();
+			//space
+			if (keys[4])
+			{
+				//System.out.println ("space pressed");
+				currWorld.getLevel (currLevel).getTux ().jump ();
+			}
+			else if (oldSpace != keys[4])
+			//else
+			{
+				//System.out.println ("space not pressed");
+				currWorld.getLevel (currLevel).getTux ().fall ();
+				keys[4] = false;
+				oldSpace = false;
+			}
+			if (!keys[2] && !keys[3])
+			{
+				currWorld.getLevel (currLevel).getTux ().stop (true);
+			}
+			if (currWorld.getLevel (currLevel).win)
+			{
+				currLevel++;
+			}
 		}
-		else if (oldSpace != keys[4])
-		//else
+		if (ae.getSource ().equals (timeout))
 		{
-			//System.out.println ("space not pressed");
-			currWorld.getLevel (currLevel).getTux ().fall ();
-			keys[4] = false;
-			oldSpace = false;
-		}
-		if (!keys[2] && !keys[3])
-		{
-			currWorld.getLevel (currLevel).getTux ().stop(true);
-		}
-		if (currWorld.getLevel (currLevel).win)
-		{
-			currLevel++;
+			currWorld.getLevel (currLevel).countdown();
+			redraw();
 		}
 	}
 
@@ -372,5 +392,9 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 		{
 			false, false, false, false, false, false
 		};
+	}
+
+	private void redraw ()
+	{
 	}
 }

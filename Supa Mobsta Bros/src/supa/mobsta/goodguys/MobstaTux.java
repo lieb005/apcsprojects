@@ -43,6 +43,7 @@ public class MobstaTux extends GoodGuy
 		{
 			setFrames (loadImage ("src/supa/mobsta/img/Tux.png"));
 			setFrame(1);
+			setHeight (2);
 			//setSize(32, 32);
 		} catch (IOException ex)
 		{
