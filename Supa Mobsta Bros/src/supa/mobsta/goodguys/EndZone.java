@@ -49,4 +49,17 @@ public class EndZone extends GoodGuy
 			f.setVisible (true);
 		}
 	}
+
+	@Override
+	public void move ()
+	{
+		// don't do anything
+	}
+
+	@Override
+	public void step ()
+	{
+		// don't do anything
+	}
+	
 }

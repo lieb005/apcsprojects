@@ -9,7 +9,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,6 +21,7 @@ import java.io.FileNotFoundException;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.Timer;
+import supa.mobsta.goodguys.MobstaTux;
 
 /**
 
@@ -58,14 +58,14 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 	 */
 	private final static int time = 1000 / 20;
 	private Timer drawer = new Timer (time, this);
-	private Timer timeout = new Timer (1000/6, this);
-	
+	private Timer timeout = new Timer (8000 / 10, this);
 	// up, down, left, right, jump, shift
 	private boolean[] keys = new boolean[]
 	{
 		false, false, false, false, false, false
 	};
 	private boolean oldSpace = false;
+	private boolean r = false;
 
 	SupaMobstaBros () throws FileNotFoundException
 	{
@@ -79,11 +79,14 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 
 	SupaMobstaBros (World world)
 	{
+		setFocusable (true);
 		setPreferredSize (new Dimension (SCREEN_WIDTH * TILE_WIDTH, SCREEN_HEIGHT * TILE_HEIGHT));
 		currWorld = world;
 		repaint ();
 		requestFocus ();
-		drawer.start ();
+			drawer.start ();
+
+		timeout.start ();
 	}
 
 	/**
@@ -130,6 +133,10 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 				oldSpace = keys[4];
 				keys[4] = true;
 				break;
+			/*case KeyEvent.VK_R:
+				r = true;
+				drawer.start ();
+				break;*/
 		}
 		keys[5] = ke.isShiftDown ();
 		if (ke.getKeyChar () - 0x30 >= 0 && ke.getKeyChar () - 30 < 10)
@@ -137,6 +144,7 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 			currLevel = ke.getKeyChar () - 0x30;
 		}
 		repaint ();
+		System.out.println ("\n\n\n\n" + ke.getKeyChar () + "\n\n\n\n");
 	}
 
 	/**
@@ -172,6 +180,22 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 		repaint ();
 	}
 
+	private void timeoutDraw (Graphics g)
+	{
+		g.setColor (Color.BLUE);
+		g.setFont (new Font ("Ariel", Font.BOLD, 24));
+		g.drawString (currWorld.getLevel (currLevel).getCountdown (), 5, 28);
+	}
+
+	@Override
+	public void update (Graphics g)
+	{
+		BufferedImage i = new BufferedImage (g.getClipBounds ().width, g.getClipBounds ().height, BufferedImage.TYPE_INT_ARGB_PRE);
+
+		super.update (i.getGraphics ());
+		g.drawImage (i, 0, 0, null);
+	}
+
 	/**
 
 	 @param g
@@ -190,9 +214,7 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 		i.getGraphics ().drawImage (view, 0, 0, null);
 
 		g.drawImage (i, 0, 0, null);
-		g.setColor (Color.BLUE);
-		g.setFont (new Font ("Ariel", Font.BOLD, 24));
-		g.drawString (currWorld.getLevel (currLevel).getCountdown (), 5, 5);
+		timeoutDraw (g);
 		/*
 		 * if (DEBUG)
 		 * {
@@ -212,18 +234,6 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 		 * f.setVisible(true);
 		 * }
 		 */
-	}
-
-	/**
-
-	 @param g
-	 */
-	@Override
-	public void update (Graphics g)
-	{
-		BufferedImage i = new BufferedImage (g.getClipBounds ().width, g.getClipBounds ().height, BufferedImage.TYPE_INT_ARGB_PRE);
-		super.update (i.getGraphics ());
-		g.drawImage (i, 0, 0, null);
 	}
 
 	/**
@@ -289,11 +299,15 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 	@Override
 	public void actionPerformed (ActionEvent ae)
 	{
+		/*if (r && false)
+		{
+			drawer.stop ();
+		}
 		String aestr = ae.toString (), drawstr = drawer.toString (), timoutstr = timeout.toString ();
 		aestr = aestr.substring (aestr.lastIndexOf ("javax"));
-				drawstr = drawstr.substring (drawstr.lastIndexOf ("javax"));
-				timoutstr = timoutstr.substring (timoutstr.lastIndexOf ("javax")) ;
-		System.out.println (aestr + ", " + drawstr + ", " + timoutstr+ "    " + aestr.equals (drawstr) + ", " + aestr.equals (timoutstr));
+		drawstr = drawstr.substring (drawstr.lastIndexOf ("javax"));
+		timoutstr = timoutstr.substring (timoutstr.lastIndexOf ("javax"));*/
+		//System.out.println (aestr + ", " + drawstr + ", " + timoutstr+ "    " + aestr.equals (drawstr) + ", " + aestr.equals (timoutstr));
 		if (ae.getSource ().equals (drawer))
 		{
 			for (Player p : currWorld.getLevel (currLevel).getPlayers ())
@@ -301,6 +315,12 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 				if (p != null)
 				{
 					p.move ();
+					p.step();
+					if (p instanceof MobstaTux)
+					{
+						System.out.println (p.getX () + ", " + p.getY ());
+					}
+					currWorld.getLevel (currLevel).setLocation (currWorld.getLevel (currLevel).getTux ().getX ());
 				}
 			}
 			if (currWorld.getLevel (currLevel).win)
@@ -370,9 +390,15 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 		}
 		if (ae.getSource ().equals (timeout))
 		{
-			currWorld.getLevel (currLevel).countdown();
-			redraw();
+			currWorld.getLevel (currLevel).countdown ();
+			repaint ();
+			if (currWorld.getLevel (currLevel).getCount () <= 0)
+			{
+				timeout.stop ();
+				lose ();
+			}
 		}
+
 	}
 
 	@Override
@@ -392,9 +418,5 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 		{
 			false, false, false, false, false, false
 		};
-	}
-
-	private void redraw ()
-	{
 	}
 }

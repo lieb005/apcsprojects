@@ -4,7 +4,7 @@
  */
 package supa.mobsta.enemies;
 
-import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 /**
  *
@@ -13,9 +13,15 @@ import java.awt.image.BufferedImage;
 public class Gangstas extends Enemy
 {
 
-	@Override
-	public BufferedImage setFrame (int frame)
+	public Gangstas ()
 	{
-		throw new UnsupportedOperationException ("Not supported yet.");
+		try{
+		setFrames (loadImage ("src/supa/mobsta/img/Gangsta.png"));
+		}catch(IOException e)
+		{
+			e.printStackTrace ();
+		}
+		setFrame (0);
 	}
+
 }

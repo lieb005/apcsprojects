@@ -13,28 +13,28 @@ import supa.mobsta.bros.Level;
 import supa.mobsta.bros.SupaMobstaBros;
 
 /**
- *
- * @author mark
+
+ @author mark
  */
 public class MobstaTux extends GoodGuy
 {
 
 	/**
-	 * Speed at which to change Tux's location each step while running
+	 Speed at which to change Tux's location each step while running
 	 */
 	public static final int RUN = 12;
 	/**
-	 * Speed at which to change Tux's location each step while walking
+	 Speed at which to change Tux's location each step while walking
 	 */
 	public static final int WALK = 8;
 	/**
-	 * Rate at which to decrease Tux's speed for each step of a stop
+	 Rate at which to decrease Tux's speed for each step of a stop
 	 */
 	public static final double STOP = .7;
 	private boolean mainTuxness;
 
 	/**
-	 *
+
 	 */
 	public MobstaTux (boolean isIt_CouldItBe___ItIs__MainTux)
 	{
@@ -42,8 +42,8 @@ public class MobstaTux extends GoodGuy
 		try
 		{
 			setFrames (loadImage ("src/supa/mobsta/img/Tux.png"));
-			setFrame(1);
-			setHeight (2);
+			setFrame (0);
+			setHeight (1);
 			//setSize(32, 32);
 		} catch (IOException ex)
 		{
@@ -78,7 +78,7 @@ public class MobstaTux extends GoodGuy
 	}
 
 	/**
-	 *
+
 	 */
 	@Override
 	public void repaint ()
@@ -93,9 +93,9 @@ public class MobstaTux extends GoodGuy
 	}
 
 	/**
-	 * Runs tux forward one step.
-	 *
-	 * @param forward Move the character forward?
+	 Runs tux forward one step.
+
+	 @param forward Move the character forward?
 	 */
 	@Override
 	public void run (boolean forward)
@@ -128,7 +128,14 @@ public class MobstaTux extends GoodGuy
 		else
 		{
 			setSpeed (-WALK);
-
+		}
+		if (getFrame () == 1 || getFrame () == 2)
+		{
+			setFrame (getFrame () % 3);
+		}
+		if (getFrame () == 3 || getFrame () == 4)
+		{
+			setFrame (getFrame () % 7);
 		}
 	}
 
@@ -149,6 +156,38 @@ public class MobstaTux extends GoodGuy
 			{
 				setSpeed ((getSpeed () - 0.5) / 2 + STOP);
 			}
+		}
+	}
+
+	@Override
+	public void step ()
+	{
+		if (cantMove ()[0] && getSpeed () < 1)
+		{
+			direction = !direction;
+			setSpeed (-getSpeed ());
+			flipForward (false);
+			System.out.println ("left blocked");
+		}
+		else if (!cantMove ()[0] && getSpeed () < 1)
+		{
+			System.out.println ("left good");
+			setX (getX () + (int) getSpeed ());
+		}
+		else if (cantMove ()[1] && getSpeed () > 1)
+		{
+			System.out.println ("right blocked");
+
+			direction = !direction;
+			setSpeed (-getSpeed ());
+			flipForward (true);
+		}
+		else if (!cantMove ()[1] && getSpeed () > 1)
+		{
+			System.out.println ("right good  " + getSpeed ());
+
+			setX (getX () + (int) getSpeed ());
+			
 		}
 	}
 }

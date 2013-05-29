@@ -7,11 +7,12 @@ package supa.mobsta.bros;
 import java.applet.AudioClip;
 import java.awt.Canvas;
 import java.awt.Graphics;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Logger;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
 
@@ -84,7 +85,21 @@ public class SMB_Container extends JApplet
 			f.setVisible (true);
 		}
 		repaint ();
+		s.setFocusable (true);
 		s.requestFocusInWindow ();
+		s.addFocusListener (new FocusListener () {
+
+			@Override
+			public void focusGained (FocusEvent fe)
+			{
+				s.requestFocusInWindow ();
+			}
+
+			@Override
+			public void focusLost (FocusEvent fe)
+			{
+			}
+		});
 		addKeyListener (s);
 		getContentPane ().addKeyListener (s);
 		try

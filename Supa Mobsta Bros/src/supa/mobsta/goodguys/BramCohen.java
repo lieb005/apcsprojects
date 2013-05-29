@@ -4,18 +4,25 @@
  */
 package supa.mobsta.goodguys;
 
-import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 /**
- *
- * @author mark
+
+ @author mark
  */
 public class BramCohen extends GoodGuy
 {
 
-	@Override
-	public BufferedImage setFrame (int frame)
+	public BramCohen ()
 	{
-		throw new UnsupportedOperationException ("Not supported yet.");
+		try
+		{
+			setFrames (loadImage ("src/supa/mobsta/img/BramCohen.png"));
+		} catch (IOException e)
+		{
+			e.printStackTrace ();
+		}
+		setFrame (0);
+		setHeight (1);
 	}
 }

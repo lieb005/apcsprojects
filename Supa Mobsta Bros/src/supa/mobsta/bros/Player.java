@@ -4,12 +4,14 @@
  */
 package supa.mobsta.bros;
 
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import javax.naming.OperationNotSupportedException;
+import supa.mobsta.goodguys.AlCapone;
+import supa.mobsta.goodguys.BramCohen;
 import supa.mobsta.goodguys.EndZone;
 import supa.mobsta.goodguys.MobstaTux;
 
@@ -19,7 +21,7 @@ import supa.mobsta.goodguys.MobstaTux;
  */
 public abstract class Player
 {
-	//coordinates for the top-Left of the player
+	//coordinates for the top-Left of the player in pixels
 
 	private int x = 0, y = 0;
 	// size of the player
@@ -80,6 +82,13 @@ public abstract class Player
 	private double speed = 0.0;
 	// current jump of player
 	private int currJump = JUMP_START;
+	// is the player facing forwards?
+	public boolean direction = true;
+	public static final double WALK = 3.0;
+
+	public Player ()
+	{
+	}
 
 	/**
 
@@ -117,8 +126,12 @@ public abstract class Player
 			case 0:
 				break;
 			case 1:
+				player = new AlCapone ();
+
 				break;
 			case 2:
+				player = new BramCohen ();
+
 				break;
 			case 3:
 				break;
@@ -180,8 +193,8 @@ public abstract class Player
 	 */
 	public void setLocation (int x, int y)
 	{
-		this.x = x;
-		this.y = y;
+		setX (x);
+		setY (y);
 	}
 
 	/**
@@ -345,7 +358,7 @@ public abstract class Player
 	 */
 	public void jump ()
 	{
-		if (velocity == 0 && !currLevel.getSurroundings (getX (), getY (), getHeight ())[0])
+		if (velocity == 0 && !currLevel.getSurroundings (getX (), getY (), getHeight (), this.getClass ().getName ())[0])
 		{
 			velocity = JUMP_VEL_START;
 		}
@@ -361,12 +374,7 @@ public abstract class Player
 	 */
 	public void move ()
 	{
-		// we don't want the endzone to fall
-		if (this instanceof EndZone)
-		{
-			return;
-		}
-		velocity += JUMP_ACCEL;
+		velocity -= JUMP_ACCEL;
 		if (velocity < -JUMP_VEL_MAX)
 		{
 			velocity = -JUMP_VEL_MAX;
@@ -375,41 +383,30 @@ public abstract class Player
 		{
 			velocity = JUMP_VEL_MAX;
 		}
-		//if (velocity > 0)
-		//{
-		//	if (velocity < -JUMP_VEL_MAX)
-		//	{
-		//		velocity = -JUMP_VEL_MAX;
-		//	}
-		//}
-		/*if (velocity > 0)
-		 {
-		 setY ((int) (getY () + velocity));
-		 }*/
-		if (!currLevel.getSurroundings (getX (), getY (), getHeight ())[2] && velocity <= 0)
+		boolean surroundings[] = currLevel.getSurroundings (getX (), getY (), getHeight (), this.getClass ().getName ());
+		if (!surroundings[2] && velocity <= 0)
 		{
 			setY ((int) (getY () + velocity));
 		}
-		if (currLevel.getSurroundings (getX (), getY (), getHeight ())[2] && velocity <= 0)
+		if (surroundings[2] && velocity <= 0)
 		{
-			fall ();
+			velocity = 0;
+			// used to round down to the nearest block
 			setY ((int) (getY () / SupaMobstaBros.TILE_HEIGHT) * SupaMobstaBros.TILE_HEIGHT);
 		}
-		if (currLevel.getSurroundings (getX (), getY (), getHeight ())[0] && velocity >= 0)
+		if (surroundings[0] && velocity >= 0)
 		{
-			fall();
+			fall ();
 		}
 		//System.out.println (velocity + " new");
 	}
 
-	public boolean[] canMove ()
+	// can move left or right
+	public boolean[] cantMove ()
 	{
-		boolean[] ret = new boolean[]
-		{
-			false, false
-		};
-		ret[0] = currLevel.getSurroundings (getX (), getY (), getHeight ())[1];
-		ret[1] = currLevel.getSurroundings (getX (), getY (), getHeight ())[3];
+		boolean[] ret = new boolean[2];
+		ret[0] = currLevel.getSurroundings (getX (), getY (), getHeight (), this.getClass ().getName ())[1];
+		ret[1] = currLevel.getSurroundings (getX (), getY (), getHeight (), this.getClass ().getName ())[3];
 		return ret;
 	}
 
@@ -425,6 +422,14 @@ public abstract class Player
 
 	public void walk (boolean forward)
 	{
+		if (forward)
+		{
+			setSpeed (-WALK);
+		}
+		else
+		{
+			setSpeed (WALK);
+		}
 	}
 
 	public void run (boolean forward)
@@ -433,5 +438,49 @@ public abstract class Player
 
 	public void stop (boolean skid)
 	{
+		setSpeed (0.0);
+	}
+
+	public void step ()
+	{
+		if (getSpeed () == 0)
+		{
+			walk (true);
+		}
+		if (cantMove ()[0] && getSpeed () < 1)
+		{
+			direction = !direction;
+			walk (direction);
+
+			flipForward (false);
+		}
+		else if (!cantMove ()[0] && getSpeed () < 1)
+		{
+			setX (getX () + (int) getSpeed ());
+		}
+		else if (cantMove ()[1] && getSpeed () > 1)
+		{
+			direction = !direction;
+			walk (direction);
+			flipForward (true);
+		}
+		else if (!cantMove ()[1] && getSpeed () > 1)
+		{
+			setX (getX () + (int) getSpeed ());
+		}
+	}
+
+	public void flipForward (boolean forward)
+	{
+		if (forward != direction)
+		{
+			int w = getWidth (), h = Math.max (getHeight () * SupaMobstaBros.TILE_HEIGHT, SupaMobstaBros.TILE_HEIGHT);
+			BufferedImage buffer = new BufferedImage (w, h, BufferedImage.TYPE_INT_ARGB);
+			Graphics2D g = buffer.createGraphics ();
+			//g.drawImage(img, 0, 0, w, h, w, 0, 0, h, null);
+			g.drawImage (frames[getFrame ()], 0, 0, w, h, w, 0, 0, h, null);
+			g.dispose ();
+			frames[getFrame ()] = buffer;
+		}
 	}
 }

@@ -59,7 +59,7 @@ public final class Level
 	// protip: to skip to last level, set 'win' to true, and run. (Perfect for the situation.)
 	public boolean win = false;
 	public boolean lose = false;
-	private int countdown = (int) 400.99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999;
+	private int countdown = (int) 400;
 
 	/**
 	 This Creates a level from the specified Data with the given name.
@@ -153,14 +153,15 @@ public final class Level
 					currCol[n] = tiles[rawTiles[i][n][1]][rawTiles[i][n][2]];
 				}
 				enemy = 0;
-				for (int n = SCREEN_HEIGHT - 1; n >= 0; n--)
+				for (int k = 0; k < SupaMobstaBros.SCREEN_HEIGHT; k++)
 				{
-					if (rawTiles[i][n][0] != 0)
+					if (rawTiles[i][k][0] != 0)
 					{
 						if (enemy == 0)
 						{
-							enemy = rawTiles[i][n][0];
-							enemyY = n;
+							enemy = rawTiles[i][k][0];
+							enemyY = SupaMobstaBros.SCREEN_HEIGHT - k;
+							break;
 						}
 						else
 						{
@@ -274,6 +275,10 @@ public final class Level
 	 */
 	public BufferedImage getFull ()
 	{
+		if (fullLevel == null)
+		{
+			makeFull ();
+		}
 		return fullLevel;
 	}
 
@@ -383,7 +388,7 @@ public final class Level
 	{/*
 		 * if (Math.signum (amount) == -1)
 		 * {
-		 * if (mainTux.canMove ()[1])
+		 * if (mainTux.cantMove ()[1])
 		 * {
 		 * if (!((getCurrX () + amount) < 0 && (getCurrX () + amount) > (getFull
 		 * ().getWidth () - TILE_WIDTH)))
@@ -394,7 +399,7 @@ public final class Level
 		 * }
 		 * else if (Math.signum (amount) == 1)
 		 * {
-		 * if (mainTux.canMove ()[0])
+		 * if (mainTux.cantMove ()[0])
 		 * {
 		 */
 		if (!((getCurrX () + amount) < 0 && (getCurrX () + amount) > (getFull ().getWidth () - TILE_WIDTH)))
@@ -405,7 +410,6 @@ public final class Level
 		 * }
 		 * }
 		 */
-		mainTux.setX (getCurrX ());
 		// padded so that Tux is Centered
 		if (getCurrX () + TILE_WIDTH >= getFull ().getWidth ())
 		{
@@ -439,6 +443,7 @@ public final class Level
 		view = move (0);
 		BufferedImage buffer = new BufferedImage (TILE_WIDTH * SCREEN_WIDTH, TILE_HEIGHT * SCREEN_HEIGHT, BufferedImage.TYPE_INT_ARGB_PRE);
 		Graphics g = buffer.getGraphics ();
+
 		g.drawImage (view, 0, 0, null);
 		//g.drawImage(mainTux.getImage(), mainTux.getX(), mainTux.getY(), null);
 		g.drawImage (drawPlayers (getStartX ()), 0, 0, null);
@@ -495,7 +500,8 @@ public final class Level
 				 * (Ex - startx) = 0
 				 */
 				int dx = (player.getX () - getStartX ());
-				g.drawImage (player.getImage (), dx, SCREEN_HEIGHT * TILE_HEIGHT - player.getY (), player.getWidth (), player.getHeight (), null);
+
+				g.drawImage (player.getImage (), dx, SCREEN_HEIGHT * TILE_HEIGHT - player.getY (), player.getWidth (), SupaMobstaBros.TILE_HEIGHT * player.getHeight (), null);
 				//}
 			}
 		}
@@ -573,7 +579,7 @@ public final class Level
 		return ret;
 	}
 
-	public boolean[] getSurroundings (int x, int y, int height)
+	public boolean[] getSurroundings (int x, int y, int height, String caller)
 	{
 		//System.out.println(currLevelCodes);
 		// above, right, below, left
@@ -581,54 +587,61 @@ public final class Level
 		{
 			false, false, false, false
 		};
+		int column = x / SupaMobstaBros.TILE_WIDTH;
+		int row = y / SupaMobstaBros.TILE_HEIGHT;
 		int[][][] tiles = levelCodes;
-		if (y / SupaMobstaBros.TILE_HEIGHT >= 0 && y / SupaMobstaBros.TILE_HEIGHT < SupaMobstaBros.SCREEN_HEIGHT)
+		if (column >= 0 && column < tiles.length)
 		{
-			if (x / SupaMobstaBros.TILE_WIDTH >= 0 && x / SupaMobstaBros.TILE_WIDTH < tiles.length)
+			if (row >= 0 && row < SupaMobstaBros.SCREEN_HEIGHT)
 			{
 				//above
-				if (y / SupaMobstaBros.TILE_HEIGHT > SupaMobstaBros.TILE_HEIGHT)
+				if (row > SupaMobstaBros.TILE_HEIGHT)
 				{
 					//+ height
-					surrounds[0] = (tiles[x / SupaMobstaBros.TILE_WIDTH][(y / SupaMobstaBros.TILE_HEIGHT) + 1][1] < SupaMobstaBros.SCREEN_HEIGHT);
+					surrounds[0] = (tiles[column][row + 1][1] > 0);
 				}
 				//right
-				if ((x / SupaMobstaBros.TILE_WIDTH) + 2 < tiles.length)
+				if (column + 1 < tiles.length)
 				{
-					surrounds[1] = (tiles[(x / SupaMobstaBros.TILE_WIDTH) + 2][ Math.min (SupaMobstaBros.SCREEN_HEIGHT - 1, (y / SupaMobstaBros.TILE_HEIGHT))][1] > 0);
+
+					surrounds[1] = (tiles[column + 1][row - height + 1][1] > 0);
+				}
+				else
+				{
+					surrounds[1] = true;
 				}
 				//below
-				if ((y / SupaMobstaBros.TILE_HEIGHT) - height > 0)
+				if (row - height > 0)
 				{
 
 					// set to false if you want to force the ground to be there always
-					if (false)
+					if (true)
 					{
 						boolean below, belowright;
 
-						below = (tiles[(int) ((x / SupaMobstaBros.TILE_WIDTH) + .5)][(int) (((y / SupaMobstaBros.TILE_HEIGHT) - height) + .5)][1] > 0);
-						
-						boolean BELOW_RIGHT = false;
-						
+						below = (tiles[column][row - height][1] > 0);
+
+						boolean BELOW_RIGHT = true;
+
 						if (BELOW_RIGHT)
 						{
-							if (x / SupaMobstaBros.TILE_WIDTH + 1 < tiles.length)
+							if (column + 1 < tiles.length)
 							{
-								belowright = (tiles[(int) ((x / SupaMobstaBros.TILE_WIDTH + 1) + .5)][(y / SupaMobstaBros.TILE_HEIGHT) - height][1] > 0);
+								belowright = (tiles[column + 1][row - height][1] > 0);
 							}
 							else
 							{
-								belowright = false;
+								belowright = true;
 							}
-							System.out.println ("below: " + below + "        belowright: " + belowright);
+							//System.out.println ("below: " + below + "        belowright: " + belowright);
 							surrounds[2] = below || belowright;
 						}
 						else
 						{
-							System.out.println ("below: " + below);
+							//System.out.println ("below: " + below);
 							surrounds[2] = below;
 						}
-						System.out.println ("x, y, h" + (int) ((x / SupaMobstaBros.TILE_WIDTH + 1) + .5) + ", " + (int) ((y / SupaMobstaBros.TILE_HEIGHT) + .5) + ", " + height + "\n");
+						//System.out.println (caller + "   x, y, h  " + (int) ((x / SupaMobstaBros.TILE_WIDTH) + .5) + ", " + (int) ((y / SupaMobstaBros.TILE_HEIGHT) + .5) + ", " + height + "\n");
 					}
 					else if (false)
 					{
@@ -636,7 +649,7 @@ public final class Level
 					}
 					else
 					{
-						if ((y / SupaMobstaBros.TILE_HEIGHT)- height > 0)
+						if ((y / SupaMobstaBros.TILE_HEIGHT) - height > 0)
 						{
 							surrounds[2] = true;
 						}
@@ -647,9 +660,13 @@ public final class Level
 					 }*/
 				}
 				//left
-				if (x / SupaMobstaBros.TILE_WIDTH - 1 > 0)
+				if (column - 1 >= 0)
 				{
-					surrounds[3] = (tiles[x / SupaMobstaBros.TILE_WIDTH - 1][ Math.min (SupaMobstaBros.SCREEN_HEIGHT - 1, (y / SupaMobstaBros.TILE_HEIGHT))][1] > 0);
+					surrounds[3] = (tiles[column - 1][Math.min (SupaMobstaBros.SCREEN_HEIGHT - 1, row - height + 1)][1] > 0);
+				}
+				else
+				{
+					surrounds[3] = true;
 				}
 			}
 		}
@@ -669,6 +686,10 @@ public final class Level
 		 * System.out.println (b);
 		 * }
 		 */
+		if (caller.contains ("Mobsta"))
+		{
+			System.out.println ("Mobsta");
+		}
 		return surrounds;
 	}
 
@@ -684,5 +705,10 @@ public final class Level
 	String getCountdown ()
 	{
 		return String.valueOf (countdown);
+	}
+
+	int getCount ()
+	{
+		return countdown;
 	}
 }
