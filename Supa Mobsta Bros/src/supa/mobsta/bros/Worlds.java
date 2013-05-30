@@ -14,8 +14,8 @@ public enum Worlds
 {
 	// These are the names of our worlds associated to the files
 
-	Example ("src/Example.wld"),
-	World_1 ("src/World1.wld");
+	Example ("./Example.wld"),
+	World_1 ("./World1.wld");
 	private World world;
 	private String url;
 	// This function makes it so that 

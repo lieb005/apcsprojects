@@ -59,7 +59,7 @@ public abstract class Player
 
 
 	 */
-	public static final int JUMP_VEL_START = 30;
+	public static final int JUMP_VEL_START = 0;
 	/**
 	 Max Velocity
 
@@ -71,7 +71,7 @@ public abstract class Player
 
 
 	 */
-	public static final int JUMP_START = JUMP_MAX;
+	public static final int JUMP_START = 0;
 	// curent level on which we stand
 	private int standy = 0;
 	// Current step in a jump
@@ -374,7 +374,8 @@ public abstract class Player
 	 */
 	public void move ()
 	{
-		velocity -= JUMP_ACCEL;
+		if (this instanceof MobstaTux) ;
+		velocity += JUMP_ACCEL;
 		if (velocity < -JUMP_VEL_MAX)
 		{
 			velocity = -JUMP_VEL_MAX;
@@ -383,6 +384,7 @@ public abstract class Player
 		{
 			velocity = JUMP_VEL_MAX;
 		}
+		
 		boolean surroundings[] = currLevel.getSurroundings (getX (), getY (), getHeight (), this.getClass ().getName ());
 		if (!surroundings[2] && velocity <= 0)
 		{
@@ -405,8 +407,9 @@ public abstract class Player
 	public boolean[] cantMove ()
 	{
 		boolean[] ret = new boolean[2];
-		ret[0] = currLevel.getSurroundings (getX (), getY (), getHeight (), this.getClass ().getName ())[1];
-		ret[1] = currLevel.getSurroundings (getX (), getY (), getHeight (), this.getClass ().getName ())[3];
+		boolean[] surrounds = currLevel.getSurroundings (getX (), getY (), getHeight (), this.getClass ().getName ());
+		ret[0] = surrounds[1];
+		ret[1] = surrounds[3];
 		return ret;
 	}
 

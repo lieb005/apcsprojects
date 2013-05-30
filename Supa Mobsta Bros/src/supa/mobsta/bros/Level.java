@@ -41,7 +41,7 @@ public final class Level
 	/**
 
 	 */
-	public static final String palletteFile = "src/supa/mobsta/img/pallette.png";
+	public static final String palletteFile = "supa/mobsta/img/pallette.png";
 	private String name;
 	private BufferedImage fullLevel, view;
 	private Image[][] levelTiles;
@@ -96,7 +96,7 @@ public final class Level
 			}
 			int j, enemy, enemyY = 0, col, row;
 			String line;
-			for (int i = SupaMobstaBros.SCREEN_HEIGHT - 1; i >= 0; i--)
+			for (int i = 0; i < SupaMobstaBros.SCREEN_HEIGHT; i++)
 			{
 				line = lev[i];
 				if (line == null || line.isEmpty ())
@@ -240,7 +240,7 @@ public final class Level
 		Graphics g = fullLevel.getGraphics ();
 		g.setColor (Color.WHITE);
 		g.fillRect (0, 0, fullLevel.getWidth (), fullLevel.getHeight ());
-		for (int i = levelTiles[0].length - 1; i >= 0; i--)
+		for (int i = 0; i < levelTiles[0].length; i++)
 		{
 			for (int j = 0; j < levelTiles.length; j++)
 			{
@@ -292,8 +292,7 @@ public final class Level
 	public BufferedImage getSegment (int startx)
 	{
 		BufferedImage ret;
-		int x;
-		x = Math.min (Math.max (startx, 0), getFull ().getWidth () - SCREEN_WIDTH * TILE_WIDTH);
+		int x = Math.min (Math.max (startx, 0), getFull ().getWidth () - SCREEN_WIDTH * TILE_WIDTH);
 		if (getFull ().getWidth () >= TILE_WIDTH * SCREEN_WIDTH)
 		{
 			if (getFull ().getWidth () - x >= TILE_WIDTH * SCREEN_WIDTH)
@@ -310,6 +309,7 @@ public final class Level
 		{
 			ret = getFull ();
 		}
+		//currX = x;
 		/*
 		 * // TODO need to make it so that the players draw in the right
 		 * places,
@@ -468,7 +468,7 @@ public final class Level
 		for (int i = startx / TILE_WIDTH; i < ((startx + TILE_WIDTH - 1) / TILE_WIDTH) + SCREEN_WIDTH; i++)
 		{
 			player = players[i];
-			if (player != null)
+			if (player != null && !(player instanceof MobstaTux))
 			{
 				//player.setFrame(0);
 				//if (player.getX() >= ((int) (getCurrX () / TILE_WIDTH) * TILE_WIDTH)*SCREEN_WIDTH && player.getX() < ((int) (getCurrX () / TILE_WIDTH + 1) * TILE_WIDTH)*SCREEN_WIDTH)
@@ -509,7 +509,7 @@ public final class Level
 		{
 			lose = true;
 		}
-		//g.drawImage (mainTux.getImage (), getCurrX () - getStartX (), mainTux.getY (), mainTux.getWidth (), mainTux.getHeight (), null);
+		g.drawImage (mainTux.getImage (), getCurrX (), SCREEN_HEIGHT * TILE_HEIGHT - mainTux.getY (), mainTux.getWidth (), SupaMobstaBros.TILE_HEIGHT * mainTux.getHeight (), null);
 		return ret;
 	}
 
@@ -556,7 +556,8 @@ public final class Level
 			ret = currX;
 		}
 		currX = ret;
-		return ret;
+		//currX = Math.min (Math.max (mainTux.getX() * TILE_WIDTH, TILE_WIDTH/2), SCREEN_WIDTH*TILE_WIDTH / 2);
+		return currX;
 	}
 
 	private int getStartX ()
@@ -578,6 +579,7 @@ public final class Level
 		}
 		return ret;
 	}
+	//@SuppressWarnings("DeadBranch")
 
 	public boolean[] getSurroundings (int x, int y, int height, String caller)
 	{
@@ -587,10 +589,10 @@ public final class Level
 		{
 			false, false, false, false
 		};
-		int column = x / SupaMobstaBros.TILE_WIDTH;
-		int row = y / SupaMobstaBros.TILE_HEIGHT;
-		int[][][] tiles = levelCodes;
-		if (column >= 0 && column < tiles.length)
+		int column = (int) ((double) (x) / (double) SupaMobstaBros.TILE_WIDTH + .5);
+		int row = (int) ((double) (y) / (double) SupaMobstaBros.TILE_HEIGHT + .5);
+		//int[][][] tiles = levelCodes;
+		if (column >= 0 && column < levelCodes.length)
 		{
 			if (row >= 0 && row < SupaMobstaBros.SCREEN_HEIGHT)
 			{
@@ -598,17 +600,17 @@ public final class Level
 				if (row > SupaMobstaBros.TILE_HEIGHT)
 				{
 					//+ height
-					surrounds[0] = (tiles[column][row + 1][1] > 0);
+					surrounds[0] = (levelCodes[column][row + 1][1] > 0);
 				}
 				//right
-				if (column + 1 < tiles.length)
+				if (column + 1 < levelCodes[0].length && row - height + 1 >= 0)
 				{
 
-					surrounds[1] = (tiles[column + 1][row - height + 1][1] > 0);
+					surrounds[1] = (levelCodes[column + 1][row - height + 1][1] > 0);
 				}
 				else
 				{
-					surrounds[1] = true;
+					//surrounds[1] = true;
 				}
 				//below
 				if (row - height > 0)
@@ -619,15 +621,15 @@ public final class Level
 					{
 						boolean below, belowright;
 
-						below = (tiles[column][row - height][1] > 0);
+						below = (levelCodes[column][row - height][1] > 0);
 
 						boolean BELOW_RIGHT = true;
 
 						if (BELOW_RIGHT)
 						{
-							if (column + 1 < tiles.length)
+							if (column + 1 < levelCodes.length)
 							{
-								belowright = (tiles[column + 1][row - height][1] > 0);
+								belowright = (levelCodes[column + 1][row - height][1] > 0);
 							}
 							else
 							{
@@ -660,25 +662,30 @@ public final class Level
 					 }*/
 				}
 				//left
-				if (column - 1 >= 0)
+				if (column - 1 >= 0 && row - height + 1 >= 0)
 				{
-					surrounds[3] = (tiles[column - 1][Math.min (SupaMobstaBros.SCREEN_HEIGHT - 1, row - height + 1)][1] > 0);
+					surrounds[3] = (levelCodes[column - 1][Math.min (SupaMobstaBros.SCREEN_HEIGHT - 1, row - height + 1)][1] > 0);
 				}
 				else
 				{
-					surrounds[3] = true;
+					//surrounds[3] = true;
 				}
 			}
 		}
 
-		if (false && (x % SupaMobstaBros.TILE_WIDTH == 0 || y % SupaMobstaBros.TILE_HEIGHT == 0))
-		{
-			System.out.println ();
-			System.out.printf ("      T:%b       \n", surrounds[0]);
-			System.out.printf ("L:%b         R:%b\n", surrounds[3], surrounds[1]);
-			System.out.printf ("      B:%b       \n", surrounds[2]);
-			System.out.println ();
-		}
+		if (false && caller.contains ("Mobsta"))
+		 {
+		 if ((x % SupaMobstaBros.TILE_WIDTH == 0 || y % SupaMobstaBros.TILE_HEIGHT == 0))
+		 {
+		 System.out.println ();
+		 System.out.println (column + ", " + row);
+		 System.out.printf ("      T:%b       \n", surrounds[0]);
+		 System.out.printf ("L:%b         R:%b\n", surrounds[3], surrounds[1]);
+		 System.out.printf ("      B:%b       \n", surrounds[2]);
+		 System.out.println ();
+		 }
+		 //System.out.println ("Mobsta");
+		 }
 		/*
 		 * System.out.println ("\nNew vals");
 		 * for (boolean b : surrounds)
@@ -686,9 +693,14 @@ public final class Level
 		 * System.out.println (b);
 		 * }
 		 */
-		if (caller.contains ("Mobsta"))
+		if (false && caller.contains ("MobstaT"))
 		{
-			System.out.println ("Mobsta");
+			System.out.println (caller + "@ " + column + ", " + row);
+			System.out.println ();
+			System.out.printf (" %1d %1d %1d  \n", levelCodes[Math.max (column - 1, 0)][Math.min (row + 1, SCREEN_HEIGHT - 1)][1], levelCodes[column][Math.min (row + 1, SCREEN_HEIGHT - 1)][1], levelCodes[column + 1][Math.min (row + 1, SCREEN_HEIGHT - 1)][1]);
+			System.out.printf (" %1d   %1d  \n", levelCodes[Math.max (column - 1, 0)][row][1], levelCodes[column + 1][row][1]);
+			System.out.printf (" %1d %1d %1d  \n", levelCodes[Math.max (column - 1, 0)][row - 1][1], levelCodes[column][row - 1][1], levelCodes[column + 1][row - 1][1]);
+			System.out.println ();
 		}
 		return surrounds;
 	}

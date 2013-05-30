@@ -41,9 +41,9 @@ public class MobstaTux extends GoodGuy
 		mainTuxness = isIt_CouldItBe___ItIs__MainTux;
 		try
 		{
-			setFrames (loadImage ("src/supa/mobsta/img/Tux.png"));
+			setFrames (loadImage ("supa/mobsta/img/Tux.png"));
 			setFrame (0);
-			setHeight (1);
+			setHeight (2);
 			//setSize(32, 32);
 		} catch (IOException ex)
 		{
@@ -162,29 +162,29 @@ public class MobstaTux extends GoodGuy
 	@Override
 	public void step ()
 	{
-		if (cantMove ()[0] && getSpeed () < 1)
+		if (cantMove ()[0] && getSpeed () < 0)
 		{
 			direction = !direction;
 			setSpeed (-getSpeed ());
 			flipForward (false);
-			System.out.println ("left blocked");
+			//System.out.println ("left blocked");
 		}
-		else if (!cantMove ()[0] && getSpeed () < 1)
+		else if (!cantMove ()[0] && getSpeed () < 0)
 		{
-			System.out.println ("left good");
+			//System.out.println ("left good");
 			setX (getX () + (int) getSpeed ());
 		}
-		else if (cantMove ()[1] && getSpeed () > 1)
+		else if (cantMove ()[1] && getSpeed () > 0)
 		{
-			System.out.println ("right blocked");
+			//System.out.println ("right blocked");
 
 			direction = !direction;
 			setSpeed (-getSpeed ());
 			flipForward (true);
 		}
-		else if (!cantMove ()[1] && getSpeed () > 1)
+		else if (!cantMove ()[1] && getSpeed () > 0)
 		{
-			System.out.println ("right good  " + getSpeed ());
+			//System.out.println ("right good  " + getSpeed ());
 
 			setX (getX () + (int) getSpeed ());
 			

@@ -22,7 +22,7 @@ public class EndZone extends GoodGuy
 	{
 		try
 		{
-			setFrames (loadImage ("src/supa/mobsta/img/EndZone.png"));
+			setFrames (loadImage ("supa/mobsta/img/EndZone.png"));
 		} catch (IOException ex)
 		{
 			ex.printStackTrace ();

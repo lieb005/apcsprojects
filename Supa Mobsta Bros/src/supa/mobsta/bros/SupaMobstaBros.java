@@ -84,7 +84,7 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 		currWorld = world;
 		repaint ();
 		requestFocus ();
-			drawer.start ();
+		drawer.start ();
 
 		timeout.start ();
 	}
@@ -134,9 +134,9 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 				keys[4] = true;
 				break;
 			/*case KeyEvent.VK_R:
-				r = true;
-				drawer.start ();
-				break;*/
+			 r = true;
+			 drawer.start ();
+			 break;*/
 		}
 		keys[5] = ke.isShiftDown ();
 		if (ke.getKeyChar () - 0x30 >= 0 && ke.getKeyChar () - 30 < 10)
@@ -144,7 +144,7 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 			currLevel = ke.getKeyChar () - 0x30;
 		}
 		repaint ();
-		System.out.println ("\n\n\n\n" + ke.getKeyChar () + "\n\n\n\n");
+		//System.out.println ("\n\n\n\n" + ke.getKeyChar () + "\n\n\n\n");
 	}
 
 	/**
@@ -248,7 +248,7 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 	/**
 
 	 */
-	public static void lose ()
+	public void lose ()
 	{
 		for (Window w : JFrame.getOwnerlessWindows ())
 		{
@@ -267,12 +267,14 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 		f.setVisible (true);
 
 		System.out.println ("You Lose.");
+		drawer.stop ();
+		timeout.stop ();
 	}
 
 	/**
 
 	 */
-	public static void win ()
+	public void win ()
 	{
 		for (Window w : JFrame.getOwnerlessWindows ())
 		{
@@ -289,6 +291,9 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 		f.setSize (100, 100);
 		f.add (l);
 		f.setVisible (true);
+		drawer.stop ();
+		timeout.stop ();
+
 		System.out.println ("You Win!");
 	}
 
@@ -300,13 +305,13 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 	public void actionPerformed (ActionEvent ae)
 	{
 		/*if (r && false)
-		{
-			drawer.stop ();
-		}
-		String aestr = ae.toString (), drawstr = drawer.toString (), timoutstr = timeout.toString ();
-		aestr = aestr.substring (aestr.lastIndexOf ("javax"));
-		drawstr = drawstr.substring (drawstr.lastIndexOf ("javax"));
-		timoutstr = timoutstr.substring (timoutstr.lastIndexOf ("javax"));*/
+		 {
+		 drawer.stop ();
+		 }
+		 String aestr = ae.toString (), drawstr = drawer.toString (), timoutstr = timeout.toString ();
+		 aestr = aestr.substring (aestr.lastIndexOf ("javax"));
+		 drawstr = drawstr.substring (drawstr.lastIndexOf ("javax"));
+		 timoutstr = timoutstr.substring (timoutstr.lastIndexOf ("javax"));*/
 		//System.out.println (aestr + ", " + drawstr + ", " + timoutstr+ "    " + aestr.equals (drawstr) + ", " + aestr.equals (timoutstr));
 		if (ae.getSource ().equals (drawer))
 		{
@@ -315,10 +320,10 @@ public class SupaMobstaBros extends Canvas implements KeyListener, ActionListene
 				if (p != null)
 				{
 					p.move ();
-					p.step();
+					p.step ();
 					if (p instanceof MobstaTux)
 					{
-						System.out.println (p.getX () + ", " + p.getY ());
+						//System.out.println (p.getX () + ", " + p.getY ());
 					}
 					currWorld.getLevel (currLevel).setLocation (currWorld.getLevel (currLevel).getTux ().getX ());
 				}

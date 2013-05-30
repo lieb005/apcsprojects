@@ -17,7 +17,7 @@ public class BramCohen extends GoodGuy
 	{
 		try
 		{
-			setFrames (loadImage ("src/supa/mobsta/img/BramCohen.png"));
+			setFrames (loadImage ("supa/mobsta/img/BramCohen.png"));
 		} catch (IOException e)
 		{
 			e.printStackTrace ();

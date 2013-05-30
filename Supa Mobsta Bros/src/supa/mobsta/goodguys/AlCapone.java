@@ -19,7 +19,7 @@ public class AlCapone extends GoodGuy
 	{
 		try
 		{
-			setFrames (loadImage ("src/supa/mobsta/img/AlCapone.png"));
+			setFrames (loadImage ("supa/mobsta/img/AlCapone.png"));
 		} catch (IOException e)
 		{
 			e.printStackTrace ();

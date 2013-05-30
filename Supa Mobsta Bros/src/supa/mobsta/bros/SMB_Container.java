@@ -105,7 +105,7 @@ public class SMB_Container extends JApplet
 		try
 		{
 			AudioClip a;
-			File f = new File ("src/music.mid");
+			File f = new File ("music.wav");
 			//System.out.println (f.getAbsolutePath ());
 			URL u = f.toURI ().toURL ();
 			System.out.println (u);
