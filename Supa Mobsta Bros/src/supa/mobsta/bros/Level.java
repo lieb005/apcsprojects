@@ -590,14 +590,14 @@ public final class Level
 			false, false, false, false
 		};
 		int column = (int) ((double) (x) / (double) SupaMobstaBros.TILE_WIDTH + .5);
-		int row = (int) ((double) (y) / (double) SupaMobstaBros.TILE_HEIGHT + .5);
+		int row = SCREEN_HEIGHT - (int) ((double) (y) / (double) SupaMobstaBros.TILE_HEIGHT + .5);
 		//int[][][] tiles = levelCodes;
 		if (column >= 0 && column < levelCodes.length)
 		{
 			if (row >= 0 && row < SupaMobstaBros.SCREEN_HEIGHT)
 			{
 				//above
-				if (row > SupaMobstaBros.TILE_HEIGHT)
+				if (row + 1 < SupaMobstaBros.SCREEN_HEIGHT)
 				{
 					//+ height
 					surrounds[0] = (levelCodes[column][row + 1][1] > 0);
@@ -672,6 +672,9 @@ public final class Level
 				}
 			}
 		}
+		boolean temp = surrounds[0];
+		surrounds[0] = surrounds[2];
+		surrounds[2] = temp;
 
 		if (false && caller.contains ("Mobsta"))
 		 {
